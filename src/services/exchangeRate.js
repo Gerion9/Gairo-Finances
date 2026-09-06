@@ -104,15 +104,18 @@ export function getManualExchangeRate() {
 
 // Conversiones
 export function convertCurrency(amount, fromCurrency, toCurrency, rate) {
-  if (!amount || isNaN(amount)) return 0;
-  if (fromCurrency === toCurrency) return amount;
+  const numAmount = Number(amount);
+  if (!numAmount || isNaN(numAmount)) return 0;
+  if (fromCurrency === toCurrency) return numAmount;
+  
+  const effectiveRate = Number(rate) > 0 ? Number(rate) : DEFAULT_USD_MXN;
   if (fromCurrency === 'USD' && toCurrency === 'MXN') {
-    return amount * rate;
+    return numAmount * effectiveRate;
   }
   if (fromCurrency === 'MXN' && toCurrency === 'USD') {
-    return amount / rate;
+    return numAmount / effectiveRate;
   }
-  return amount;
+  return numAmount;
 }
 
 // Formateo visual

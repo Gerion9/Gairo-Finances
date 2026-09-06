@@ -168,7 +168,17 @@ export function loadFinancialData() {
       return INITIAL_DATA;
     }
     const parsed = JSON.parse(raw);
-    return { ...INITIAL_DATA, ...parsed };
+    return {
+      ...INITIAL_DATA,
+      ...parsed,
+      honorarios: { ...INITIAL_DATA.honorarios, ...(parsed.honorarios || {}) },
+      gastosNecesarios: Array.isArray(parsed.gastosNecesarios) ? parsed.gastosNecesarios : INITIAL_DATA.gastosNecesarios,
+      gastosOpcionales: Array.isArray(parsed.gastosOpcionales) ? parsed.gastosOpcionales : INITIAL_DATA.gastosOpcionales,
+      deudas: Array.isArray(parsed.deudas) ? parsed.deudas : INITIAL_DATA.deudas,
+      activos: Array.isArray(parsed.activos) ? parsed.activos : INITIAL_DATA.activos,
+      transacciones: Array.isArray(parsed.transacciones) ? parsed.transacciones : INITIAL_DATA.transacciones,
+      config: { ...INITIAL_DATA.config, ...(parsed.config || {}) }
+    };
   } catch (e) {
     console.error('Error cargando datos de LocalStorage:', e);
     return INITIAL_DATA;

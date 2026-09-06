@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Sparkles, Shield, TrendingUp, DollarSign } from 'lucide-react';
-import { formatMoney } from '../services/exchangeRate';
+import { formatMoney, convertCurrency } from '../services/exchangeRate';
 
-export default function Investments({ financialData, cashFlow }) {
+export default function Investments({ financialData, cashFlow, exchangeRate = 19.25 }) {
   const { totalCostodeVida } = cashFlow;
 
   // Fondo de Emergencia: Metas
@@ -10,24 +10,26 @@ export default function Investments({ financialData, cashFlow }) {
   const meta6Meses = totalCostodeVida * 6;
   const meta12Meses = totalCostodeVida * 12;
 
-  // Ahorro líquido actual
-  const ahorroLiquido = financialData.activos
+  // Ahorro líquido actual (convertido a MXN en caso de cuentas en USD)
+  const ahorroLiquido = (financialData?.activos || [])
     .filter(a => a.tipo === 'Efectivo' || a.tipo === 'Inversión')
-    .reduce((sum, a) => sum + (a.monto || 0), 0);
+    .reduce((sum, a) => sum + convertCurrency(a.monto, a.moneda, 'MXN', exchangeRate), 0);
 
-  const progreso3m = Math.min(100, Math.round((ahorroLiquido / meta3Meses) * 100));
+  const progreso3m = meta3Meses > 0 ? Math.min(100, Math.round((ahorroLiquido / meta3Meses) * 100)) : 100;
 
   // Calculadora de Interés Compuesto
   const [monthlyContribution, setMonthlyContribution] = useState(5000);
   const [annualRate, setAnnualRate] = useState(9.5); // 9.5% CETES
   const [years, setYears] = useState(10);
 
-  // Fórmulas de valor futuro
+  // Fórmulas de valor futuro con salvaguarda r === 0
   const r = (annualRate / 100) / 12;
   const n = years * 12;
-  const valorFuturo = monthlyContribution * ((Math.pow(1 + r, n) - 1) / r);
+  const valorFuturo = r === 0 
+    ? (monthlyContribution * n)
+    : (monthlyContribution * ((Math.pow(1 + r, n) - 1) / r));
   const totalAportado = monthlyContribution * n;
-  const rendimiento = valorFuturo - totalAportado;
+  const rendimiento = Math.max(0, valorFuturo - totalAportado);
 
   return (
     <div className="space-y-6">

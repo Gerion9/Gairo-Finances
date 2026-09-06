@@ -3,24 +3,25 @@
 import { convertCurrency } from './exchangeRate.js';
 
 // 1. Cálculo Fiscal y CFDI
-export function calculateFiscalOverview(honorarios) {
-  const importeFacturado = Number(honorarios.importeFacturado) || 0;
-  const ivaCobrado = importeFacturado * (honorarios.tasaIva || 0.16);
+export function calculateFiscalOverview(honorarios = {}) {
+  const safeHon = honorarios || {};
+  const importeFacturado = Number(safeHon.importeFacturado) || 0;
+  const ivaCobrado = importeFacturado * (safeHon.tasaIva || 0.16);
   const subtotalCfdi = importeFacturado + ivaCobrado;
 
-  const retencionIsr = importeFacturado * (honorarios.retencionIsrTasa || 0.10);
-  const retencionIva = ivaCobrado * (honorarios.retencionIvaFraccion !== undefined ? honorarios.retencionIvaFraccion : 0.6667);
+  const retencionIsr = importeFacturado * (safeHon.retencionIsrTasa || 0.10);
+  const retencionIva = ivaCobrado * (safeHon.retencionIvaFraccion !== undefined ? safeHon.retencionIvaFraccion : 0.6667);
 
   // Cash real que entra a la cuenta bancaria
   const netoEnCuenta = subtotalCfdi - retencionIsr - retencionIva;
 
   // Declaración mensual al SAT (lo que tú declaras y tienes que pagar)
-  const isrTotalEstimado = importeFacturado * (honorarios.tasaIsrDeclaracion || 0.1725);
+  const isrTotalEstimado = importeFacturado * (safeHon.tasaIsrDeclaracion || 0.1725);
   const isrACargo = Math.max(0, isrTotalEstimado - retencionIsr);
   const ivaACargo = Math.max(0, ivaCobrado - retencionIva);
   const totalImpuestosSat = isrACargo + ivaACargo;
 
-  const otrosIngresos = Number(honorarios.otrosIngresos) || 0;
+  const otrosIngresos = Number(safeHon.otrosIngresos) || 0;
   const ingresoDisponibleReal = netoEnCuenta + otrosIngresos - totalImpuestosSat;
 
   return {
@@ -39,20 +40,24 @@ export function calculateFiscalOverview(honorarios) {
 }
 
 // 2. Resumen de Flujo de Efectivo
-export function calculateCashFlow(data, exchangeRate) {
-  const fiscal = calculateFiscalOverview(data.honorarios);
+export function calculateCashFlow(data = {}, exchangeRate = 19.25) {
+  const safeData = data || {};
+  const fiscal = calculateFiscalOverview(safeData.honorarios);
 
-  const totalCostodeVida = data.gastosNecesarios.reduce((acc, g) => acc + (Number(g.monto) || 0), 0);
-  const totalGastosOpcionales = data.gastosOpcionales.reduce((acc, g) => acc + (Number(g.monto) || 0), 0);
+  const gastosNec = Array.isArray(safeData.gastosNecesarios) ? safeData.gastosNecesarios : [];
+  const gastosOpc = Array.isArray(safeData.gastosOpcionales) ? safeData.gastosOpcionales : [];
+  const deudas = Array.isArray(safeData.deudas) ? safeData.deudas : [];
+
+  const totalCostodeVida = gastosNec.reduce((acc, g) => acc + (Number(g.monto) || 0), 0);
+  const totalGastosOpcionales = gastosOpc.reduce((acc, g) => acc + (Number(g.monto) || 0), 0);
 
   // Pagos mínimos actuales de deudas (convertidos a MXN)
-  const totalPagosMinimosMXN = data.deudas.reduce((acc, d) => {
+  const totalPagosMinimosMXN = deudas.reduce((acc, d) => {
     const minMXN = convertCurrency(d.pagoMinimo, d.moneda, 'MXN', exchangeRate);
     return acc + (minMXN || 0);
   }, 0);
 
   // Flujo libre antes de aportaciones extraordinarias
-  // = Neto recibido + Otros ingresos - SAT - Costos de vida - Opcionales - Mínimos de deuda
   const flujoLibreReal = (fiscal.netoEnCuenta + fiscal.otrosIngresos)
     - fiscal.totalImpuestosSat
     - totalCostodeVida
@@ -69,31 +74,37 @@ export function calculateCashFlow(data, exchangeRate) {
 }
 
 // 3. Tasa de Sangrado por Intereses (Bleed Rate)
-export function calculateInterestBleed(deudas, exchangeRate) {
+export function calculateInterestBleed(deudas = [], exchangeRate = 19.25) {
   let interesMensualTotal = 0;
+  const safeDeudas = Array.isArray(deudas) ? deudas : [];
 
-  deudas.forEach(d => {
+  safeDeudas.forEach(d => {
     const saldoMXN = convertCurrency(d.saldo, d.moneda, 'MXN', exchangeRate);
     const tasaMensual = ((Number(d.tasaAnual) || 0) / 100) / 12;
     interesMensualTotal += saldoMXN * tasaMensual;
   });
 
-  const interesDiario = interesMensualTotal / 30;
-  const interesAnual = interesMensualTotal * 12;
+  const interesMensual = Math.round(interesMensualTotal);
+  const interesDiario = Math.round(interesMensualTotal / 30);
+  const interesAnual = interesMensual * 12;
 
   return {
-    interesDiario: Math.round(interesDiario),
-    interesMensual: Math.round(interesMensualTotal),
-    interesAnual: Math.round(interesAnual)
+    interesDiario,
+    interesMensual,
+    interesAnual
   };
 }
 
 // 4. Score de Salud Financiera (0 - 100) y Diagnóstico Inteligente
-export function calculateFinancialHealthScore(data, exchangeRate) {
-  const cashFlow = calculateCashFlow(data, exchangeRate);
-  const bleed = calculateInterestBleed(data.deudas, exchangeRate);
-  const totalDeudaMXN = data.deudas.reduce((sum, d) => sum + convertCurrency(d.saldo, d.moneda, 'MXN', exchangeRate), 0);
-  const totalActivosMXN = data.activos.reduce((sum, a) => sum + convertCurrency(a.monto, a.moneda, 'MXN', exchangeRate), 0);
+export function calculateFinancialHealthScore(data = {}, exchangeRate = 19.25) {
+  const safeData = data || {};
+  const deudas = Array.isArray(safeData.deudas) ? safeData.deudas : [];
+  const activos = Array.isArray(safeData.activos) ? safeData.activos : [];
+
+  const cashFlow = calculateCashFlow(safeData, exchangeRate);
+  const bleed = calculateInterestBleed(deudas, exchangeRate);
+  const totalDeudaMXN = deudas.reduce((sum, d) => sum + convertCurrency(d.saldo, d.moneda, 'MXN', exchangeRate), 0);
+  const totalActivosMXN = activos.reduce((sum, a) => sum + convertCurrency(a.monto, a.moneda, 'MXN', exchangeRate), 0);
   const totalIngresoNeto = cashFlow.fiscal.netoEnCuenta + cashFlow.fiscal.otrosIngresos;
 
   // Factor 1: DTI (Debt-To-Income) Ratio (0 - 25 pts)

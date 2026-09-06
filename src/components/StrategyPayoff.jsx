@@ -95,11 +95,18 @@ export default function StrategyPayoff({
 
       {/* Steps breakdown */}
       <div className="mt-6 space-y-3">
-        {paymentPlan.map((planItem, idx) => {
-          const { debt, tag, reason, suggestedPayment, isPrimaryTarget } = planItem;
+        {paymentPlan.length === 0 ? (
+          <div className="p-8 text-center bg-slate-950/60 rounded-xl border border-slate-800">
+            <CheckCircle className="w-10 h-10 text-emerald-400 mx-auto mb-2" />
+            <h4 className="text-sm font-bold text-white">¡No tienes pagos de deudas pendientes!</h4>
+            <p className="text-xs text-slate-400 mt-1">Todos tus saldos están liquidados al 100% o en $0.00.</p>
+          </div>
+        ) : (
+          paymentPlan.map((planItem, idx) => {
+            const { debt, tag, reason, suggestedPayment, isPrimaryTarget } = planItem;
 
-          return (
-            <div
+            return (
+              <div
               key={debt.id}
               className={`p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
                 isPrimaryTarget
@@ -162,7 +169,7 @@ export default function StrategyPayoff({
               </div>
             </div>
           );
-        })}
+        }))}
       </div>
 
       <div className="mt-6 p-3.5 bg-slate-950/80 rounded-xl border border-slate-800 text-xs text-slate-400 flex items-center gap-2">

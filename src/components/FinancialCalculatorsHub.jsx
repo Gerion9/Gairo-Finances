@@ -39,6 +39,12 @@ export default function FinancialCalculatorsHub({ financialData, exchangeRate })
   const [msiInput, setMsiInput] = useState({ precio: 25000, desc: 10, meses: 12, tasaInv: 9.5 });
   const [windfallInput, setWindfallInput] = useState(30000);
   const [hormigaInput, setHormigaInput] = useState({ diario: 85, dias: 24, tasa: 9.5 });
+  const [rule503020Input, setRule503020Input] = useState({
+    neto: 51761.70,
+    necesidades: 27000,
+    deseos: 5500,
+    ahorroDeuda: 12850
+  });
   const [refinanceInput, setRefinanceInput] = useState({ saldo: 120000, tasaVieja: 49.03, tasaNueva: 18.5, plazo: 24 });
   const [fireInput, setFireInput] = useState({ gastosAnuales: 324000, patrimonio: 45000, ahorro: 10000, tasa: 9.0 });
   const [horasInput, setHorasInput] = useState({ neto: 51761, horas: 160, precio: 3500 });
@@ -52,7 +58,7 @@ export default function FinancialCalculatorsHub({ financialData, exchangeRate })
   const msiRes = calculateMSIvsDiscount(msiInput.precio, msiInput.desc, msiInput.meses, msiInput.tasaInv);
   const windfallRes = calculateWindfallAllocation(windfallInput, financialData.deudas, exchangeRate);
   const hormigaRes = calculateGastosHormiga(hormigaInput.diario, hormigaInput.dias, hormigaInput.tasa);
-  const rule503020 = calculate503020Rule(51761.70, 27000, 5500, 12850);
+  const rule503020 = calculate503020Rule(rule503020Input.neto, rule503020Input.necesidades, rule503020Input.deseos, rule503020Input.ahorroDeuda);
   const refinanceRes = calculateRefinancingBenefit(refinanceInput.saldo, refinanceInput.tasaVieja, refinanceInput.tasaNueva, refinanceInput.plazo);
   const fireRes = calculateFIRERetirement(fireInput.gastosAnuales, fireInput.patrimonio, fireInput.ahorro, fireInput.tasa);
   const horasRes = calculateWorkHoursCost(horasInput.neto, horasInput.horas, horasInput.precio);
@@ -328,6 +334,45 @@ export default function FinancialCalculatorsHub({ financialData, exchangeRate })
             <p className="text-xs text-slate-400">
               Compara la distribución de tu dinero con la regla de oro financiera: 50% Necesidades, 30% Deseos, 20% Ahorro/Deuda.
             </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2">
+              <div>
+                <label className="block text-xs text-slate-300 font-semibold mb-1">Ingreso Neto ($)</label>
+                <input
+                  type="number"
+                  value={rule503020Input.neto}
+                  onChange={(e) => setRule503020Input({ ...rule503020Input, neto: parseFloat(e.target.value) || 0 })}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-slate-300 font-semibold mb-1">Necesidades / Fijos ($)</label>
+                <input
+                  type="number"
+                  value={rule503020Input.necesidades}
+                  onChange={(e) => setRule503020Input({ ...rule503020Input, necesidades: parseFloat(e.target.value) || 0 })}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-slate-300 font-semibold mb-1">Deseos / Opcionales ($)</label>
+                <input
+                  type="number"
+                  value={rule503020Input.deseos}
+                  onChange={(e) => setRule503020Input({ ...rule503020Input, deseos: parseFloat(e.target.value) || 0 })}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-slate-300 font-semibold mb-1">Aporte Ahorro/Deuda ($)</label>
+                <input
+                  type="number"
+                  value={rule503020Input.ahorroDeuda}
+                  onChange={(e) => setRule503020Input({ ...rule503020Input, ahorroDeuda: parseFloat(e.target.value) || 0 })}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono"
+                />
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
               <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800">

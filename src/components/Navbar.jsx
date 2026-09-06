@@ -103,6 +103,15 @@ export default function Navbar({
           {/* Right Controls */}
           <div className="flex items-center gap-2">
             
+            {/* Mobile Command Palette Trigger */}
+            <button
+              onClick={onOpenCommandPalette}
+              className="md:hidden p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+              title="Buscar herramientas o calculadoras"
+            >
+              <Search className="w-4 h-4 text-emerald-400" />
+            </button>
+
             {/* Privacy Mode Toggle */}
             <button
               onClick={() => setPrivacyMode(!privacyMode)}

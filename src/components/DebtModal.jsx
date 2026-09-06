@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, AlertCircle } from 'lucide-react';
+import { X, Save, AlertCircle, Calendar } from 'lucide-react';
 
 export default function DebtModal({ isOpen, onClose, onSave, debtToEdit }) {
   const [formData, setFormData] = useState({
@@ -9,6 +9,8 @@ export default function DebtModal({ isOpen, onClose, onSave, debtToEdit }) {
     saldo: '',
     tasaAnual: '',
     pagoMinimo: '',
+    diaCorte: 15,
+    diaPagoLimite: 5,
     tipo: 'HIGH_INTEREST',
     promoDeadline: '',
     tasaRegularPostPromo: '',
@@ -25,6 +27,8 @@ export default function DebtModal({ isOpen, onClose, onSave, debtToEdit }) {
         saldo: debtToEdit.saldo !== undefined ? debtToEdit.saldo : '',
         tasaAnual: debtToEdit.tasaAnual !== undefined ? debtToEdit.tasaAnual : '',
         pagoMinimo: debtToEdit.pagoMinimo !== undefined ? debtToEdit.pagoMinimo : '',
+        diaCorte: debtToEdit.diaCorte !== undefined ? debtToEdit.diaCorte : 15,
+        diaPagoLimite: debtToEdit.diaPagoLimite !== undefined ? debtToEdit.diaPagoLimite : 5,
         tipo: debtToEdit.tipo || 'HIGH_INTEREST',
         promoDeadline: debtToEdit.promoDeadline || '',
         tasaRegularPostPromo: debtToEdit.tasaRegularPostPromo || '',
@@ -39,6 +43,8 @@ export default function DebtModal({ isOpen, onClose, onSave, debtToEdit }) {
         saldo: '',
         tasaAnual: '',
         pagoMinimo: '',
+        diaCorte: 15,
+        diaPagoLimite: 5,
         tipo: 'HIGH_INTEREST',
         promoDeadline: '',
         tasaRegularPostPromo: '',
@@ -60,6 +66,8 @@ export default function DebtModal({ isOpen, onClose, onSave, debtToEdit }) {
       saldo: parseFloat(formData.saldo) || 0,
       tasaAnual: parseFloat(formData.tasaAnual) || 0,
       pagoMinimo: parseFloat(formData.pagoMinimo) || 0,
+      diaCorte: parseInt(formData.diaCorte) || 15,
+      diaPagoLimite: parseInt(formData.diaPagoLimite) || 5,
       tipo: formData.tipo,
       promoDeadline: formData.promoDeadline,
       tasaRegularPostPromo: parseFloat(formData.tasaRegularPostPromo) || 0,
@@ -173,6 +181,39 @@ export default function DebtModal({ isOpen, onClose, onSave, debtToEdit }) {
                 placeholder="0.00"
                 value={formData.pagoMinimo}
                 onChange={(e) => setFormData({ ...formData, pagoMinimo: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500 font-mono"
+              />
+            </div>
+          </div>
+
+          {/* Fechas de corte y pago para el calendario */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                Día de Corte (1 - 31)
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="31"
+                placeholder="15"
+                value={formData.diaCorte}
+                onChange={(e) => setFormData({ ...formData, diaCorte: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500 font-mono"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                Día Límite de Pago (1 - 31)
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="31"
+                placeholder="5"
+                value={formData.diaPagoLimite}
+                onChange={(e) => setFormData({ ...formData, diaPagoLimite: e.target.value })}
                 className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500 font-mono"
               />
             </div>

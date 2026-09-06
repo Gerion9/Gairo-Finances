@@ -31,7 +31,7 @@ export default function DashboardOverview({
   const totalDeudaMXN = financialData.deudas.reduce((acc, d) => {
     return acc + convertCurrency(d.saldo, d.moneda, 'MXN', exchangeRate);
   }, 0);
-  const totalDeudaUSD = totalDeudaMXN / exchangeRate;
+  const totalDeudaUSD = convertCurrency(totalDeudaMXN, 'MXN', 'USD', exchangeRate);
 
   // Total Activos en MXN
   const totalActivosMXN = financialData.activos.reduce((acc, a) => {
@@ -247,27 +247,35 @@ export default function DashboardOverview({
 
             {/* Pie Chart */}
             <div className="h-44 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={debtBreakdown}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={45}
-                    outerRadius={65}
-                    paddingAngle={3}
-                    dataKey="value"
-                  >
-                    {debtBreakdown.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', fontSize: '11px' }}
-                    formatter={(val) => [`$${Number(val).toLocaleString('es-MX')} MXN`, '']}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+              {debtBreakdown.length === 0 || debtBreakdown.every(d => d.value <= 0) ? (
+                <div className="h-full flex flex-col items-center justify-center text-center p-4 bg-slate-950/40 rounded-xl border border-slate-800/80">
+                  <Sparkles className="w-8 h-8 text-emerald-400 mb-1" />
+                  <span className="text-xs font-bold text-white">¡Sin deudas activas!</span>
+                  <span className="text-[10px] text-slate-400">Todos tus saldos están en $0.00</span>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={debtBreakdown}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={45}
+                      outerRadius={65}
+                      paddingAngle={3}
+                      dataKey="value"
+                    >
+                      {debtBreakdown.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', fontSize: '11px' }}
+                      formatter={(val) => [`$${Number(val).toLocaleString('es-MX')} MXN`, '']}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
             </div>
 
             {/* List of debts summary */}

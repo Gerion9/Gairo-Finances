@@ -24,7 +24,8 @@ import SettingsModal from './components/SettingsModal';
 import { 
   loadFinancialData, 
   saveFinancialData, 
-  resetToExcelDefaults 
+  resetToExcelDefaults,
+  INITIAL_DATA
 } from './services/storage.js';
 import { 
   fetchExchangeRate 
@@ -38,6 +39,7 @@ import {
   isAuthenticated, 
   logout 
 } from './services/auth.js';
+import { exportFinancesToExcel } from './services/excelExport.js';
 import { Plus } from 'lucide-react';
 
 export default function App() {
@@ -165,11 +167,26 @@ export default function App() {
     reader.onload = (event) => {
       try {
         const imported = JSON.parse(event.target.result);
-        setFinancialData(imported);
-        alert('¡Datos restaurados correctamente!');
+        if (!imported || typeof imported !== 'object') {
+          throw new Error('Formato inválido');
+        }
+        const sanitized = {
+          ...INITIAL_DATA,
+          ...imported,
+          honorarios: { ...INITIAL_DATA.honorarios, ...(imported.honorarios || {}) },
+          gastosNecesarios: Array.isArray(imported.gastosNecesarios) ? imported.gastosNecesarios : INITIAL_DATA.gastosNecesarios,
+          gastosOpcionales: Array.isArray(imported.gastosOpcionales) ? imported.gastosOpcionales : INITIAL_DATA.gastosOpcionales,
+          deudas: Array.isArray(imported.deudas) ? imported.deudas : INITIAL_DATA.deudas,
+          activos: Array.isArray(imported.activos) ? imported.activos : INITIAL_DATA.activos,
+          transacciones: Array.isArray(imported.transacciones) ? imported.transacciones : INITIAL_DATA.transacciones,
+          config: { ...INITIAL_DATA.config, ...(imported.config || {}) }
+        };
+        setFinancialData(sanitized);
+        saveFinancialData(sanitized);
+        alert('¡Datos restaurados y verificados con éxito!');
         setIsSettingsOpen(false);
       } catch (err) {
-        alert('Error: Archivo de respaldo no válido.');
+        alert('Error: Archivo de respaldo no válido o dañado.');
       }
     };
     reader.readAsText(file);
@@ -180,6 +197,16 @@ export default function App() {
       const def = resetToExcelDefaults();
       setFinancialData(def);
       setIsSettingsOpen(false);
+    }
+  };
+
+  const handleCommandAction = (action) => {
+    if (action === 'exportExcel') {
+      exportFinancesToExcel(financialData, exchangeRate);
+    } else if (action === 'openSettings') {
+      setIsSettingsOpen(true);
+    } else if (action === 'openPricing') {
+      setIsPricingOpen(true);
     }
   };
 
@@ -340,6 +367,7 @@ export default function App() {
           <Investments
             financialData={financialData}
             cashFlow={cashFlow}
+            exchangeRate={exchangeRate}
           />
         )}
 
@@ -386,6 +414,7 @@ export default function App() {
         isOpen={isCommandPaletteOpen}
         onClose={() => setIsCommandPaletteOpen(false)}
         onNavigateTab={setActiveTab}
+        onAction={handleCommandAction}
       />
 
       {/* Footer */}

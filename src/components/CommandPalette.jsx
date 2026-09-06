@@ -1,5 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Search, X, Zap, Calculator, Layers, Calendar, Receipt, Activity, ShieldCheck, Printer, ArrowRight } from 'lucide-react';
+import { 
+  Search, 
+  X, 
+  Zap, 
+  Calculator, 
+  Layers, 
+  Calendar, 
+  Receipt, 
+  Activity, 
+  ShieldCheck, 
+  Printer, 
+  ArrowRight,
+  Sparkles,
+  Percent,
+  Coffee,
+  PieChart,
+  Home,
+  Briefcase,
+  TrendingUp,
+  FileSpreadsheet,
+  Settings,
+  Crown,
+  BookOpen
+} from 'lucide-react';
 
 export default function CommandPalette({ isOpen, onClose, onNavigateTab, onAction }) {
   const [query, setQuery] = useState('');
@@ -8,7 +31,7 @@ export default function CommandPalette({ isOpen, onClose, onNavigateTab, onActio
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        onClose(); // toggle
+        onClose();
       }
       if (e.key === 'Escape') {
         onClose();
@@ -21,18 +44,38 @@ export default function CommandPalette({ isOpen, onClose, onNavigateTab, onActio
   if (!isOpen) return null;
 
   const allItems = [
-    { id: 'dashboard', title: 'Panel Resumen & KPIs', category: 'General', tab: 'dashboard', icon: Zap },
-    { id: 'debts', title: 'Estrategia Gairo & Deudas', category: 'Deudas', tab: 'debts', icon: Layers },
-    { id: 'calendar', title: 'Calendario de Pagos por Quincena', category: 'Flujo', tab: 'calendar', icon: Calendar },
-    { id: 'transactions', title: 'Control de Transacciones & Presupuesto', category: 'Presupuesto', tab: 'transactions', icon: Receipt },
-    { id: 'calculators', title: 'Suite de Calculadoras Financieras (CAT, MSI, Aguinaldo...)', category: 'Herramientas', tab: 'calculators', icon: Calculator },
-    { id: 'health', title: 'Diagnóstico & Salud Financiera (Score)', category: 'Diagnóstico', tab: 'health', icon: Activity },
-    { id: 'diagnostics', title: 'Guía Buró, Checklist Mensual & Cartas Bancarias', category: 'Diagnóstico', tab: 'diagnostics', icon: ShieldCheck },
-    { id: 'simulator', title: 'Simulador What-If de Desendeudamiento', category: 'Simulador', tab: 'simulator', icon: Calculator },
-    { id: 'budget', title: 'Estado de Resultados & Módulo SAT CFDI', category: 'Fiscal', tab: 'budget', icon: Zap },
-    { id: 'balance', title: 'Balance General & Patrimonio Neto', category: 'Capital', tab: 'balance', icon: ShieldCheck },
-    { id: 'investments', title: 'Fondo de Emergencia & Interés Compuesto', category: 'Inversión', tab: 'investments', icon: Zap },
-    { id: 'report', title: 'Reporte Ejecutivo Imprimible / PDF', category: 'Exportación', tab: 'report', icon: Printer },
+    // Pestañas Principales
+    { id: 'dashboard', title: 'Panel Resumen & KPIs Principales', category: 'General', tab: 'dashboard', icon: Zap },
+    { id: 'debts', title: 'Estrategia Gairo & Portafolio de Deudas', category: 'Deudas', tab: 'debts', icon: Layers },
+    { id: 'calendar', title: 'Calendario de Pagos por Quincena (Q1 & Q2)', category: 'Flujo de Caja', tab: 'calendar', icon: Calendar },
+    { id: 'transactions', title: 'Control de Transacciones Diarias & Presupuesto', category: 'Presupuesto', tab: 'transactions', icon: Receipt },
+    { id: 'calculators', title: 'Suite de Calculadoras Financieras (Hub)', category: 'Herramientas', tab: 'calculators', icon: Calculator },
+    { id: 'health', title: 'Score de Salud Financiera (0 a 100) & Bleed Rate', category: 'Diagnóstico', tab: 'health', icon: Activity },
+    { id: 'diagnostics', title: 'Guía Buró de Crédito, Checklist & Carta UNE', category: 'Diagnóstico', tab: 'diagnostics', icon: ShieldCheck },
+    { id: 'simulator', title: 'Simulador What-If con Control Deslizante & Confetti', category: 'Simulador', tab: 'simulator', icon: Sparkles },
+    { id: 'budget', title: 'Estado de Resultados Personal & Módulo SAT CFDI', category: 'Fiscal SAT', tab: 'budget', icon: Zap },
+    { id: 'balance', title: 'Balance General & Patrimonio Neto (Activos - Pasivos)', category: 'Capital', tab: 'balance', icon: ShieldCheck },
+    { id: 'investments', title: 'Fondo de Emergencia & Interés Compuesto CETES', category: 'Inversión', tab: 'investments', icon: TrendingUp },
+    { id: 'report', title: 'Generador de Reporte Ejecutivo Imprimible / PDF', category: 'Exportación', tab: 'report', icon: Printer },
+
+    // Accesos Directos Específicos a Calculadoras
+    { id: 'calc-cat', title: 'Calculadora de CAT Real & Costo Anual Total', category: 'Calculadora', tab: 'calculators', icon: Percent },
+    { id: 'calc-msi', title: 'Meses Sin Intereses (MSI) vs Descuento Contado', category: 'Calculadora', tab: 'calculators', icon: Sparkles },
+    { id: 'calc-windfall', title: 'Inyección de Aguinaldo, Bonos o Finiquito', category: 'Calculadora', tab: 'calculators', icon: Layers },
+    { id: 'calc-hormiga', title: 'Detector de Gastos Hormiga & Costo Compuesto', category: 'Calculadora', tab: 'calculators', icon: Coffee },
+    { id: 'calc-503020', title: 'Auditoría de Presupuesto Regla 50 / 30 / 20', category: 'Calculadora', tab: 'calculators', icon: PieChart },
+    { id: 'calc-refinance', title: 'Calculadora de Refinanciamiento / Consolidación', category: 'Calculadora', tab: 'calculators', icon: TrendingUp },
+    { id: 'calc-fire', title: 'Calculadora de Retiro Temprano (FIRE Number)', category: 'Calculadora', tab: 'calculators', icon: TrendingUp },
+    { id: 'calc-horas', title: 'Conversor de Gastos a Horas de Trabajo', category: 'Calculadora', tab: 'calculators', icon: Briefcase },
+    { id: 'calc-rent-buy', title: 'Comparador Rentar vs Comprar Vivienda', category: 'Calculadora', tab: 'calculators', icon: Home },
+    { id: 'calc-real-yield', title: 'Rendimiento Real vs Inflación e ISR', category: 'Calculadora', tab: 'calculators', icon: Percent },
+    { id: 'calc-deductions', title: 'Deducciones Personales SAT & Devolución Anual', category: 'Calculadora', tab: 'calculators', icon: BookOpen },
+    { id: 'calc-resico', title: 'Simulador Fiscal RESICO vs Actividad Profesional', category: 'Calculadora', tab: 'calculators', icon: ShieldCheck },
+
+    // Acciones y Configuración
+    { id: 'act-excel', title: 'Descargar Libro Completo en Excel (.xlsx)', category: 'Acción', action: 'exportExcel', icon: FileSpreadsheet },
+    { id: 'act-settings', title: 'Ajustes, Contraseña & Tipo de Cambio USD/MXN', category: 'Configuración', action: 'openSettings', icon: Settings },
+    { id: 'act-pricing', title: 'Ver Planes Comerciales PRO & Licencias SaaS', category: 'SaaS', action: 'openPricing', icon: Crown }
   ];
 
   const filtered = allItems.filter(item => 
@@ -50,7 +93,7 @@ export default function CommandPalette({ isOpen, onClose, onNavigateTab, onActio
           <input
             type="text"
             autoFocus
-            placeholder="Buscar herramienta, calculadora o sección (Ctrl+K)..."
+            placeholder="Buscar cualquier herramienta, calculadora o acción (Ctrl+K)..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="w-full bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none"
@@ -71,7 +114,11 @@ export default function CommandPalette({ isOpen, onClose, onNavigateTab, onActio
                 <button
                   key={item.id}
                   onClick={() => {
-                    onNavigateTab(item.tab);
+                    if (item.action && onAction) {
+                      onAction(item.action);
+                    } else if (item.tab && onNavigateTab) {
+                      onNavigateTab(item.tab);
+                    }
                     onClose();
                   }}
                   className="w-full p-3 rounded-xl hover:bg-slate-800/80 flex items-center justify-between text-left transition-colors group"
@@ -97,8 +144,8 @@ export default function CommandPalette({ isOpen, onClose, onNavigateTab, onActio
         </div>
 
         <div className="p-3 bg-slate-950/80 border-t border-slate-800 flex justify-between items-center text-[10px] text-slate-400">
-          <span>Navega a cualquier funcionalidad en 1 solo clic</span>
-          <span>Presiona <strong className="text-slate-200 font-mono">Ctrl + K</strong> para abrir en cualquier momento</span>
+          <span>Acceso instantáneo a las 50 funcionalidades en 1 solo clic</span>
+          <span className="font-mono">Gairo Finances 2026</span>
         </div>
 
       </div>

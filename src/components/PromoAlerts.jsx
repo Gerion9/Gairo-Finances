@@ -8,16 +8,21 @@ export default function PromoAlerts({ promoDeadlines, displayCurrency, exchangeR
   return (
     <div className="mb-6 space-y-3">
       {promoDeadlines.map((item) => {
-        const isCritical = item.daysRemaining <= 30;
-        const isHigh = item.daysRemaining > 30 && item.daysRemaining <= 90;
+        const isExpired = item.daysRemaining < 0;
+        const isCritical = !isExpired && item.daysRemaining <= 30;
+        const isHigh = !isExpired && item.daysRemaining > 30 && item.daysRemaining <= 90;
 
-        const borderClass = isCritical
+        const borderClass = isExpired
+          ? 'border-red-600/70 bg-gradient-to-r from-red-950/60 via-red-900/30 to-slate-900'
+          : isCritical
           ? 'border-red-500/50 bg-gradient-to-r from-red-950/40 via-red-900/20 to-slate-900'
           : isHigh
           ? 'border-amber-500/50 bg-gradient-to-r from-amber-950/40 via-amber-900/20 to-slate-900'
           : 'border-blue-500/40 bg-gradient-to-r from-blue-950/30 via-slate-900 to-slate-900';
 
-        const badgeClass = isCritical
+        const badgeClass = isExpired
+          ? 'bg-red-600 text-white font-black animate-pulse'
+          : isCritical
           ? 'bg-red-500/20 text-red-400 border border-red-500/40 animate-pulse'
           : isHigh
           ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
@@ -29,7 +34,7 @@ export default function PromoAlerts({ promoDeadlines, displayCurrency, exchangeR
             className={`p-4 rounded-xl border ${borderClass} shadow-lg backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-4`}
           >
             <div className="flex items-start gap-3.5">
-              <div className={`p-2.5 rounded-xl shrink-0 ${isCritical ? 'bg-red-500/20 text-red-400' : isHigh ? 'bg-amber-500/20 text-amber-400' : 'bg-blue-500/20 text-blue-400'}`}>
+              <div className={`p-2.5 rounded-xl shrink-0 ${isExpired || isCritical ? 'bg-red-500/20 text-red-400' : isHigh ? 'bg-amber-500/20 text-amber-400' : 'bg-blue-500/20 text-blue-400'}`}>
                 <AlertTriangle className="w-5 h-5" />
               </div>
 
@@ -39,7 +44,9 @@ export default function PromoAlerts({ promoDeadlines, displayCurrency, exchangeR
                     {item.nombre}
                   </h4>
                   <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${badgeClass}`}>
-                    {item.daysRemaining <= 0
+                    {item.daysRemaining < 0
+                      ? '¡PLAZO EXPIRADO!'
+                      : item.daysRemaining === 0
                       ? '¡VENCE HOY!'
                       : `¡Vence en ${item.daysRemaining} días!`}
                   </span>

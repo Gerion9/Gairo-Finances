@@ -29,8 +29,15 @@ export default function TransactionsTracker({ financialData, onUpdateTransaction
     realExpensesByCategory[t.categoria] = (realExpensesByCategory[t.categoria] || 0) + (Number(t.monto) || 0);
   });
 
-  // Presupuesto mapeado
-  const budgetByCategory = {
+  // Presupuesto mapeado dinámicamente desde gastosNecesarios y gastosOpcionales
+  const budgetByCategory = {};
+  [...(financialData?.gastosNecesarios || []), ...(financialData?.gastosOpcionales || [])].forEach(g => {
+    if (g.categoria) {
+      budgetByCategory[g.categoria] = (budgetByCategory[g.categoria] || 0) + (Number(g.monto) || 0);
+    }
+  });
+  // Fallback para categorías estándar si estuvieran en $0
+  const defaultBudgets = {
     'Vivienda': 8500,
     'Servicios': 2200,
     'Transporte': 2800,
@@ -38,6 +45,11 @@ export default function TransactionsTracker({ financialData, onUpdateTransaction
     'Mascota': 3500,
     'Estilo de Vida': 5500
   };
+  Object.keys(defaultBudgets).forEach(cat => {
+    if (!budgetByCategory[cat]) {
+      budgetByCategory[cat] = defaultBudgets[cat];
+    }
+  });
 
   const handleAddTx = (e) => {
     e.preventDefault();

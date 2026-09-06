@@ -1,41 +1,60 @@
+import { convertCurrency } from './exchangeRate.js';
+
 // Suite Integral de Calculadoras Financieras Avanzadas (Gairo Finances)
 
 // 1. Calculadora de CAT Real (Costo Anual Total Efectivo)
 export function calculateCATReal(saldo, tasaNominalAnual, plazoMeses, anualidad = 0, comisionesMensuales = 0) {
-  const saldoPrincipal = Number(saldo) || 10000;
-  const tasaNom = (Number(tasaNominalAnual) || 40) / 100;
-  const meses = Number(plazoMeses) || 12;
+  const saldoPrincipal = Math.max(0, Number(saldo) || 0);
+  const tasaNom = Math.max(0, Number(tasaNominalAnual) || 0) / 100;
+  const meses = Math.max(1, Number(plazoMeses) || 12);
   const rMensual = tasaNom / 12;
 
-  // Pago mensual amortizable base (PMT)
-  const cuotaBase = (saldoPrincipal * rMensual) / (1 - Math.pow(1 + rMensual, -meses));
-  const pagoMensualConCargos = cuotaBase + (Number(comisionesMensuales) || 0) + (Number(anualidad) / 12);
+  if (saldoPrincipal === 0) {
+    return {
+      cuotaMensual: 0,
+      totalPagado: 0,
+      totalInteresesYCargos: 0,
+      catReal: 0
+    };
+  }
 
-  const totalPagado = (pagoMensualConCargos * meses);
-  const costoTotalExtra = totalPagado - saldoPrincipal;
-  const catEstimado = (Math.pow(1 + (costoTotalExtra / saldoPrincipal) / (meses / 12), 1) - 1) * 100;
+  // Pago mensual amortizable base (PMT)
+  let cuotaBase = 0;
+  if (rMensual === 0) {
+    cuotaBase = saldoPrincipal / meses;
+  } else {
+    const factor = 1 - Math.pow(1 + rMensual, -meses);
+    cuotaBase = factor > 0 ? (saldoPrincipal * rMensual) / factor : (saldoPrincipal / meses);
+  }
+
+  const pagoMensualConCargos = cuotaBase + Math.max(0, Number(comisionesMensuales) || 0) + (Math.max(0, Number(anualidad) || 0) / 12);
+  const totalPagado = pagoMensualConCargos * meses;
+  const costoTotalExtra = Math.max(0, totalPagado - saldoPrincipal);
+  const catEstimado = (meses > 0 && saldoPrincipal > 0)
+    ? (Math.pow(1 + (costoTotalExtra / saldoPrincipal) / (meses / 12), 1) - 1) * 100
+    : 0;
 
   return {
     cuotaMensual: Math.round(pagoMensualConCargos),
     totalPagado: Math.round(totalPagado),
     totalInteresesYCargos: Math.round(costoTotalExtra),
-    catReal: Math.min(180, Math.max(tasaNominalAnual, parseFloat(catEstimado.toFixed(1))))
+    catReal: Math.min(250, Math.max(tasaNominalAnual || 0, parseFloat(catEstimado.toFixed(1))))
   };
 }
 
 // 2. Calculadora: "Meses Sin Intereses (MSI) vs Descuento de Contado"
 export function calculateMSIvsDiscount(precioLista, descuentoContadoPorcentaje, mesesMSI, tasaRendimientoCETES = 9.5) {
-  const precio = Number(precioLista) || 20000;
-  const descPct = (Number(descuentoContadoPorcentaje) || 10) / 100;
-  const meses = Number(mesesMSI) || 12;
-  const tasaInvAnual = (Number(tasaRendimientoCETES) || 9.5) / 100;
+  const precio = Math.max(0, Number(precioLista) || 0);
+  const descPct = Math.max(0, Number(descuentoContadoPorcentaje) || 0) / 100;
+  const meses = Math.max(1, Number(mesesMSI) || 12);
+  const tasaInvAnual = Math.max(0, Number(tasaRendimientoCETES) || 0) / 100;
 
   // Opción A: Contado con Descuento
   const precioContado = precio * (1 - descPct);
   const ahorroContado = precio * descPct;
 
   // Opción B: Pagar a MSI e invertir el dinero en CETES retirando la mensualidad
-  const cuotaMSI = precio / meses;
+  const cuotaMSI = meses > 0 ? precio / meses : precio;
   let capitalInvertido = precioContado;
   let rendimientoGanado = 0;
 
@@ -63,16 +82,17 @@ export function calculateMSIvsDiscount(precioLista, descuentoContadoPorcentaje, 
 }
 
 // 3. Inyección Extraordinaria (Aguinaldo, Bono, Venta de Activo)
-export function calculateWindfallAllocation(montoExtra, deudas, exchangeRate) {
-  const totalInyeccion = Number(montoExtra) || 20000;
+export function calculateWindfallAllocation(montoExtra, deudas = [], exchangeRate = 19.25) {
+  const totalInyeccion = Math.max(0, Number(montoExtra) || 0);
   let disponible = totalInyeccion;
   const asignaciones = [];
+  const safeDeudas = Array.isArray(deudas) ? deudas : [];
 
   // 1. Primero blindar promociones con deadline al 0%
-  const promos = deudas.filter(d => d.tipo === 'PROMO_DEADLINE' && d.saldo > 0);
+  const promos = safeDeudas.filter(d => d.tipo === 'PROMO_DEADLINE' && (Number(d.saldo) || 0) > 0);
   promos.forEach(p => {
     if (disponible <= 0) return;
-    const saldoMXN = p.moneda === 'USD' ? p.saldo * exchangeRate : p.saldo;
+    const saldoMXN = convertCurrency(p.saldo, p.moneda, 'MXN', exchangeRate);
     const pago = Math.min(saldoMXN, disponible);
     asignaciones.push({
       deudaId: p.id,
@@ -84,13 +104,13 @@ export function calculateWindfallAllocation(montoExtra, deudas, exchangeRate) {
   });
 
   // 2. Deudas de alto interés (Avalancha a la mayor tasa)
-  const caras = deudas
-    .filter(d => d.tipo === 'HIGH_INTEREST' && d.saldo > 0)
-    .sort((a, b) => b.tasaAnual - a.tasaAnual);
+  const caras = safeDeudas
+    .filter(d => d.tipo === 'HIGH_INTEREST' && (Number(d.saldo) || 0) > 0)
+    .sort((a, b) => (Number(b.tasaAnual) || 0) - (Number(a.tasaAnual) || 0));
 
   caras.forEach(c => {
     if (disponible <= 0) return;
-    const saldoMXN = c.moneda === 'USD' ? c.saldo * exchangeRate : c.saldo;
+    const saldoMXN = convertCurrency(c.saldo, c.moneda, 'MXN', exchangeRate);
     const pago = Math.min(saldoMXN, disponible);
     asignaciones.push({
       deudaId: c.id,
@@ -110,17 +130,26 @@ export function calculateWindfallAllocation(montoExtra, deudas, exchangeRate) {
 
 // 4. Detector de Gastos Hormiga & Pérdida por Interés Compuesto
 export function calculateGastosHormiga(gastoDiario, diasAlMes = 24, rendimientoAnualCETES = 9.5) {
-  const diario = Number(gastoDiario) || 75; // Café, snack, estacionamiento
-  const dias = Number(diasAlMes) || 24;
-  const r = (Number(rendimientoAnualCETES) || 9.5) / 100 / 12;
+  const diario = Math.max(0, Number(gastoDiario) || 0);
+  const dias = Math.max(0, Number(diasAlMes) || 0);
+  const r = Math.max(0, Number(rendimientoAnualCETES) || 0) / 100 / 12;
 
   const mensual = diario * dias;
   const anual = mensual * 12;
 
-  // Proyección del valor futuro si se hubiera invertido
-  const vf5 = mensual * ((Math.pow(1 + r, 5 * 12) - 1) / r);
-  const vf10 = mensual * ((Math.pow(1 + r, 10 * 12) - 1) / r);
-  const vf20 = mensual * ((Math.pow(1 + r, 20 * 12) - 1) / r);
+  let vf5 = 0;
+  let vf10 = 0;
+  let vf20 = 0;
+
+  if (r === 0) {
+    vf5 = mensual * 5 * 12;
+    vf10 = mensual * 10 * 12;
+    vf20 = mensual * 20 * 12;
+  } else {
+    vf5 = mensual * ((Math.pow(1 + r, 5 * 12) - 1) / r);
+    vf10 = mensual * ((Math.pow(1 + r, 10 * 12) - 1) / r);
+    vf20 = mensual * ((Math.pow(1 + r, 20 * 12) - 1) / r);
+  }
 
   return {
     gastoDiario: diario,
@@ -134,14 +163,14 @@ export function calculateGastosHormiga(gastoDiario, diasAlMes = 24, rendimientoA
 
 // 5. Regla de Presupuesto 50/30/20
 export function calculate503020Rule(ingresoNeto, costosVidaNecesarios, gastosOpcionales, aporteDeudaOAhorro) {
-  const neto = Number(ingresoNeto) || 51761.70;
-  const necesidades = Number(costosVidaNecesarios) || 27000;
-  const deseos = Number(gastosOpcionales) || 5500;
-  const ahorroDeuda = Number(aporteDeudaOAhorro) || 12850;
+  const neto = Math.max(0, Number(ingresoNeto) || 0);
+  const necesidades = Math.max(0, Number(costosVidaNecesarios) || 0);
+  const deseos = Math.max(0, Number(gastosOpcionales) || 0);
+  const ahorroDeuda = Math.max(0, Number(aporteDeudaOAhorro) || 0);
 
-  const pctNecesidades = (necesidades / neto) * 100;
-  const pctDeseos = (deseos / neto) * 100;
-  const pctAhorroDeuda = (ahorroDeuda / neto) * 100;
+  const pctNecesidades = neto > 0 ? (necesidades / neto) * 100 : 0;
+  const pctDeseos = neto > 0 ? (deseos / neto) * 100 : 0;
+  const pctAhorroDeuda = neto > 0 ? (ahorroDeuda / neto) * 100 : 0;
 
   const metaNecesidades = neto * 0.50;
   const metaDeseos = neto * 0.30;
@@ -168,41 +197,72 @@ export function calculate503020Rule(ingresoNeto, costosVidaNecesarios, gastosOpc
 
 // 6. Calculadora de Refinanciamiento / Consolidación de Deuda
 export function calculateRefinancingBenefit(saldoTotal, tasaActualPromedio, nuevaTasaConsolidada, plazoMeses = 24) {
-  const saldo = Number(saldoTotal) || 120000;
-  const tasaVieja = (Number(tasaActualPromedio) || 49.03) / 100 / 12;
-  const tasaNueva = (Number(nuevaTasaConsolidada) || 18.0) / 100 / 12;
-  const n = Number(plazoMeses) || 24;
+  const saldo = Math.max(0, Number(saldoTotal) || 0);
+  const tasaVieja = Math.max(0, Number(tasaActualPromedio) || 0) / 100 / 12;
+  const tasaNueva = Math.max(0, Number(nuevaTasaConsolidada) || 0) / 100 / 12;
+  const n = Math.max(1, Number(plazoMeses) || 24);
 
   // Cuota actual estimada
-  const cuotaVieja = (saldo * tasaVieja) / (1 - Math.pow(1 + tasaVieja, -n));
+  let cuotaVieja = 0;
+  if (tasaVieja === 0) {
+    cuotaVieja = saldo / n;
+  } else {
+    const denom = 1 - Math.pow(1 + tasaVieja, -n);
+    cuotaVieja = denom > 0 ? (saldo * tasaVieja) / denom : (saldo / n);
+  }
   const totalViejo = cuotaVieja * n;
 
   // Cuota nueva consolidada
-  const cuotaNueva = (saldo * tasaNueva) / (1 - Math.pow(1 + tasaNueva, -n));
+  let cuotaNueva = 0;
+  if (tasaNueva === 0) {
+    cuotaNueva = saldo / n;
+  } else {
+    const denom = 1 - Math.pow(1 + tasaNueva, -n);
+    cuotaNueva = denom > 0 ? (saldo * tasaNueva) / denom : (saldo / n);
+  }
   const totalNuevo = cuotaNueva * n;
 
-  const ahorroIntereses = totalViejo - totalNuevo;
-  const reduccionCuota = cuotaVieja - cuotaNueva;
+  const ahorroIntereses = Math.max(0, totalViejo - totalNuevo);
+  const reduccionCuota = Math.max(0, cuotaVieja - cuotaNueva);
+  const pctAhorro = totalViejo > 0 ? ((ahorroIntereses / totalViejo) * 100) : 0;
 
   return {
     cuotaVieja: Math.round(cuotaVieja),
     cuotaNueva: Math.round(cuotaNueva),
     reduccionCuotaMensual: Math.round(reduccionCuota),
     ahorroTotalIntereses: Math.round(ahorroIntereses),
-    porcentajeAhorro: parseFloat(((ahorroIntereses / totalViejo) * 100).toFixed(1))
+    porcentajeAhorro: parseFloat(pctAhorro.toFixed(1))
   };
 }
 
 // 7. Calculadora de Retiro FIRE & Libertad Financiera
 export function calculateFIRERetirement(gastosAnuales, patrimonioActual, ahorroMensual, rendimientoAnual = 9.0) {
-  const gastos = Number(gastosAnuales) || (27000 * 12);
-  const patrimonio = Number(patrimonioActual) || 35000;
-  const ahorro = Number(ahorroMensual) || 10000;
-  const rAnual = (Number(rendimientoAnual) || 9.0) / 100;
+  const gastos = Math.max(0, Number(gastosAnuales) || 0);
+  const patrimonio = Math.max(0, Number(patrimonioActual) || 0);
+  const ahorro = Math.max(0, Number(ahorroMensual) || 0);
+  const rAnual = Math.max(0, Number(rendimientoAnual) || 0) / 100;
   const rMensual = rAnual / 12;
 
   // Regla del 4% (Número FIRE = Gastos Anuales * 25)
   const numeroFIRE = gastos * 25;
+
+  if (patrimonio >= numeroFIRE && numeroFIRE > 0) {
+    return {
+      numeroFIRE: Math.round(numeroFIRE),
+      patrimonioActual: Math.round(patrimonio),
+      anosParaRetiro: 0,
+      ahorroMensual: Math.round(ahorro)
+    };
+  }
+
+  if (ahorro === 0 && rMensual === 0) {
+    return {
+      numeroFIRE: Math.round(numeroFIRE),
+      patrimonioActual: Math.round(patrimonio),
+      anosParaRetiro: 99.0,
+      ahorroMensual: 0
+    };
+  }
 
   let balance = patrimonio;
   let meses = 0;
@@ -223,12 +283,12 @@ export function calculateFIRERetirement(gastosAnuales, patrimonioActual, ahorroM
 
 // 8. Costo Real por Hora de Trabajo
 export function calculateWorkHoursCost(ingresoNetoMensual, horasTrabajadasMes = 160, precioGasto = 2500) {
-  const neto = Number(ingresoNetoMensual) || 51761.70;
-  const horas = Number(horasTrabajadasMes) || 160;
-  const gasto = Number(precioGasto) || 2500;
+  const neto = Math.max(0, Number(ingresoNetoMensual) || 0);
+  const horas = Math.max(1, Number(horasTrabajadasMes) || 160);
+  const gasto = Math.max(0, Number(precioGasto) || 0);
 
   const ingresoPorHora = neto / horas;
-  const horasNecesarias = gasto / ingresoPorHora;
+  const horasNecesarias = ingresoPorHora > 0 ? (gasto / ingresoPorHora) : 0;
 
   return {
     ingresoPorHora: Math.round(ingresoPorHora),
@@ -239,31 +299,40 @@ export function calculateWorkHoursCost(ingresoNetoMensual, horasTrabajadasMes = 
 
 // 9. Capacidad Máxima de Endeudamiento Bancario Sano
 export function calculateBorrowingCapacity(ingresoNetoMensual, pagosDeudaActuales, rentaMensual = 8500) {
-  const neto = Number(ingresoNetoMensual) || 51761.70;
-  const deudaActual = Number(pagosDeudaActuales) || 6000;
-  const renta = Number(rentaMensual) || 8500;
+  const neto = Math.max(0, Number(ingresoNetoMensual) || 0);
+  const deudaActual = Math.max(0, Number(pagosDeudaActuales) || 0);
+  const renta = Math.max(0, Number(rentaMensual) || 0);
 
   // Criterio CONDUSEF: El total de deudas + vivienda no debe exceder el 40% del ingreso neto
   const limiteMaximoTotal = neto * 0.40;
   const margenRestante = Math.max(0, limiteMaximoTotal - deudaActual - (renta * 0.5));
+  const dtiActual = neto > 0 ? ((deudaActual / neto) * 100) : 0;
 
   return {
     limiteMaximoTotal: Math.round(limiteMaximoTotal),
     margenRestanteMensual: Math.round(margenRestante),
-    dtiActual: parseFloat(((deudaActual / neto) * 100).toFixed(1))
+    dtiActual: parseFloat(dtiActual.toFixed(1))
   };
 }
 
 // 10. Renta vs Compra de Vivienda (10 y 20 años)
 export function calculateRentVsBuy(rentaMensual = 8500, precioInmueble = 2200000, enganchePorcentaje = 20, tasaHipoteca = 10.5, plusvaliaAnual = 5.0, rendimientoCETES = 9.5) {
-  const renta = Number(rentaMensual) || 8500;
-  const precio = Number(precioInmueble) || 2200000;
-  const enganche = precio * ((Number(enganchePorcentaje) || 20) / 100);
-  const credito = precio - enganche;
-  const rHip = (Number(tasaHipoteca) || 10.5) / 100 / 12;
+  const renta = Math.max(0, Number(rentaMensual) || 0);
+  const precio = Math.max(0, Number(precioInmueble) || 0);
+  const enganche = precio * (Math.max(0, Number(enganchePorcentaje) || 0) / 100);
+  const credito = Math.max(0, precio - enganche);
+  const rHip = Math.max(0, Number(tasaHipoteca) || 0) / 100 / 12;
 
   // Mensualidad hipoteca 20 años (240 meses)
-  const mensualidadHipoteca = (credito * rHip) / (1 - Math.pow(1 + rHip, -240));
+  let mensualidadHipoteca = 0;
+  if (credito > 0) {
+    if (rHip === 0) {
+      mensualidadHipoteca = credito / 240;
+    } else {
+      const denom = 1 - Math.pow(1 + rHip, -240);
+      mensualidadHipoteca = denom > 0 ? (credito * rHip) / denom : (credito / 240);
+    }
+  }
 
   return {
     rentaMensual: Math.round(renta),
@@ -278,12 +347,13 @@ export function calculateRentVsBuy(rentaMensual = 8500, precioInmueble = 2200000
 
 // 11. Rendimiento Real (Tasa Nominal vs Inflación e Impuesto)
 export function calculateRealYield(tasaNominal = 9.5, inflacion = 4.5, retencionISR = 0.50) {
-  const nom = Number(tasaNominal) || 9.5;
-  const inf = Number(inflacion) || 4.5;
-  const isr = Number(retencionISR) || 0.50;
+  const nom = Number(tasaNominal) || 0;
+  const inf = Number(inflacion) || 0;
+  const isr = Math.max(0, Number(retencionISR) || 0);
 
   const tasaNeta = nom - isr;
-  const rendimientoReal = ((1 + tasaNeta / 100) / (1 + inf / 100) - 1) * 100;
+  const infFactor = 1 + (inf / 100);
+  const rendimientoReal = infFactor !== 0 ? (((1 + tasaNeta / 100) / infFactor) - 1) * 100 : 0;
 
   return {
     tasaNominal: nom,
@@ -296,25 +366,28 @@ export function calculateRealYield(tasaNominal = 9.5, inflacion = 4.5, retencion
 
 // 12. Estimador de Deducciones Personales en Declaración Anual
 export function calculatePersonalTaxDeductions(ingresoAnualBruto, gastosMedicosDentales = 15000, aportacionesPPR = 25000, colegiaturas = 0) {
-  const bruto = Number(ingresoAnualBruto) || (54295.79 * 12);
-  const medicos = Number(gastosMedicosDentales) || 15000;
-  const ppr = Number(aportacionesPPR) || 25000;
-  const col = Number(colegiaturas) || 0;
+  const bruto = Math.max(0, Number(ingresoAnualBruto) || 0);
+  const medicos = Math.max(0, Number(gastosMedicosDentales) || 0);
+  const ppr = Math.max(0, Number(aportacionesPPR) || 0);
+  const col = Math.max(0, Number(colegiaturas) || 0);
 
   const totalDeducciones = medicos + ppr + col;
-  // Tasa marginal promedio estimada (ej. 20% - 30%)
-  const devolucionEstimada = totalDeducciones * 0.25;
+  // Tope legal LISR: Máximo 15% del ingreso anual bruto o 5 UMAs anuales (~198,000 MXN)
+  const topeLegal = Math.min(bruto * 0.15, 198031);
+  const deduccionesAplicables = Math.min(totalDeducciones, topeLegal > 0 ? topeLegal : totalDeducciones);
+  const devolucionEstimada = deduccionesAplicables * 0.25;
 
   return {
     totalDeducciones: Math.round(totalDeducciones),
+    deduccionesAplicables: Math.round(deduccionesAplicables),
     devolucionEstimadaSAT: Math.round(devolucionEstimada)
   };
 }
 
 // 13. Comparativa Fiscal: RESICO vs PFAE
 export function calculateResicoVsPfae(facturacionAnualSinIVA = 651549, gastosDeduciblesAnuales = 250000) {
-  const facturacion = Number(facturacionAnualSinIVA) || (54295.79 * 12);
-  const gastos = Number(gastosDeduciblesAnuales) || 250000;
+  const facturacion = Math.max(0, Number(facturacionAnualSinIVA) || 0);
+  const gastos = Math.max(0, Number(gastosDeduciblesAnuales) || 0);
 
   // RESICO (Tasa fija sobre ingresos brutos entre 1% y 2.5%)
   let tasaResico = 0.015;
