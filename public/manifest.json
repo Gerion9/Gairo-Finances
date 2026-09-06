@@ -1,0 +1,16 @@
+{
+  "short_name": "GairoFinances",
+  "name": "Gairo Finances - Planificador de Libertad Financiera",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#020617",
+  "theme_color": "#10b981",
+  "display": "standalone",
+  "orientation": "portrait"
+}
