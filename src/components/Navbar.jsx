@@ -19,7 +19,8 @@ import {
   Search,
   Eye,
   EyeOff,
-  BookOpen
+  BookOpen,
+  Rocket
 } from 'lucide-react';
 import { exportFinancesToExcel } from '../services/excelExport.js';
 
@@ -36,6 +37,7 @@ export default function Navbar({
   onOpenSettings, 
   onOpenPricing,
   onOpenOnboarding,
+  onOpenRoadmap,
   onLogout,
   financialData
 }) {
@@ -168,6 +170,15 @@ export default function Navbar({
             </div>
 
             {/* Quick Actions */}
+            <button
+              onClick={onOpenRoadmap}
+              className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-600/30 transition-all"
+              title="Ver Plan Maestro de 100 Optimizaciones FinTech"
+            >
+              <Rocket className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Roadmap 100</span>
+            </button>
+
             <button
               onClick={() => exportFinancesToExcel(financialData, exchangeRateData?.rate || 19.25)}
               className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600/30 transition-all"

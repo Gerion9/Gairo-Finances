@@ -21,7 +21,8 @@ import {
   FileSpreadsheet,
   Settings,
   Crown,
-  BookOpen
+  BookOpen,
+  Rocket
 } from 'lucide-react';
 
 export default function CommandPalette({ isOpen, onClose, onNavigateTab, onAction }) {
@@ -73,6 +74,7 @@ export default function CommandPalette({ isOpen, onClose, onNavigateTab, onActio
     { id: 'calc-resico', title: 'Simulador Fiscal RESICO vs Actividad Profesional', category: 'Calculadora', tab: 'calculators', icon: ShieldCheck },
 
     // Acciones y Configuración
+    { id: 'act-roadmap', title: 'Plan Maestro: 100 Optimizaciones FinTech (Roadmap)', category: 'Estrategia', action: 'openRoadmap', icon: Rocket },
     { id: 'act-excel', title: 'Descargar Libro Completo en Excel (.xlsx)', category: 'Acción', action: 'exportExcel', icon: FileSpreadsheet },
     { id: 'act-settings', title: 'Ajustes, Contraseña & Tipo de Cambio USD/MXN', category: 'Configuración', action: 'openSettings', icon: Settings },
     { id: 'act-pricing', title: 'Ver Planes Comerciales PRO & Licencias SaaS', category: 'SaaS', action: 'openPricing', icon: Crown }

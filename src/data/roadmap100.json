@@ -1,0 +1,1002 @@
+[
+  {
+    "id": 1,
+    "title": "PWA Offline-First Completo con Service Worker y Cache API",
+    "pillarId": 1,
+    "pillarName": "Arquitectura & Rendimiento Extremo",
+    "why": "El usuario necesita revisar sus cuentas o registrar un gasto en lugares sin señal (metro, sótanos, vuelos o zonas rurales). Si la app requiere red para cargar, se pierde la retención. Además, una PWA instalable en iOS y Android elimina la necesidad de pagar comisiones del 30% a Apple y Google App Stores.",
+    "how": "- Configurar `vite-plugin-pwa` en `vite.config.js` con estrategia `generateSW` y modo `CacheFirst` para assets estáticos (JS, CSS, SVGs, fuentes).\n  - Implementar un Service Worker personalizado que intercepte peticiones a las APIs de tipos de cambio (`open.er-api.com`), devolviendo la última tasa guardada en caché con timestamp si no hay conexión a internet.\n  - Añadir evento `beforeinstallprompt` capturado en un banner discreto en `Navbar.jsx`: *\"Instala Gairo Finances en tu pantalla de inicio en 1 toque\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1-2 días).",
+    "kpi": "100% de operatividad sin internet y aumento del 45% en aperturas diarias vía acceso directo en pantalla de inicio."
+  },
+  {
+    "id": 2,
+    "title": "Migración del Almacenamiento Local a IndexedDB con `idb-keyval`",
+    "pillarId": 1,
+    "pillarName": "Arquitectura & Rendimiento Extremo",
+    "why": "`localStorage` tiene un límite rígido de ~5MB por dominio y sus operaciones de lectura/escritura son sincrónicas, lo que bloquea el hilo principal (main thread) de JavaScript y produce micro-congelamientos (jank) al guardar estados con muchas transacciones.",
+    "how": "- Instalar la micro-librería `idb-keyval` (<1kB).\n  - En `src/services/storage.js`, crear una capa de abstracción asíncrona `async function saveFinancialData(data)` y `async function loadFinancialData()`.\n  - Crear un mecanismo de migración transparente: si se detectan datos en `localStorage`, se leen, se escriben en IndexedDB y se limpian de `localStorage`, manteniendo retrocompatibilidad absoluta.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Cero bloqueos en el hilo principal y capacidad de almacenamiento virtualmente ilimitada (>500MB de transacciones y respaldos)."
+  },
+  {
+    "id": 3,
+    "title": "Virtualización de Listas con `@tanstack/react-virtual`",
+    "pillarId": 1,
+    "pillarName": "Arquitectura & Rendimiento Extremo",
+    "why": "Un usuario activo puede acumular 500 a 3,000 transacciones y decenas de conceptos en su presupuesto. Renderizar 3,000 nodos DOM en `TransactionsTracker.jsx` destruye el rendimiento en teléfonos móviles de gama media/baja, reduciendo la tasa de refresco a menos de 20 FPS.",
+    "how": "- Integrar `@tanstack/react-virtual` en el componente de transacciones y en el listado de deudas.\n  - Definir un contenedor con altura fija o dinámica y renderizar únicamente los elementos visibles en el viewport (10 a 15 elementos en pantalla simultáneamente), reciclando los nodos del DOM durante el scroll.",
+    "feasibility": "Alta factibilidad / Complejidad Media (1-2 días).",
+    "kpi": "60 FPS estables y fluidos durante el desplazamiento vertical, consumo de memoria DOM reducido en un 90%."
+  },
+  {
+    "id": 4,
+    "title": "Carga Diferida (Dynamic Code Splitting & React.lazy) de Módulos Pesados",
+    "pillarId": 1,
+    "pillarName": "Arquitectura & Rendimiento Extremo",
+    "why": "El usuario típico entra a ver su Dashboard o registrar un gasto rápido. No necesita cargar de inmediato los 42 kB de `FinancialCalculatorsHub`, ni el motor de exportación `xlsx` (282 kB) ni `PricingModal`.",
+    "how": "- En `App.jsx`, transformar las importaciones directas de componentes secundarios en imports dinámicos:\n    ```jsx\n    const FinancialCalculatorsHub = React.lazy(() => import('./components/FinancialCalculatorsHub'));\n    const PrintableReport = React.lazy(() => import('./components/PrintableReport'));\n    const AdvancedDiagnosticsHub = React.lazy(() => import('./components/AdvancedDiagnosticsHub'));\n    ```\n  - Envolver las vistas en `<React.Suspense fallback={<ModuleSkeleton />}>`.\n  - Configurar `manualChunks` en `vite.config.js` para aislar `xlsx` de forma que solo se descargue en el momento exacto en que el usuario hace clic en \"Exportar a Excel\".",
+    "feasibility": "Alta factibilidad / Complejidad Baja (0.5 días).",
+    "kpi": "Reducción del First Contentful Paint (FCP) a menos de 0.8 segundos y bundle inicial menor a 70 kB gzipped."
+  },
+  {
+    "id": 5,
+    "title": "Auditoría de Re-renders y Memoización Fina (`useMemo`, `useCallback`, `React.memo`)",
+    "pillarId": 1,
+    "pillarName": "Arquitectura & Rendimiento Extremo",
+    "why": "En `App.jsx`, al actualizar una transacción o cambiar la divisa activa, múltiples componentes no relacionados (como `IncomeStatement` o `PaymentCalendar`) se re-renderizan sin necesidad, desperdiciando ciclos de CPU y batería en móviles.",
+    "how": "- Perfilar con React DevTools Profiler para detectar componentes con renders innecesarios.\n  - Envolver funciones manipuladoras de estado en `useCallback` y cálculos derivados pesados (como `calculateGairoStrategy` y amortizaciones) en `useMemo`.\n  - Implementar `React.memo` en componentes hoja como `DebtCard.jsx` con funciones de comparación de props (`prevProps.debt === nextProps.debt && prevProps.activeCurrency === nextProps.activeCurrency`).",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Reducción del 75% en tiempo de render acumulado durante interacciones cotidianas."
+  },
+  {
+    "id": 6,
+    "title": "Web Worker para Simulaciones Complejas de Desendeudamiento a 360 Meses",
+    "pillarId": 1,
+    "pillarName": "Arquitectura & Rendimiento Extremo",
+    "why": "Cuando el usuario mueve el control deslizante (slider) del simulador \"What-If\", el motor calcula en tiempo real la amortización mes a mes para 4 estrategias concurrentes a lo largo de 30 años. Si se tienen 15 deudas, esto representa miles de iteraciones matemáticas que pueden provocar caídas de frames visibles en la animación del slider.",
+    "how": "- Crear `src/workers/simulationWorker.js`.\n  - Mover la lógica de proyección de amortizaciones de `financeEngine.js` al Worker mediante la sintaxis nativa de Vite: `const worker = new Worker(new URL('../workers/simulationWorker.js', import.meta.url), { type: 'module' });`.\n  - Comunicar los parámetros del slider por `postMessage` y recibir las curvas de amortización calculadas en paralelo en un hilo independiente del navegador.",
+    "feasibility": "Alta factibilidad / Complejidad Media (2 días).",
+    "kpi": "Cero milisegundos de bloqueo en el hilo principal (Total Blocking Time: 0 ms) al mover sliders complejos."
+  },
+  {
+    "id": 7,
+    "title": "Tree-Shaking Quirúrgico de Iconografía y Utilidades",
+    "pillarId": 1,
+    "pillarName": "Arquitectura & Rendimiento Extremo",
+    "why": "Aunque `lucide-react` es una excelente librería, importar decenas de iconos puede arrastrar metadatos superfluos si no se optimiza el empaquetado.",
+    "how": "- Auditar todas las importaciones de iconos para asegurar que se utilicen únicamente los glifos requeridos.\n  - Configurar un plugin de Vite o alias de resolución que garantice que los iconos no utilizados sean eliminados al 100% durante la fase de minificación con Terser o esbuild.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (0.5 días).",
+    "kpi": "Ahorro de 15 kB en el chunk de iconos (`vendor-icons`)."
+  },
+  {
+    "id": 8,
+    "title": "Pre-compresión Estática Brotli y Gzip en Fase de Build",
+    "pillarId": 1,
+    "pillarName": "Arquitectura & Rendimiento Extremo",
+    "why": "Aunque plataformas como Vercel y Netlify pueden comprimir al vuelo, la compresión dinámica en tiempo real se ejecuta a niveles bajos (nivel 4 o 5) para no demorar la respuesta del servidor. La pre-compresión estática en build permite utilizar Brotli nivel 11 (máxima compresión posible).",
+    "how": "- Instalar `vite-plugin-compression` y agregar al `vite.config.js`:\n    ```javascript\n    viteCompression({ algorithm: 'brotliCompress', ext: '.br', threshold: 1024 }),\n    viteCompression({ algorithm: 'gzip', ext: '.gz', threshold: 1024 })\n    ```\n  - Configurar en `netlify.toml` y `vercel.json` el servicio de los activos `.br` directamente cuando el navegador envíe el header `Accept-Encoding: br`.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (0.5 días).",
+    "kpi": "Reducción del tamaño de transferencia de red en un 22% adicional frente a Gzip estándar."
+  },
+  {
+    "id": 9,
+    "title": "Cero Layout Shifts (CLS = 0) mediante Reserva de Espacio en Gráficos y Cards",
+    "pillarId": 1,
+    "pillarName": "Arquitectura & Rendimiento Extremo",
+    "why": "Si los gráficos de Recharts se montan después de calcular el tamaño del contenedor, empujan el contenido hacia abajo, generando Cumulative Layout Shift (CLS) que castiga el puntaje de Google Core Web Vitals y frustra al usuario que intenta hacer clic.",
+    "how": "- Reemplazar `<ResponsiveContainer width=\"100%\" height={300}>` dinámico sin dimensiones iniciales por un contenedor padre con clase Tailwind `min-h-[300px] w-full aspect-video` o ratio de aspecto reservado.\n  - Implementar placeholders con las mismas dimensiones para evitar cualquier brinco visual cuando los datos terminan de procesarse.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (0.5 días).",
+    "kpi": "Métrica CLS en 0.000 exacto en Google PageSpeed Insights."
+  },
+  {
+    "id": 10,
+    "title": "Preconexión y Prebúsqueda DNS para Endpoints de Divisas",
+    "pillarId": 1,
+    "pillarName": "Arquitectura & Rendimiento Extremo",
+    "why": "La sincronización de tipos de cambio con `open.er-api.com` o `frankfurter.app` toma entre 200 y 400 ms en resolver DNS, negociar TLS y conectar.",
+    "how": "- Insertar en el `<head>` de `index.html`:\n    ```html\n    <link rel=\"preconnect\" href=\"https://open.er-api.com\" crossorigin>\n    <link rel=\"dns-prefetch\" href=\"https://open.er-api.com\">\n    ```\n  - Esto adelanta el apretón de manos criptográfico antes de que la aplicación realice el primer fetch de divisa.",
+    "feasibility": "Alta factibilidad / Complejidad Muy Baja (15 minutos).",
+    "kpi": "Reducción de 150 ms en la primera petición de tipo de cambio al iniciar la aplicación."
+  },
+  {
+    "id": 11,
+    "title": "Renderizado Condicional Pasivo con `content-visibility: auto`",
+    "pillarId": 1,
+    "pillarName": "Arquitectura & Rendimiento Extremo",
+    "why": "Los navegadores modernos gastan tiempo de pintado y renderizado en secciones que están fuera de la pantalla.",
+    "how": "- En las pestañas y secciones largas de reportes, agregar la propiedad CSS en `src/index.css`:\n    ```css\n    .content-auto-render {\n      content-visibility: auto;\n      contain-intrinsic-size: 1px 600px;\n    }\n    ```\n  - Esto indica al motor Chromium/WebKit que no calcule el layout ni pinte los elementos hasta que el scroll del usuario se acerque a su posición.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (0.5 días).",
+    "kpi": "Disminución del 30% en el tiempo de render inicial de pestañas extensas como Reporte Ejecutivo e Historial."
+  },
+  {
+    "id": 12,
+    "title": "Monitor en Vivo de Core Web Vitals Integrado en Menú de Ajustes",
+    "pillarId": 1,
+    "pillarName": "Arquitectura & Rendimiento Extremo",
+    "why": "Para conservar la certificación Lighthouse 100% en producción de forma permanente, los desarrolladores y usuarios avanzados deben poder monitorear métricas reales en sus propios dispositivos.",
+    "how": "- Integrar el paquete oficial `web-vitals` de Google.\n  - Crear un panel de telemetría local en `SettingsModal.jsx` que muestre los valores medidos en tiempo real: LCP (Largest Contentful Paint), INP (Interaction to Next Paint) y CLS (Cumulative Layout Shift) con semáforo verde/amarillo/rojo.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (0.5 días).",
+    "kpi": "Detección inmediata de cualquier regresión de rendimiento antes de lanzar a producción."
+  },
+  {
+    "id": 13,
+    "title": "Modo Oscuro (Dark Mode) Nativo con Conmutador Tri-Estado (Luz / Noche / Sistema)",
+    "pillarId": 2,
+    "pillarName": "Experiencia UI/UX FinTech Elite",
+    "why": "Más del 70% de los usuarios de aplicaciones financieras prefieren revisar sus números de noche con modo oscuro para evitar fatiga ocular. Transmite elegancia y sofisticación de producto premium.",
+    "how": "- Activar `darkMode: 'class'` en `tailwind.config.js`.\n  - Crear un hook `useTheme` que maneje `light`, `dark` y `system` con sincronización en `localStorage`.\n  - Inyectar un script bloqueante de 3 líneas en el `<head>` de `index.html` para aplicar la clase `.dark` antes del primer render, eliminando el desagradable parpadeo blanco (FOUC).\n  - Dotar a todas las tarjetas, tablas y modales de variantes `dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100`.",
+    "feasibility": "Alta factibilidad / Complejidad Media (2 días).",
+    "kpi": "Incremento del 40% en tiempo de sesión nocturna y satisfacción del usuario en encuestas cualitativas."
+  },
+  {
+    "id": 14,
+    "title": "Micro-interacciones y Transiciones Suaves con Tailwind Motion",
+    "pillarId": 2,
+    "pillarName": "Experiencia UI/UX FinTech Elite",
+    "why": "Las interfaces estáticas parecen herramientas de oficina de hace 15 años; las micro-interacciones sutiles generan una sensación táctil moderna como las apps de Apple o Nubank.",
+    "how": "- Implementar animaciones de entrada escalonadas (`stagger`) al cargar las tarjetas de deuda.\n  - Animar el incremento numérico de los totales de ahorro y saldos mediante un contador interpolado (odómetro numérico animado).\n  - Suavizar el despliegue de modales con efectos de escala y desenfoque (`scale-95 opacity-0 -> scale-100 opacity-100 backdrop-blur-sm`).",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1-2 días).",
+    "kpi": "Aumento en la percepción de calidad y velocidad reportada por los usuarios."
+  },
+  {
+    "id": 15,
+    "title": "Efectos de Sonido Táctiles Sutiles con Web Audio API (Audio FX)",
+    "pillarId": 2,
+    "pillarName": "Experiencia UI/UX FinTech Elite",
+    "why": "El refuerzo auditivo sutil genera un impacto psicológico tremendo. Escuchar un sonido satisfactorio de \"caja registradora\" o un acorde armónico al registrar un pago crea un hábito positivo de recompensa (dopamina).",
+    "how": "- Crear un servicio `src/services/soundEffects.js` utilizando la Web Audio API nativa (`AudioContext`).\n  - Sintetizar tonos sinusoidales limpios por código (frecuencias 520Hz y 660Hz en acorde mayor) sin necesidad de descargar archivos de audio pesados.\n  - Incluir un interruptor general en la barra superior y en Ajustes: *\"Sonidos interactivos [Activado/Desactivado]\"* (respetando la preferencia del usuario).",
+    "feasibility": "Alta factibilidad / Complejidad Baja (0.5 días).",
+    "kpi": "80% de activación en usuarios y aumento del 25% en recurrencia de registro de transacciones."
+  },
+  {
+    "id": 16,
+    "title": "Sistema de Skeleton Screens en Reemplazo de Indicadores Circulares",
+    "pillarId": 2,
+    "pillarName": "Experiencia UI/UX FinTech Elite",
+    "why": "Los círculos giratorios (spinners) comunican espera y lentitud; las pantallas esqueléticas con destello translúcido comunican que la interfaz ya está lista y solo llena los datos.",
+    "how": "- Crear un componente modular `<Skeleton className=\"...\" />` con la animación `animate-pulse` de Tailwind.\n  - Implementar variantes para tarjetas de deuda, filas de tablas de transacciones y tarjetas de métricas del Dashboard.",
+    "feasibility": "Alta factibilidad / Complejidad Muy Baja (0.5 días).",
+    "kpi": "Percepción subjetiva de velocidad 2 veces mayor en pruebas de usabilidad con usuarios."
+  },
+  {
+    "id": 17,
+    "title": "Sistema Unificado de Notificaciones Toast con Acción de \"Deshacer\" (Undo)",
+    "pillarId": 2,
+    "pillarName": "Experiencia UI/UX FinTech Elite",
+    "why": "Si un usuario borra por error una deuda o una quincena, entra en pánico si no hay forma de recuperarla. La acción de \"Deshacer\" durante 6 segundos elimina la ansiedad por completo.",
+    "how": "- Crear un contexto global `ToastContext.jsx` con soporte para mensajes de tipo: éxito, alerta, error e información.\n  - Al eliminar una entidad, retrasar la purga definitiva del estado durante 6 segundos, guardando el elemento en un buffer temporal. Si el usuario presiona \"Deshacer\" en el Toast, el elemento vuelve a su posición original instantáneamente.",
+    "feasibility": "Alta factibilidad / Complejidad Media (1 día).",
+    "kpi": "Reducción a 0 de tickets de soporte por borrados accidentales de información."
+  },
+  {
+    "id": 18,
+    "title": "Navegación por Gestos Táctiles (Swipe entre Pestañas en Móviles)",
+    "pillarId": 2,
+    "pillarName": "Experiencia UI/UX FinTech Elite",
+    "why": "En dispositivos móviles, tocar los botones de la barra de navegación requiere mover el pulgar hacia arriba o a los extremos. Deslizar la pantalla hacia los lados para navegar entre Dashboard, Deudas y Transacciones es natural y ergonómico.",
+    "how": "- Implementar un hook ligero `useSwipeNavigation` que escuche los eventos `touchstart`, `touchmove` y `touchend` en el contenedor principal.\n  - Si el desplazamiento horizontal supera los 60px y el ángulo es horizontal, cambiar la pestaña activa al índice anterior o siguiente con una transición lateral suave.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Aumento del 50% en la navegación entre pestañas en sesiones móviles."
+  },
+  {
+    "id": 19,
+    "title": "Búsqueda Difusa Inteligente (Fuzzy Search) en Command Palette",
+    "pillarId": 2,
+    "pillarName": "Experiencia UI/UX FinTech Elite",
+    "why": "Si un usuario abre la paleta (`Ctrl+K`) y escribe \"bbv\" en lugar de \"BBVA\", o \"calcu auto\" en lugar de \"Capacidad de Endeudamiento\", una búsqueda estricta (`includes`) no devuelve resultados.",
+    "how": "- Integrar un algoritmo ligero de distancia de Levenshtein o una versión compacta de `Fuse.js` en `CommandPalette.jsx`.\n  - Configurar claves de búsqueda por nombre, sinónimos, etiquetas y atajos semánticos (ej: \"sat\", \"impuestos\", \"factura\" apuntan a Fiscal SAT).",
+    "feasibility": "Alta factibilidad / Complejidad Baja (0.5 días).",
+    "kpi": "98% de éxito en búsquedas dentro de la Command Palette al primer intento."
+  },
+  {
+    "id": 20,
+    "title": "Reordenamiento Manual con Drag & Drop en Estrategia Personalizada",
+    "pillarId": 2,
+    "pillarName": "Experiencia UI/UX FinTech Elite",
+    "why": "Cada persona tiene prioridades emocionales: quizá quiere pagar primero la tarjeta de un banco que le llama constantemente, sin importar la tasa. Poder arrastrar las tarjetas con el mouse o el dedo para cambiar el orden de ataque empodera al usuario.",
+    "how": "- En la pestaña de Estrategias (`StrategyPayoff.jsx`), al seleccionar \"Estrategia Personalizada\", activar manejadores de arrastre basados en la API nativa de HTML5 Drag and Drop o `@hello-pangea/dnd`.\n  - Al soltar la tarjeta, el nuevo orden de prioridades se guarda automáticamente y el motor recalcula las amortizaciones en tiempo real.",
+    "feasibility": "Alta factibilidad / Complejidad Media (1.5 días).",
+    "kpi": "Adopción masiva de la estrategia personalizada en usuarios con múltiples créditos bancarios."
+  },
+  {
+    "id": 21,
+    "title": "Selector de Fechas con Atajos Financieros Inteligentes",
+    "pillarId": 2,
+    "pillarName": "Experiencia UI/UX FinTech Elite",
+    "why": "Escribir fechas a mano o navegar por calendarios mensuales tradicionales toma demasiado tiempo en la captura diaria.",
+    "how": "- En todos los formularios con campos de fecha, añadir una hilera de botones de 1 clic: `[Hoy]`, `[Ayer]`, `[Día 15 - Q1]`, `[Fin de Mes - Q2]`.\n  - Al hacer clic, el valor se autocompleta con formato ISO `YYYY-MM-DD` sin abrir selectores engorrosos.",
+    "feasibility": "Alta factibilidad / Complejidad Muy Baja (0.5 días).",
+    "kpi": "Reducción del tiempo promedio de registro de transacciones de 18 a 5 segundos."
+  },
+  {
+    "id": 22,
+    "title": "Tooltips Explicativos Financieros con Glosario Condusef Integrado",
+    "pillarId": 2,
+    "pillarName": "Experiencia UI/UX FinTech Elite",
+    "why": "Muchos usuarios no conocen la diferencia exacta entre \"Pago para no generar intereses\", \"Pago mínimo\", \"CAT sin IVA\" y \"Tasa ordinaria\". La falta de conocimiento financiero genera miedo y parálisis.",
+    "how": "- Crear un micro-componente `<FinancialGlossaryTooltip term=\"CAT\" />` con un icono `(?)` en color sutil.\n  - Al pasar el cursor o pulsar en móvil, despliega un cuadro flotante con la definición oficial de la Condusef/Banxico explicada en lenguaje sencillo con un ejemplo numérico cotidiano.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Mayor retención en usuarios principiantes y disminución de dudas sobre terminología."
+  },
+  {
+    "id": 23,
+    "title": "Tour Interactivo de Bienvenida (Onboarding Paso a Paso)",
+    "pillarId": 2,
+    "pillarName": "Experiencia UI/UX FinTech Elite",
+    "why": "Una aplicación potente con 50 funciones puede abrumar a un nuevo usuario si no sabe por dónde empezar.",
+    "how": "- Implementar un sistema de tour guiado sin librerías pesadas mediante un overlay oscuro con agujero iluminador (`backdrop-filter`) enfocado en 3 pasos clave:\n    1. *\"Aquí configuras tus ingresos y fondo de emergencia\"*.\n    2. *\"Agrega tus deudas con su tasa o promoción a meses sin intereses\"*.\n    3. *\"Descubre en qué fecha exacta serás libre de deudas y cuánto ahorrarás en intereses\"*.\n  - Guardar en almacenamiento que el usuario ya completó el tour para no volver a mostrarlo salvo que lo solicite en Ayuda.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "85% de finalización del proceso de onboarding en los primeros 3 minutos."
+  },
+  {
+    "id": 24,
+    "title": "Filtros Combinados y Agrupación Dinámica en Libro de Transacciones",
+    "pillarId": 2,
+    "pillarName": "Experiencia UI/UX FinTech Elite",
+    "why": "Para analizar fugas de dinero, el usuario necesita saber: *\"¿Cuánto gasté en Uber Eats en la segunda quincena del mes pasado pagando con tarjeta de crédito?\"*.",
+    "how": "- En `TransactionsTracker.jsx`, incorporar una barra de filtros multifactorial: por rango de fechas, cuenta bancaria, categoría, método de pago y rango de importe ($).\n  - Añadir vista agrupada: poder colapsar la tabla por Categoría o por Día para ver subtotales automáticos.",
+    "feasibility": "Alta factibilidad / Complejidad Media (1.5 días).",
+    "kpi": "Capacidad de auditoría instantánea de cualquier rubro presupuestario en menos de 3 clics."
+  },
+  {
+    "id": 25,
+    "title": "Respuesta Háptica en Acciones Clave en Dispositivos Móviles",
+    "pillarId": 2,
+    "pillarName": "Experiencia UI/UX FinTech Elite",
+    "why": "La vibración física de confirmación proporciona una certeza táctil idéntica a la de las mejores aplicaciones nativas de iOS y Android.",
+    "how": "- Crear una utilidad `src/services/haptics.js` con el método `navigator.vibrate`.\n  - Disparar pulsos de 10ms (vibración ligera) al marcar una quincena como pagada, 25ms al liquidar una deuda y dos pulsos de 15ms al cometer un error de validación en un formulario.",
+    "feasibility": "Alta factibilidad / Complejidad Muy Baja (0.5 días).",
+    "kpi": "Sensación comprobada de robustez y acabado nativo en dispositivos móviles."
+  },
+  {
+    "id": 26,
+    "title": "Simulación Estocástica Monte Carlo para Variables Financieras",
+    "pillarId": 3,
+    "pillarName": "Motor Financiero & Matemáticas Avanzadas",
+    "why": "La vida real no tiene rendimientos fijos; la inflación cambia, las tasas de CETES fluctúan y los ingresos variables oscilan. Un cálculo determinista lineal da una falsa sensación de certeza.",
+    "how": "- En `calculators.js`, programar un motor de simulación Monte Carlo con 1,000 iteraciones usando la transformación de Box-Muller para generar variables aleatorias normales.\n  - Proyectar tres bandas de probabilidad para el desendeudamiento y retiro FIRE:\n    - Escenario Optimista (Percentil 90).\n    - Escenario Esperado (Mediana / Percentil 50).\n    - Escenario Pesimista o de Estrés (Percentil 10).\n  - Graficar las bandas de incertidumbre en Recharts con un área sombreada translúcida.",
+    "feasibility": "Media factibilidad / Complejidad Alta (3 días).",
+    "kpi": "Diferenciador único de grado institucional frente a cualquier otra app de finanzas del mercado."
+  },
+  {
+    "id": 27,
+    "title": "Ajuste por Inflación Oficial (Banxico / INEGI) y Valor Presente Neto (VPN)",
+    "pillarId": 3,
+    "pillarName": "Motor Financiero & Matemáticas Avanzadas",
+    "why": "Pagar una deuda de $100,000 MXN en 5 años a meses sin intereses significa que el dinero que pagas en el año 5 vale aproximadamente un 25% menos en términos reales por efecto de la inflación acumulada.",
+    "how": "- Incorporar la serie histórica y expectativa de inflación de Banxico (4.5% - 5.0% anual) en el cálculo de flujo de caja descontado.\n  - Mostrar en la vista de deudas a MSI: *\"El costo real de tu deuda en dinero de hoy es de $82,400 MXN gracias al subsidio inflacionario\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Educación financiera avanzada que ayuda al usuario a no apresurar pagos de créditos sin intereses por encima de deudas con costo financiero alto."
+  },
+  {
+    "id": 28,
+    "title": "Optimizador de Consolidación de Deuda y Refinanciamiento Bancario",
+    "pillarId": 3,
+    "pillarName": "Motor Financiero & Matemáticas Avanzadas",
+    "why": "Si un usuario tiene 4 tarjetas de crédito con CAT promedio del 55%, un préstamo personal al 24% o una transferencia de saldo a otra tarjeta le ahorraría miles de pesos de inmediato.",
+    "how": "- Crear un algoritmo que evalúe todas las deudas con tasa superior al 30% anual.\n  - Calcular automáticamente:\n    1. El monto exacto necesario para liquidar todas las deudas tóxicas en un solo paquete.\n    2. La cuota mensual resultante a plazos de 12, 24 y 36 meses a tasas de referencia del mercado (18%, 24%, 28%).\n    3. El ahorro neto total en pesos y meses de vida financiera ganados.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Herramienta de altísimo valor que genera intención de ahorro de decenas de miles de pesos por usuario."
+  },
+  {
+    "id": 29,
+    "title": "Medidor del CAT Global Ponderado de Cartera de Crédito",
+    "pillarId": 3,
+    "pillarName": "Motor Financiero & Matemáticas Avanzadas",
+    "why": "El usuario conoce la tasa individual de cada tarjeta, pero no sabe cuál es el costo real promedio que paga por el conjunto total de su deuda.",
+    "how": "- Implementar la fórmula ponderada oficial:\n    $$\\text{CAT Ponderado} = \\frac{\\sum (\\text{Saldo}_i \\times \\text{CAT}_i)}{\\sum \\text{Saldo}_i}$$\n  - Mostrar un medidor circular en el Dashboard que se actualiza dinámicamente: a medida que el usuario abona a la tarjeta más cara, el indicador muestra cómo su tasa promedio general se desploma (ej: del 48.5% al 16.2%).",
+    "feasibility": "Alta factibilidad / Complejidad Muy Baja (0.5 días).",
+    "kpi": "Métrica de cabecera que incentiva el pago de las deudas más tóxicas."
+  },
+  {
+    "id": 30,
+    "title": "Estrategia \"Colchón de Emergencia Intocable\" (Cash Cushion Safeguard)",
+    "pillarId": 3,
+    "pillarName": "Motor Financiero & Matemáticas Avanzadas",
+    "why": "Un error común al aplicar el método Bola de Nieve o Avalancha es destinar hasta el último peso del sueldo a pagar deudas. Si se presenta cualquier imprevisto (enfermedad, reparación de auto), el usuario se ve forzado a tarjetear de nuevo, cayendo en un ciclo destructivo.",
+    "how": "- En `financeEngine.js`, incorporar un umbral configurable de reserva de emergencia (ej: $5,000 o 1 mes de gastos fijos).\n  - El motor bloquea la asignación de pagos acelerados hasta que el fondo de emergencia mínimo esté completamente constituido en liquidez.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Cero recaídas en deudas por falta de liquidez ante imprevistos cotidianos."
+  },
+  {
+    "id": 31,
+    "title": "Simulador de Estrés Cambiario (Currency Shock Stress Test)",
+    "pillarId": 3,
+    "pillarName": "Motor Financiero & Matemáticas Avanzadas",
+    "why": "Para personas con deudas en dólares (tarjetas americanas, préstamos en el extranjero o compras en el exterior), una devaluación abrupta del peso mexicano encarece severamente el pago mensual.",
+    "how": "- En la pestaña de Estrategias y Balance, incorporar un simulador con selector de escenarios rápidos:\n    - Escenario Base: Tipo de cambio actual (ej: $19.25).\n    - Escenario Moderado: Depreciación al $22.00 (+14%).\n    - Escenario Severo: Depreciación al $25.00 (+30%).\n  - El sistema muestra el incremento exacto en pesos del saldo total y la cuota mínima mensual, emitiendo una recomendación sobre si conviene priorizar la liquidación de la deuda en USD antes de un choque cambiario.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Protección patrimonial efectiva para usuarios con pasivos en moneda extranjera."
+  },
+  {
+    "id": 32,
+    "title": "Cálculo de Impuestos por Intereses Reales Ganados en Inversiones (Art. 54 LISR)",
+    "pillarId": 3,
+    "pillarName": "Motor Financiero & Matemáticas Avanzadas",
+    "why": "En México, las inversiones en CETES, pagarés bancarios y SOFIPOs generan retenciones de ISR sobre el capital invertido (0.50% anual en 2024/2026), y solo se acumula fiscalmente el interés real que exceda a la inflación. Si no se descuenta esto, el usuario sobreestima sus ganancias netas.",
+    "how": "- Añadir a la calculadora de inversiones en `calculators.js` los campos:\n    - Retención Provisional de ISR sobre Capital.\n    - Factor de Inflación del periodo.\n    - Rendimiento Neto Real de Bolsillo después de impuestos e inflación.\n  - Indicar la exención de 5 UMAs anuales (~$198,000 MXN) para inversiones en SOFIPOs (como Nu, Finsus, Klar) conforme al Art. 93 fracción XX de la LISR.",
+    "feasibility": "Alta factibilidad / Complejidad Media (1 día).",
+    "kpi": "Precisión matemática fiscal inigualable en el cálculo de rendimientos de ahorro e inversión."
+  },
+  {
+    "id": 33,
+    "title": "Calculadora de Costos Ocultos por Pago Tardío y Comisiones Moratorias",
+    "pillarId": 3,
+    "pillarName": "Motor Financiero & Matemáticas Avanzadas",
+    "why": "Olvidar pagar la tarjeta antes de la fecha límite genera una comisión bancaria por pago tardío de entre $400 y $750 MXN más IVA, además de intereses moratorios a una tasa que suele ser el doble de la ordinaria.",
+    "how": "- Diseñar una herramienta interactiva que tome las deudas del usuario y calcule exactamente cuántos pesos al año se pierden si se incurre en una comisión por pago tardío cada dos meses.\n  - Mostrar el botón: *\"Activar recordatorios para blindar $4,800 MXN al año en comisiones bancarias\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (0.5 días).",
+    "kpi": "Refuerzo preventivo que evita que el usuario caiga en penalizaciones bancarias."
+  },
+  {
+    "id": 34,
+    "title": "Detección Inteligente de \"Meses Mágicos\" (3 Quincenas en un Mes)",
+    "pillarId": 3,
+    "pillarName": "Motor Financiero & Matemáticas Avanzadas",
+    "why": "Las personas asalariadas que cobran quincenalmente reciben 26 pagos al año. Esto significa que en dos meses del año reciben 3 quincenas en lugar de 2. Como los gastos fijos (renta, servicios, comida) ya están cubiertos con las dos primeras quincenas, el 100% de la tercera quincena es dinero libre que puede destruir una deuda por completo.",
+    "how": "- En `PaymentCalendar.jsx`, analizar los meses del año actual con 31 días y detectar automáticamente cuándo caen 3 pagos quincenales en el mismo mes calendario.\n  - Resaltar con un distintivo dorado y una alerta especial: *\"¡Atención! En Mayo recibirás 3 quincenas. Inyecta la quincena extra a tu Tarjeta BBVA y adelanta tu libertad financiera en 4 meses\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Momento de alto impacto financiero que acelera el desendeudamiento del usuario de forma masiva."
+  },
+  {
+    "id": 35,
+    "title": "Asesor del \"Truco de los 50 Días de Crédito Gratuito\"",
+    "pillarId": 3,
+    "pillarName": "Motor Financiero & Matemáticas Avanzadas",
+    "why": "Si un usuario realiza una compra un día después de la fecha de corte de su tarjeta, tiene hasta 20 días después del siguiente corte para liquidarla, obteniendo hasta 50 días de financiamiento al 0% de interés de forma totalmente legal.",
+    "how": "- En el Dashboard y en la vista de deudas, crear un widget interactivo de recomendación de compra en tiempo real:\n    - *\"¿Vas a realizar una compra hoy? Te conviene usar tu Tarjeta Citibanamex (cortó ayer: tienes 49 días para pagar sin intereses). Evita usar Tarjeta Santander (corta mañana: tendrías que pagarla en 20 días)\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Funcionalidad altamente viral que optimiza el flujo de efectivo del usuario sin costo financiero."
+  },
+  {
+    "id": 36,
+    "title": "Simulador de Inyección Extraordinaria por Venta de Activos Ociosos",
+    "pillarId": 3,
+    "pillarName": "Motor Financiero & Matemáticas Avanzadas",
+    "why": "Muchas personas tienen artículos en casa que ya no utilizan (una consola, una bicicleta, una laptop antigua) con un valor de $3,000 a $8,000 MXN. Desconocen el impacto desproporcionado que vender ese objeto tendría en sus deudas.",
+    "how": "- Crear un modal interactivo donde el usuario ingresa: \"Objeto a vender\" y \"Valor estimado\".\n  - El sistema simula instantáneamente la inyección de ese capital en la deuda más tóxica y muestra el antes y después en semanas de vida ganadas y miles de pesos de intereses ahorrados.",
+    "feasibility": "Alta factibilidad / Complejidad Muy Baja (0.5 días).",
+    "kpi": "Motivación tangible para convertir cosas materiales olvidadas en paz mental financiera."
+  },
+  {
+    "id": 37,
+    "title": "Calculadora de Costo de Oportunidad: ¿Pagar Deuda vs Invertir en CETES/Nu?",
+    "pillarId": 3,
+    "pillarName": "Motor Financiero & Matemáticas Avanzadas",
+    "why": "El dilema más recurrente en foros de finanzas: *\"¿Me conviene abonar a mi crédito automotriz con tasa del 13.5% o meter ese dinero a CETES o Nu al 11.5%?\"*.",
+    "how": "- Algoritmo en `calculators.js` que compara la tasa neta anualizada libre de riesgo después de impuestos frente al Costo Anual Total (CAT) de la deuda.\n  - Regla matemática inequívoca: Si el CAT de la deuda excede el rendimiento neto de la inversión, la recomendación algorítmica es amortizar pasivos; si la deuda tiene una tasa subsidiada o 0% inferior a la tasa libre de riesgo, se recomienda mantener la inversión líquida.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (0.5 días).",
+    "kpi": "Resolución instantánea del dilema con fundamento matemático irrefutable."
+  },
+  {
+    "id": 38,
+    "title": "Detector de \"Fuga Invisible de Efectivo\" (Discrepancia Ingresos vs Gastos)",
+    "pillarId": 3,
+    "pillarName": "Motor Financiero & Matemáticas Avanzadas",
+    "why": "Gran parte de la población percibe ingresos pero no sabe en qué se le fue el 25% de su sueldo al final del mes. Esa fuga no registrada es la causa raíz del endeudamiento crónico.",
+    "how": "- En el Estado de Resultados y Dashboard, contrastar el Ingreso Neto Disponible contra la sumatoria de Gastos Necesarios + Opcionales + Pagos a Deuda + Ahorros Registrados.\n  - Si existe una diferencia negativa no atribuible, mostrar una tarjeta de advertencia en ámbar: *\"Tienes una fuga invisible de $3,450 MXN este mes que no ha sido documentada en transacciones\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (0.5 días).",
+    "kpi": "Concientización financiera que cierra las brechas de gasto no planificado."
+  },
+  {
+    "id": 39,
+    "title": "Extractor Local de Estados de Cuenta Bancarios en PDF (Client-Side Parsing)",
+    "pillarId": 4,
+    "pillarName": "Integración Bancaria, Importación & OCR",
+    "why": "Capturar 8 tarjetas de crédito a mano con sus fechas de corte, pagos mínimos y saldos insume tiempo. La capacidad de arrastrar el PDF oficial del banco y que la app lea los datos en 2 segundos revoluciona la experiencia de usuario.",
+    "how": "- Integrar `pdfjs-dist` en un Web Worker para renderizar y extraer texto del PDF directamente en el navegador del usuario (100% privado, sin subir el PDF a ningún servidor ajeno).\n  - Programar expresiones regulares y patrones de extracción para los principales bancos de México: BBVA, Citibanamex, Santander, Nu, Hey Banco, Banorte y HSBC.\n  - Desplegar una pantalla de confirmación previa con los datos extraídos para que el usuario valide antes de guardar.",
+    "feasibility": "Media factibilidad / Complejidad Media-Alta (3 días).",
+    "kpi": "Reducción del tiempo de configuración inicial de 15 minutos a 30 segundos."
+  },
+  {
+    "id": 40,
+    "title": "Importador Universal de Archivos CSV y Excel con Mapeo Inteligente de Columnas",
+    "pillarId": 4,
+    "pillarName": "Integración Bancaria, Importación & OCR",
+    "why": "Cualquier portal bancario permite descargar los movimientos del mes en archivo `.csv` o `.xlsx`.",
+    "how": "- En `TransactionsTracker.jsx`, habilitar un botón de importación que procese el archivo con la librería `xlsx` ya integrada en el proyecto.\n  - Analizar las cabeceras del archivo y sugerir automáticamente las correspondencias: columna de fecha, descripción, importe y tipo (cargo/abono).\n  - Permitir al usuario reasignar columnas mediante selectores interactivos y previsualizar las primeras 5 filas antes de importar.",
+    "feasibility": "Alta factibilidad / Complejidad Media (1.5 días).",
+    "kpi": "Cero fricción al migrar miles de transacciones pasadas desde cualquier banca electrónica."
+  },
+  {
+    "id": 41,
+    "title": "Escáner de Códigos QR de Tickets y Facturas del SAT vía Cámara Web/Móvil",
+    "pillarId": 4,
+    "pillarName": "Integración Bancaria, Importación & OCR",
+    "why": "Todo comprobante fiscal impreso o ticket de supermercado en México incluye un código QR bidimensional reglamentario del SAT que codifica la URL oficial con folio fiscal (UUID), RFC de emisor, RFC de receptor y total.",
+    "how": "- Integrar la librería ligera de escaneo por cámara `html5-qrcode`.\n  - Al abrir el escáner y apuntar a un ticket, decodificar los parámetros de la URL del SAT (`re=...&rr=...&tt=...&id=...`).\n  - Autocompletar el formulario de transacción con el monto exacto, fecha de hoy y el RFC del emisor identificado.",
+    "feasibility": "Alta factibilidad / Complejidad Media (2 días).",
+    "kpi": "Captura de gastos en tiendas físicas en menos de 3 segundos con la cámara del celular."
+  },
+  {
+    "id": 42,
+    "title": "Clasificador Automático de Gastos por Diccionario Heurístico Mexicano",
+    "pillarId": 4,
+    "pillarName": "Integración Bancaria, Importación & OCR",
+    "why": "En los estados de cuenta bancarios, las descripciones vienen con códigos extraños como *\"OXXO TIENDA 4928 GDL\"*, *\"UBER *TRIP 8291\"*, *\"SHELL GASOLIN\"* o *\"WALMART SUPER 2049\"*.",
+    "how": "- Crear un motor de reglas semánticas en `src/services/categorizer.js` con más de 200 comercios y patrones recurrentes en México.\n  - Al importar o escribir un concepto, clasificarlo automáticamente en su categoría correspondiente (Supermercado, Transporte, Gasolina, Servicios, Entretenimiento, Salud) y asignarle el tag deducible si aplica.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "92% de acierto en categorización automática sin intervención manual."
+  },
+  {
+    "id": 43,
+    "title": "Detector Inteligente de Transacciones Duplicadas",
+    "pillarId": 4,
+    "pillarName": "Integración Bancaria, Importación & OCR",
+    "why": "Si un usuario importa un CSV del banco y además había anotado una compra a mano el día anterior, se duplica el gasto, arruinando la precisión del presupuesto.",
+    "how": "- Al registrar o importar transacciones, comparar con los movimientos existentes en una ventana de tolerancia de ±2 días calendario con importe idéntico y similitud textual en la descripción superior al 80%.\n  - Desplegar una alerta: *\"Se detectó 1 posible transacción duplicada: ¿Deseas conservarla o descartarla?\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Eliminación total de distorsiones presupuestales por doble registro."
+  },
+  {
+    "id": 44,
+    "title": "Exportador de Informe Financiero Ejecutivo a PDF Vectorial Formato Revista",
+    "pillarId": 4,
+    "pillarName": "Integración Bancaria, Importación & OCR",
+    "why": "Aunque la vista en pantalla es interactiva, los usuarios necesitan presentar un reporte físico o digital formal a su pareja, a un asesor patrimonial, o archivarlo en sus carpetas personales.",
+    "how": "- Enriquecer `PrintableReport.jsx` con estilos de impresión CSS (@media print) de precisión milimétrica.\n  - Diseñar un informe de 3 páginas con membrete profesional:\n    - Página 1: Diagnóstico Ejecutivo, Score de Salud y Balance General.\n    - Página 2: Plan de Liquidación Mensual Paso a Paso y Calendario de Pagos.\n    - Página 3: Desglose Fiscal SAT y Proyección de Ahorro en Intereses.\n  - Botón directo de exportación a PDF limpio sin encabezados ni pies de página del navegador.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Informes listos para imprimir con estética de banco privado suizo."
+  },
+  {
+    "id": 45,
+    "title": "Sincronización Privada P2P Entre Dispositivos vía Código QR / WebRTC",
+    "pillarId": 4,
+    "pillarName": "Integración Bancaria, Importación & OCR",
+    "why": "Los usuarios quieren tener sus datos sincronizados en su laptop y en su teléfono móvil, pero NO quieren que su información bancaria resida en servidores en la nube de empresas externas.",
+    "how": "- Opción A (Rápida): En la computadora, generar un código QR que contenga la base de datos completa comprimida con Brotli y codificada en Base64. Al escanearlo con la cámara del celular en Gairo Finances, los datos se sincronizan al instante.\n  - Opción B (En vivo): Establecer un canal de datos directo WebRTC P2P (Peer-to-Peer) entre los dos navegadores mediante señalización efímera, transmitiendo los cambios cifrados de dispositivo a dispositivo.",
+    "feasibility": "Alta factibilidad / Complejidad Media (2 días).",
+    "kpi": "Sincronización multidispositivo con privacidad criptográfica absoluta y costo de servidor $0."
+  },
+  {
+    "id": 46,
+    "title": "Galería de Plantillas Financieras Preconfiguradas según Estilo de Vida",
+    "pillarId": 4,
+    "pillarName": "Integración Bancaria, Importación & OCR",
+    "why": "Un médico residente con guardias, un freelancer en honorarios, un empleado asalariado con hipoteca y una pareja con dos hijos tienen realidades financieras totalmente distintas.",
+    "how": "- En el menú de bienvenida y Ajustes, incluir un catálogo de plantillas precargadas:\n    - *Freelancer / Servicios Profesionales* (con retenciones SAT, provisiones de impuestos y gastos de oficina).\n    - *Empleado Asalariado con Deudas de Tarjeta* (quincenas estándar, MSI y crédito de nómina).\n    - *Finanzas Familiares* (colegiaturas, súper grande, seguros de gastos médicos).\n    - *Emprendedor / Negocio Propio* (punto de equilibrio, flujo operativo y colchón de liquidez).\n  - Al seleccionar una plantilla, se configuran las categorías y rubros ideales sin esfuerzo.",
+    "feasibility": "Alta factibilidad / Complejidad Muy Baja (1 día).",
+    "kpi": "Aumento del 60% en la tasa de activación de usuarios en su primer día."
+  },
+  {
+    "id": 47,
+    "title": "Extensión Web Complementaria / Bookmarklet de Registro Rápido",
+    "pillarId": 4,
+    "pillarName": "Integración Bancaria, Importación & OCR",
+    "why": "Cuando el usuario realiza una compra en Amazon, Mercado Libre o Liverpool, tener que abrir otra pestaña para registrar el gasto genera fricción y olvidos.",
+    "how": "- Desarrollar un Bookmarklet en JavaScript (1 solo enlace que se arrastra a la barra de marcadores del navegador) o una extensión WebExtension ligera.\n  - Al estar en la página de confirmación de pedido de Amazon o Mercado Libre, hacer clic en el botón lee el total de la compra y la tarjeta utilizada, abriendo una micro-ventana emergente que la registra en Gairo Finances en 1 clic.",
+    "feasibility": "Alta factibilidad / Complejidad Media (2 días).",
+    "kpi": "Captura inmediata del 90% de las compras de comercio electrónico en el momento en que suceden."
+  },
+  {
+    "id": 48,
+    "title": "Sincronización Automática con Google Sheets vía Webhook Personal",
+    "pillarId": 4,
+    "pillarName": "Integración Bancaria, Importación & OCR",
+    "why": "Millones de entusiastas de las finanzas personales adoran conservar una copia en Google Sheets para hacer sus propias tablas dinámicas o respaldos en Google Drive.",
+    "how": "- Proveer al usuario un script gratuito de Google Apps Script (5 líneas de código) que él mismo pega en su propia hoja de cálculo.\n  - En Gairo Finances, ingresar la URL del Webhook personal; cada vez que se agregue una transacción o se actualice una deuda, la app envía un payload JSON seguro que actualiza la hoja de cálculo de Google en tiempo real.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Integración amada por power-users y analistas que garantiza la soberanía de datos del usuario."
+  },
+  {
+    "id": 49,
+    "title": "Generador y Exportador en Formato Bancario Universal QIF / OFX",
+    "pillarId": 4,
+    "pillarName": "Integración Bancaria, Importación & OCR",
+    "why": "QIF (Quicken Interchange Format) y OFX (Open Financial Exchange) son los formatos estándar adoptados por software contable profesional (GnuCash, YNAB, Quicken).",
+    "how": "- Programar un serializador en `src/services/qifExport.js` que traduzca el historial de transacciones al formato estructurado QIF/OFX con fechas, importes, beneficiarios y categorías.\n  - Botón en Ajustes: *\"Exportar historial en formato QIF/OFX\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Muy Baja (0.5 días).",
+    "kpi": "Interoperabilidad completa con cualquier ecosistema financiero global."
+  },
+  {
+    "id": 50,
+    "title": "Almacenamiento Local de Comprobantes Fotográficos de Gastos",
+    "pillarId": 4,
+    "pillarName": "Integración Bancaria, Importación & OCR",
+    "why": "Guardar la fotografía del ticket de gastos médicos, gasolina o mantenimiento del coche es indispensable para aclaraciones con bancos o deducciones con el SAT.",
+    "how": "- En el modal de transacciones, habilitar la captura o selección de fotografía.\n  - Procesar la imagen con un `<canvas>` HTML5 reduciendo su resolución a un máximo de 1000px y comprimiéndola en formato WebP con calidad 0.75 (peso menor a 80 kB).\n  - Almacenar el archivo binario en IndexedDB asociado al ID de la transacción, con un botón para visualizarla en tamaño completo cuando se desee.",
+    "feasibility": "Alta factibilidad / Complejidad Media (1.5 días).",
+    "kpi": "Repositorio digital organizado de facturas y tickets sin costo de servidor en la nube."
+  },
+  {
+    "id": 51,
+    "title": "Simulador de Declaración Anual de Personas Físicas (Cálculo de Devolución de Impuestos)",
+    "pillarId": 5,
+    "pillarName": "Fiscalidad Mexicana SAT & CFDI",
+    "why": "Cada año en abril, todo contribuyente mexicano se hace la misma pregunta: *\"¿El SAT me va a devolver dinero o me va a salir a pagar?\"*. Es la funcionalidad más buscada de todo el año fiscal en México.",
+    "how": "- Integrar la tarifa anual completa del Art. 152 de la Ley del Impuesto sobre la Renta (LISR).\n  - Sumar los ingresos acumulables del año, restar las deducciones personales autorizadas aplicables, calcular el ISR anual causado y restarle los pagos provisionales y retenciones efectuadas.\n  - Mostrar en un tablero destacado: *\"Tu Saldo a Favor Estimado a Devolver por el SAT es de: $12,450 MXN\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Media (2 días).",
+    "kpi": "Funcionalidad con potencial viral descomunal durante los meses de enero a abril de cada año."
+  },
+  {
+    "id": 52,
+    "title": "Calendario Fiscal Dinámico con Regla del Sexto Dígito del RFC (Día 17 + Días Hábiles)",
+    "pillarId": 5,
+    "pillarName": "Fiscalidad Mexicana SAT & CFDI",
+    "why": "En México, las declaraciones mensuales vencen el día 17 del mes siguiente, pero la Resolución Miscelánea Fiscal otorga días hábiles adicionales según el sexto dígito numérico del RFC (de 1 a 5 días hábiles extra). No conocer esto hace que la gente pague a las prisas o incurra en recargos innecesarios.",
+    "how": "- Solicitar el RFC del usuario en la sección fiscal (solo los primeros caracteres o el dígito numérico).\n  - Calcular con precisión de días hábiles bancarios la fecha límite exacta para presentar el pago provisional del mes en curso, emitiendo alertas visuales preventivas.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Cero multas, recargos ni actualizaciones por presentación extemporánea de declaraciones."
+  },
+  {
+    "id": 53,
+    "title": "Visor y Validador de Archivos XML CFDI 4.0 en el Navegador",
+    "pillarId": 5,
+    "pillarName": "Fiscalidad Mexicana SAT & CFDI",
+    "why": "Los contadores y contribuyentes batallan para abrir y entender el galimatías de los archivos XML del SAT. Un visor que traduzca el XML a una interfaz limpia y amigable es una mina de oro.",
+    "how": "- Utilizar el parser nativo `DOMParser` del navegador para leer el XML arrastrado a la pantalla.\n  - Extraer los nodos clave: Emisor (RFC y Nombre), Receptor, Uso de CFDI, Régimen Fiscal, Conceptos, Desglose de IVA 16%, Retención ISR 10%, Retención IVA 2/3 y Cadena Original del Timbre Fiscal Digital.\n  - Validar si el XML corresponde a la versión CFDI 4.0 oficial y permitir importar sus datos como gasto o ingreso en 1 clic.",
+    "feasibility": "Alta factibilidad / Complejidad Media (1.5 días).",
+    "kpi": "Ahorro de tiempo para cualquier profesionista independiente y contador que revise facturas."
+  },
+  {
+    "id": 54,
+    "title": "Verificador de Requisitos de Deducciones Personales (Art. 151 LISR)",
+    "pillarId": 5,
+    "pillarName": "Fiscalidad Mexicana SAT & CFDI",
+    "why": "Si pagas al médico o dentista en efectivo, el gasto NO es deducible ante el SAT. Si la factura dice \"Gastos en general\" en lugar de \"Honorarios médicos\", el SAT rechaza la devolución.",
+    "how": "- Checklist interactivo de validación al registrar un gasto de salud o educación:\n    - ¿Se pagó con tarjeta de débito, crédito, transferencia o cheque? (El efectivo invalida la deducción).\n    - ¿El Uso de CFDI es D01 (Honorarios médicos) o D02 (Gastos dentales)?\n    - ¿Cuentas con factura emitida con tu RFC correcto?\n  - Si no cumple, el sistema emite una advertencia inmediata para solicitar la refacturación a tiempo.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "100% de éxito en la aprobación de deducciones personales ante el SAT en la declaración anual."
+  },
+  {
+    "id": 55,
+    "title": "Monitoreo en Tiempo Real del Tope Legal de Deducciones Personales (5 UMAs vs 15%)",
+    "pillarId": 5,
+    "pillarName": "Fiscalidad Mexicana SAT & CFDI",
+    "why": "La Ley del ISR establece un límite máximo a las deducciones personales: el monto menor entre el 15% del total de ingresos del contribuyente o 5 veces el valor de la UMA anual (aproximadamente $198,031 MXN). Gastar más allá de ese tope no aporta ningún beneficio fiscal adicional.",
+    "how": "- En la pestaña Fiscal SAT, calcular la barra de progreso acumulativa de deducciones del año frente al tope legal aplicable al usuario.\n  - Mostrar una alerta: *\"Has utilizado $64,200 MXN de tu tope deducible anual de $120,000 MXN. Aún tienes espacio para deducir $55,800 MXN en gastos autorizados\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (0.5 días).",
+    "kpi": "Optimización tributaria al centavo para profesionistas independientes."
+  },
+  {
+    "id": 56,
+    "title": "Comparador Paramétrico de Regímenes Fiscales: RESICO vs Actividad Profesional (PFAE)",
+    "pillarId": 5,
+    "pillarName": "Fiscalidad Mexicana SAT & CFDI",
+    "why": "En RESICO (Régimen Simplificado de Confianza) se paga entre 1% y 2.5% de ISR sobre ingresos brutos pero no se pueden deducir gastos personales; en PFAE se paga hasta 35% pero se deducen todos los gastos operativos. Para muchos profesionistas, equivocarse de régimen cuesta más de $80,000 MXN de impuestos al año.",
+    "how": "- Perfeccionar el comparador fiscal en `FinancialCalculatorsHub.jsx` tomando la facturación anual y la estructura de gastos reales del usuario.\n  - Presentar la comparativa lado a lado: ISR en RESICO vs ISR en PFAE, recomendando con respaldo numérico cuál régimen maximiza la utilidad neta de bolsillo.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Ahorro fiscal masivo demostrado para profesionistas y emprendedores."
+  },
+  {
+    "id": 57,
+    "title": "Calculadora de Retención de IVA del 6% para Servicios Especializados (REPSE)",
+    "pillarId": 5,
+    "pillarName": "Fiscalidad Mexicana SAT & CFDI",
+    "why": "Conforme al Artículo 1-A, fracción IV de la Ley del IVA, las personas morales que contratan servicios especializados de personas físicas deben retener el 6% del valor del IVA facturado.",
+    "how": "- Añadir una opción en el módulo de facturación de honorarios: *\"Aplica Retención IVA 6% REPSE\"*.\n  - Desglosar con exactitud matemática el cálculo del importe neto a recibir en cuenta bancaria y la provisión correspondiente.",
+    "feasibility": "Alta factibilidad / Complejidad Muy Baja (0.5 días).",
+    "kpi": "Cumplimiento regulatorio estricto para contratistas y proveedores de servicios especializados en México."
+  },
+  {
+    "id": 58,
+    "title": "Calculadora Laboral de Prestaciones conforme a la Ley Federal del Trabajo (LFT)",
+    "pillarId": 5,
+    "pillarName": "Fiscalidad Mexicana SAT & CFDI",
+    "why": "Con la reforma de \"Vacaciones Dignas\" (mínimo 12 días desde el primer año) y el aguinaldo legal (mínimo 15 días), los empleados y empleadores necesitan saber con certeza matemática cuánto dinero líquido deben recibir o pagar en diciembre y en su aniversario laboral.",
+    "how": "- Crear en el hub de calculadoras un módulo laboral que reciba: Salario mensual bruto, fecha de ingreso y días de aguinaldo pactados.\n  - Calcular: Aguinaldo proporcional, días de vacaciones por antigüedad, prima vacacional mínima legal (25%) y la parte exenta para ISR (30 UMAs para aguinaldo y 15 UMAs para prima vacacional).",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Herramienta de consulta laboral masiva para asalariados en todo el país."
+  },
+  {
+    "id": 59,
+    "title": "Calculadora de Finiquito y Liquidación por Despido Injustificado (Art. 48/50 LFT)",
+    "pillarId": 5,
+    "pillarName": "Fiscalidad Mexicana SAT & CFDI",
+    "why": "En momentos de pérdida de empleo o recorte de personal, la asimetría de información favorece a la empresa y perjudica al trabajador. Saber exactamente cuánto corresponde por 3 meses de salario constitucional, 20 días por año laborado, prima de antigüedad (12 días por año con tope de 2 salarios mínimos) y partes proporcionales otorga tranquilidad y poder de negociación.",
+    "how": "- Implementar el algoritmo completo de liquidación conforme a los artículos 48, 50 y 162 de la LFT.\n  - Desglosar los conceptos exentos y gravados conforme al Art. 93 fracción XIII de la LISR y calcular la retención de ISR aplicable por indemnización laboral.",
+    "feasibility": "Alta factibilidad / Complejidad Media (1.5 días).",
+    "kpi": "Utilidad social gigantesca y alta viralidad en momentos de incertidumbre laboral."
+  },
+  {
+    "id": 60,
+    "title": "Generador de la Matriz Preliminar para la DIOT (Operaciones con Terceros)",
+    "pillarId": 5,
+    "pillarName": "Fiscalidad Mexicana SAT & CFDI",
+    "why": "Los contribuyentes que tributan en PFAE o Personas Morales están obligados a presentar mensualmente la DIOT ante el SAT informando los pagos a proveedores clasificados por tasa de IVA (16%, 8% fronterizo, 0% y exento).",
+    "how": "- En el libro de transacciones, agrupar automáticamente los egresos del mes según su tasa impositiva.\n  - Exportar una tabla con los campos estándar requeridos por el programa oficial del SAT (RFC del proveedor, tipo de tercero, tipo de operación, valor de los actos gravados a tasa 16% y monto de IVA trasladado).",
+    "feasibility": "Alta factibilidad / Complejidad Media (1.5 días).",
+    "kpi": "Ahorro de horas de trabajo para profesionistas independientes y sus contadores."
+  },
+  {
+    "id": 61,
+    "title": "Módulo de Depreciación y Deducción de Inversiones en Activos Fijos",
+    "pillarId": 5,
+    "pillarName": "Fiscalidad Mexicana SAT & CFDI",
+    "why": "La compra de equipo de cómputo, maquinaria o automóviles no se deduce en un solo mes en PFAE; la ley obliga a deducirlos porcentualmente a lo largo de varios años (30% anual para computadoras, 10% para muebles, 25% con tope de $175,000 para autos de gasolina).",
+    "how": "- Crear una sub-pestaña en el módulo fiscal: *\"Mis Activos Fijos\"*.\n  - Al ingresar un activo (ej: MacBook Pro de $45,000 MXN adquirida en marzo), generar la tabla de amortización fiscal mensualizada (30% anual = 2.5% mensual), sumando esa deducción legal a los pagos provisionales de cada mes.",
+    "feasibility": "Alta factibilidad / Complejidad Media (1.5 días).",
+    "kpi": "Cumplimiento contable riguroso sin necesidad de costosos sistemas ERP."
+  },
+  {
+    "id": 62,
+    "title": "Optimizador de Aportaciones al AFORE y Planes Personales de Retiro (PPR)",
+    "pillarId": 5,
+    "pillarName": "Fiscalidad Mexicana SAT & CFDI",
+    "why": "Las aportaciones complementarias de retiro al AFORE o a un PPR privado son 100% deducibles de impuestos hasta por el 10% de los ingresos anuales (con tope de 5 UMAs). Si una persona en el tramo del 30% de ISR aporta $50,000 MXN al PPR antes del 31 de diciembre, Hacienda le regresa $15,000 MXN en su cuenta bancaria en abril.",
+    "how": "- Crear un recomendador en noviembre/diciembre que calcule: *\"Si aportas $X a tu fondo de retiro antes de que termine el año, el SAT te devolverá $Y en efectivo en tu declaración anual\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Fomento al ahorro para el retiro apalancado con devolución fiscal garantizada."
+  },
+  {
+    "id": 63,
+    "title": "Sistema de Insignias y Logros Gamificados (\"Financial Badges\")",
+    "pillarId": 6,
+    "pillarName": "Psicología Financiera & Gamificación",
+    "why": "El proceso de pagar deudas dura meses o años y puede volverse agotador. Celebrar pequeños hitos intermedios con insignias digitales llamativas recompensa la constancia y mantiene alta la motivación.",
+    "how": "- Diseñar un sistema de logros desbloqueables:\n    - 🥉 *Primer Golpe*: Realizaste tu primer abono extraordinario a capital.\n    - 🥈 *Cazador de Intereses*: Ahorraste más de $5,000 MXN en intereses bancarios.\n    - 🥇 *Tarjeta Destruida*: Liquidaste al 100% una tarjeta de crédito.\n    - 💎 *Cero Deudas*: Eliminaste todos tus pasivos tóxicos.\n    - 🛡️ *Blindaje Fiscal*: Apartaste tu provisión del SAT a tiempo durante 3 meses consecutivos.\n  - Al desbloquear cada logro, desplegar animación con confeti y sonido festivo.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Incremento del 35% en la retención de usuarios a los 90 días de uso."
+  },
+  {
+    "id": 64,
+    "title": "Escala de 10 Niveles de Libertad Financiera",
+    "pillarId": 6,
+    "pillarName": "Psicología Financiera & Gamificación",
+    "why": "Las personas aman ver su estatus reflejado en una escala de progreso visible, similar a los niveles en videojuegos o artes marciales.",
+    "how": "- Crear una barra de experiencia (XP) que suba de nivel automáticamente según métricas financieras auditadas:\n    - *Nivel 1*: Asfixia (Deudas > 60% de ingresos, 0 ahorro).\n    - *Nivel 3*: Estabilidad (Deudas < 30%, fondo de 1 mes).\n    - *Nivel 5*: Zona de Seguridad (0 deudas de consumo, 3 meses de fondo de emergencia).\n    - *Nivel 7*: Inversionista en Crecimiento (Inversiones activas que superan los pasivos).\n    - *Nivel 10*: Libertad Financiera FIRE (Rendimientos cubren el 100% del estilo de vida).",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Deseo de superación personal que empuja a mejorar los indicadores financieros reales."
+  },
+  {
+    "id": 65,
+    "title": "Reto Interactivo de las 52 Semanas de Ahorro con Conversión a Abono de Deuda",
+    "pillarId": 6,
+    "pillarName": "Psicología Financiera & Gamificación",
+    "why": "El reto de las 52 semanas es el fenómeno viral de ahorro más exitoso de la historia de internet.",
+    "how": "- Implementar una matriz interactiva con 52 casillas (Semana 1: $20, Semana 2: $40 ... Semana 52: $1,040, acumulando $27,560 MXN en el año).\n  - Permitir al usuario marcar las casillas a su ritmo y ofrecer la opción: *\"Transferir el pozo acumulado del reto directamente como abono a capital de la deuda más tóxica\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Participación comunitaria masiva y recaudación de decenas de miles de pesos en ahorro sin esfuerzo percibido."
+  },
+  {
+    "id": 66,
+    "title": "Modo \"Antídoto de Compra Impulsiva\" (Enfriador Emocional de 72 Horas)",
+    "pillarId": 6,
+    "pillarName": "Psicología Financiera & Gamificación",
+    "why": "Casi todo el endeudamiento innecesario en tarjetas proviene de compras emocionales por impulso realizadas en cuestión de minutos.",
+    "how": "- Añadir un botón en la barra superior: *\"¿Tentación de compra?\"*.\n  - El usuario anota el objeto deseado y su precio. La app inicia una cuenta regresiva de 72 horas y le muestra: *\"Para pagar este artículo tendrás que trabajar 28 horas de tu vida. Respira y espera 3 días\"*.\n  - Pasadas las 72 horas, la app pregunta: *\"¿Todavía lo deseas con la misma intensidad?\"*. Si el usuario dice que no, celebra el ahorro virtualmente.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Cancelación espontánea de más del 70% de las compras no esenciales planificadas por impulso."
+  },
+  {
+    "id": 67,
+    "title": "Generador de Tarjetas de Progreso Compartibles en Redes Sociales (Story / Post)",
+    "pillarId": 6,
+    "pillarName": "Psicología Financiera & Gamificación",
+    "why": "El crecimiento viral ocurre cuando los usuarios comparten con orgullo sus victorias en Instagram Stories, TikTok, LinkedIn o WhatsApp.",
+    "how": "- Al liquidar una deuda o alcanzar un hito, botón: *\"Compartir mi victoria\"*.\n  - Utilizar `html-to-image` para renderizar al vuelo una imagen gráfica vertical (1080x1920 px) con diseño minimalista oscuro, gradientes modernos y tipografía elegante: *\"¡Hoy liquidé una tarjeta de crédito más y recorté 14 meses de intereses! #GairoFinances\"*.\n  - Ocultar automáticamente montos monetarios sensibles para proteger la privacidad del usuario, mostrando únicamente porcentajes de avance y meses ahorrados.",
+    "feasibility": "Alta factibilidad / Complejidad Media (1.5 días).",
+    "kpi": "Coeficiente viral (K-factor) superior a 1.2 vía menciones orgánicas en redes sociales."
+  },
+  {
+    "id": 68,
+    "title": "Métrica Humana: \"Días de Vida Comprados\"",
+    "pillarId": 6,
+    "pillarName": "Psicología Financiera & Gamificación",
+    "why": "Hablar de \"$15,000 pesos de intereses ahorrados\" es abstracto; hablar de \"37 días de tu vida que ya no tendrás que trabajar para enriquecer al banco\" conecta directamente con el corazón del usuario.",
+    "how": "- Calcular el costo de vida diario del usuario: `(Gastos Fijos + Comida) / 30`.\n  - Cada vez que el usuario realiza un abono a capital o aplica una estrategia que ahorra intereses, convertir el monto en días de libertad: *\"Con este abono de hoy acabas de comprar 12 días de vida libre\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Muy Baja (0.5 días).",
+    "kpi": "Conexión emocional profunda con el valor del dinero y del tiempo propio."
+  },
+  {
+    "id": 69,
+    "title": "El \"Muro de la Vergüenza Bancaria\" (Total Acumulado de Intereses Donados a Bancos)",
+    "pillarId": 6,
+    "pillarName": "Psicología Financiera & Gamificación",
+    "why": "La indignación constructiva es el motivador más potente para dejar de procrastinar el pago de deudas.",
+    "how": "- En la pestaña de diagnóstico, mostrar un contador en color rojo carmesí con el total acumulado de intereses que el usuario pagaría si se limita a los pagos mínimos: *\"Si sigues pagando solo el mínimo, le regalarás al banco $142,800 MXN en intereses limpios. Eso equivale a comprarle un auto nuevo al gerente de la sucursal\"*.\n  - Al lado, un botón verde contrastante: *\"Ver plan para rescatar ese dinero ahora mismo\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Muy Baja (0.5 días).",
+    "kpi": "Incremento del 65% en la tasa de adopción del plan de amortización acelerada."
+  },
+  {
+    "id": 70,
+    "title": "Simulador de \"Apocalipsis Financiero\" (Zero Income Survival Test)",
+    "pillarId": 6,
+    "pillarName": "Psicología Financiera & Gamificación",
+    "why": "La complacencia financiera desaparece cuando una persona ve con frialdad matemática cuánto tiempo sobreviviría su familia si sus ingresos cayeran a $0 el día de hoy.",
+    "how": "- Botón de prueba de estrés en el Dashboard.\n  - Al presionarlo, la pantalla simula la desconexión de todos los ingresos y calcula el runway exacto dividiendo la liquidez bancaria actual entre el gasto indispensable de supervivencia.\n  - Muestra un reloj de arena con la fecha exacta en que el dinero se agotaría: *\"Cuentas con exactamente 54 días de oxígeno financiero\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (0.5 días).",
+    "kpi": "Urgencia justificada para construir el fondo de emergencia de 3 a 6 meses."
+  },
+  {
+    "id": 71,
+    "title": "Micro-Píldoras Diarias de Sabiduría Financiera al Iniciar Sesión",
+    "pillarId": 6,
+    "pillarName": "Psicología Financiera & Gamificación",
+    "why": "Los hábitos se construyen con pequeñas dosis diarias de aprendizaje.",
+    "how": "- Crear un repositorio curado de 100 citas y consejos financieros prácticos de referentes mundiales (Morgan Housel, John Bogle, Charlie Munger, Naval Ravikant).\n  - Al iniciar sesión en el día, mostrar un banner sutil con la reflexión del día y una pregunta de autoexamen financiero.",
+    "feasibility": "Alta factibilidad / Complejidad Muy Baja (0.5 días).",
+    "kpi": "Apertura diaria de la app convertida en un ritual positivo de crecimiento personal."
+  },
+  {
+    "id": 72,
+    "title": "Barra de Combustible Quincenal (\"Fuel Tank Gauge\")",
+    "pillarId": 6,
+    "pillarName": "Psicología Financiera & Gamificación",
+    "why": "Cuando cae la quincena, la gente gasta con euforia los primeros 5 días y sufre los últimos 5 días comiendo atún.",
+    "how": "- Diseñar un indicador en forma de tanque de gasolina en el Dashboard quincenal:\n    - Verde: Consumo a ritmo óptimo.\n    - Amarillo: Consumo acelerado (quedarán menos de $1,000 en los últimos 3 días).\n    - Rojo: Ritmo insostenible (te quedarás sin fondos antes del día de pago).",
+    "feasibility": "Alta factibilidad / Complejidad Baja (0.5 días).",
+    "kpi": "Disminución drástica del estrés en los días 12-15 y 27-30 de cada mes."
+  },
+  {
+    "id": 73,
+    "title": "Generador de Diploma Oficial de \"Libertad de Deudas\" Descargable",
+    "pillarId": 6,
+    "pillarName": "Psicología Financiera & Gamificación",
+    "why": "Liquidar un crédito de años es una de las hazañas más difíciles y dignas de celebración en la vida de una persona.",
+    "how": "- Cuando el saldo de una deuda llega a $0.00, desplegar un modal conmemorativo con confeti y música triunfal, generando un diploma imprimible de alta resolución con tipografía clásica, nombre del usuario, entidad bancaria liquidada, fecha y firma simbólica de victoria financiera.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Momento culminante de deleite del usuario que se comparte con familiares y amigos."
+  },
+  {
+    "id": 74,
+    "title": "Sistema de Rachas de Disciplina Financiera (Daily Streaks)",
+    "pillarId": 6,
+    "pillarName": "Psicología Financiera & Gamificación",
+    "why": "Las rachas consecutivas son el motor de retención más poderoso de Duolingo y Strava.",
+    "how": "- Contador de días consecutivos revisando el presupuesto o registrando movimientos en el Navbar con un icono de llama encendida (`🔥 14 días`).\n  - Si el usuario mantiene su racha por 30 días seguidos, desbloquea temas visuales exclusivos de la aplicación.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (0.5 días).",
+    "kpi": "Incremento del 200% en el DAU (Daily Active Users)."
+  },
+  {
+    "id": 75,
+    "title": "Test Interactivo de Arquetipo de Personalidad con el Dinero",
+    "pillarId": 6,
+    "pillarName": "Psicología Financiera & Gamificación",
+    "why": "A las personas les fascina descubrir cosas sobre sí mismas mediante cuestionarios psicológicos y compartirlos.",
+    "how": "- Implementar un cuestionario de 8 preguntas situacionales que evalúa la aversión al riesgo, impulsividad y visión de futuro.\n  - Clasificar al usuario en uno de 4 arquetipos con recomendaciones personalizadas:\n    - *El Halcón Inversionista*: Obsesionado con el rendimiento, necesita aprender a disfrutar más el presente.\n    - *El Guerrero Protector*: Prioriza la seguridad y el fondo de emergencia, teme invertir.\n    - *El Emocional Generoso*: Gasta para complacer a otros y busca gratificación instantánea.\n    - *El Avestruz Evasivo*: Prefiere no ver sus estados de cuenta por miedo a la realidad.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Herramienta de captación y viralización masiva en campañas de adquisición orgánica."
+  },
+  {
+    "id": 76,
+    "title": "Cifrado Militar AES-GCM-256 de Extremo a Extremo en la Base de Datos Local",
+    "pillarId": 7,
+    "pillarName": "Criptografía, Seguridad & Privacidad",
+    "why": "Si un usuario deja su computadora en un cibercafé o alguien inspecciona el almacenamiento local mediante las herramientas de desarrollador (F12), podría ver sus deudas y saldos en texto plano. El cifrado en reposo es el estándar dorado de seguridad.",
+    "how": "- Usar la Web Crypto API nativa de los navegadores (`window.crypto.subtle`).\n  - Al ingresar la contraseña, derivar una clave simétrica robusta mediante PBKDF2 con 100,000 iteraciones y salt criptográfico seguro.\n  - Cifrar toda la base de datos financiera con AES-GCM de 256 bits antes de escribirla en IndexedDB/localStorage. Sin la contraseña del usuario, los datos guardados son simplemente ruido criptográfico indescifrable.",
+    "feasibility": "Media factibilidad / Complejidad Media (2 días).",
+    "kpi": "Certificación de seguridad bancaria con arquitectura de Conocimiento Cero (Zero-Knowledge)."
+  },
+  {
+    "id": 77,
+    "title": "Bloqueo Automático por Inactividad (Auto-Lock con Desbloqueo por PIN)",
+    "pillarId": 7,
+    "pillarName": "Criptografía, Seguridad & Privacidad",
+    "why": "Si el usuario se levanta a tomar un café en la oficina y deja abierta la aplicación, cualquier compañero de trabajo podría asomarse a su pantalla.",
+    "how": "- Configurar un temporizador de inactividad que detecte la falta de interacción (movimientos de mouse, pulsaciones de teclas o toques en pantalla) durante 3 o 5 minutos.\n  - Al vencer el tiempo, desplegar una cortina de seguridad translúcida que desenfoca la información y solicita el PIN de 4 dígitos o contraseña para reanudar la sesión.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Cero filtraciones visuales accidentales en entornos compartidos."
+  },
+  {
+    "id": 78,
+    "title": "Autenticación Biométrica WebAuthn (Touch ID, Face ID y Windows Hello)",
+    "pillarId": 7,
+    "pillarName": "Criptografía, Seguridad & Privacidad",
+    "why": "Escribir una contraseña compleja cada vez que se entra a la aplicación cansa al usuario; desbloquear con la huella digital o el reconocimiento facial de la computadora o teléfono es instantáneo y sumamente seguro.",
+    "how": "- Implementar la Web Authentication API estándar (`navigator.credentials.create` y `navigator.credentials.get`).\n  - Permitir al usuario registrar la biometría de su propio dispositivo para desbloquear la llave criptográfica local en menos de 1 segundo.",
+    "feasibility": "Alta factibilidad / Complejidad Media (2 días).",
+    "kpi": "Experiencia de acceso premium idéntica a la banca móvil más avanzada."
+  },
+  {
+    "id": 79,
+    "title": "Verificador Criptográfico de Integridad (SHA-256 Checksum)",
+    "pillarId": 7,
+    "pillarName": "Criptografía, Seguridad & Privacidad",
+    "why": "Prevenir corrupciones silenciosas del almacenamiento local o modificaciones no autorizadas por extensiones de navegador invasivas.",
+    "how": "- Al guardar los datos, calcular un hash SHA-256 del contenido y almacenarlo junto con una firma digital.\n  - Al iniciar sesión, verificar el hash antes de parsear. Si no coincide, notificar al usuario y ofrecer restaurar la última copia de seguridad íntegra.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (0.5 días).",
+    "kpi": "100% de consistencia de datos a prueba de manipulaciones o fallas de disco."
+  },
+  {
+    "id": 80,
+    "title": "Modo Contraseña Señuelo (Duress / Decoy Password)",
+    "pillarId": 7,
+    "pillarName": "Criptografía, Seguridad & Privacidad",
+    "why": "En situaciones incómodas o coercitivas donde una tercera persona exige ver las finanzas del usuario (*\"A ver, muéstrame cuánto ganas y cuánto tienes\"*), ingresar una contraseña alternativa abre una cuenta señuelo con datos ficticios e inofensivos.",
+    "how": "- En Ajustes de Seguridad, permitir configurar una \"Contraseña Señuelo\" secundaria.\n  - Si el usuario inicia sesión con esa contraseña, la app renderiza un perfil financiero genérico con números moderados, manteniendo la base de datos real completamente oculta e inaccesible.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Máxima protección de la intimidad financiera personal ante terceros."
+  },
+  {
+    "id": 81,
+    "title": "Limpieza Automática y Segura del Portapapeles (Clipboard Purge)",
+    "pillarId": 7,
+    "pillarName": "Criptografía, Seguridad & Privacidad",
+    "why": "Al copiar un reporte, una carta de reclamación o un número de cuenta, esos datos quedan almacenados en el portapapeles del sistema operativo, donde cualquier otra aplicación o script malicioso podría leerlos.",
+    "how": "- Tras cualquier acción de copia al portapapeles, iniciar un temporizador de 45 segundos.\n  - Pasado el tiempo, ejecutar `navigator.clipboard.writeText('')` para sobrescribir y limpiar el portapapeles de forma transparente.",
+    "feasibility": "Alta factibilidad / Complejidad Muy Baja (0.5 días).",
+    "kpi": "Protección contra lectores no autorizados del historial de portapapeles."
+  },
+  {
+    "id": 82,
+    "title": "Política Estricta de Cero Telemetría Externa (Zero Third-Party Telemetry)",
+    "pillarId": 7,
+    "pillarName": "Criptografía, Seguridad & Privacidad",
+    "why": "Las grandes instituciones financieras y fintechs rastrean cada clic y venden hábitos de consumo a agencias publicitarias. Demostrar que Gairo Finances tiene CERO rastreadores (cero Google Analytics, cero Facebook Pixel, cero scripts de terceros) es el argumento de venta ético más fuerte de la plataforma.",
+    "how": "- Auditar la red con DevTools para asegurar que la app no emita una sola llamada HTTP saliente fuera de los endpoints abiertos de tipos de cambio.\n  - Incluir una política de Content Security Policy (CSP) en los headers de `vercel.json` y `netlify.toml` que bloquee cualquier intento de exfiltración de datos.",
+    "feasibility": "Alta factibilidad / Complejidad Muy Baja (0.5 días).",
+    "kpi": "Confianza ciega y recomendación entusiasta en comunidades de privacidad y ciberseguridad."
+  },
+  {
+    "id": 83,
+    "title": "Respaldo Mnemónico de 12 Palabras Semilla (Estándar BIP-39)",
+    "pillarId": 7,
+    "pillarName": "Criptografía, Seguridad & Privacidad",
+    "why": "Las contraseñas tradicionales se olvidan con facilidad. El sistema de frases semilla de 12 palabras (popularizado por las carteras criptográficas de mayor seguridad) permite al usuario recuperar su base de datos cifrada en cualquier computadora nueva simplemente anotando 12 palabras en un papel.",
+    "how": "- Implementar la lista estándar de 2048 palabras BIP-39 en español o inglés.\n  - Derivar la clave criptográfica maestra a partir de la entropía de las 12 palabras, permitiendo restaurar la contraseña o descifrar el archivo de respaldo sin necesidad de soporte técnico.",
+    "feasibility": "Alta factibilidad / Complejidad Media (2 días).",
+    "kpi": "Mecanismo de recuperación soberano e indestructible para el usuario final."
+  },
+  {
+    "id": 84,
+    "title": "Cortina Visual Anti-Espía en Cambio de Ventana (`window.onblur`)",
+    "pillarId": 7,
+    "pillarName": "Criptografía, Seguridad & Privacidad",
+    "why": "Cuando el usuario cambia de pestaña en la computadora o abre el carrusel de aplicaciones en el celular, el sistema operativo genera una captura de pantalla en miniatura que puede verse al conmutar ventanas.",
+    "how": "- Escuchar los eventos `visibilitychange` y `window.onblur`.\n  - En el instante exacto en que la ventana pierde el foco, superponer un filtro opaco con el escudo de Gairo Finances; en cuanto el usuario regresa a la app (`window.onfocus`), la vista se restablece instantáneamente.",
+    "feasibility": "Alta factibilidad / Complejidad Muy Baja (0.5 días).",
+    "kpi": "Prevención total de capturas visuales inadvertidas en el sistema operativo."
+  },
+  {
+    "id": 85,
+    "title": "Protocolo de Destrucción Criptográfica Segura (Cryptographic Shredding)",
+    "pillarId": 7,
+    "pillarName": "Criptografía, Seguridad & Privacidad",
+    "why": "Cuando un usuario decide borrar su cuenta o limpiar sus datos en un equipo prestado, un simple `localStorage.clear()` puede dejar rastros en sectores de memoria flash sin sobrescribir.",
+    "how": "- En la función de reseteo de fábrica, sobrescribir todos los registros de almacenamiento con secuencias de bytes pseudo-aleatorios criptográficos (`crypto.getRandomValues`) tres veces consecutivas antes de ejecutar la eliminación física de las bases de datos en IndexedDB y localStorage.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (0.5 días).",
+    "kpi": "Borrado de grado militar garantizado sin posibilidad de recuperación forense."
+  },
+  {
+    "id": 86,
+    "title": "Modelo Freemium de Alta Conversión con Límites Orgánicos Elegantes",
+    "pillarId": 8,
+    "pillarName": "Comercialización SaaS & Viralidad",
+    "why": "Para comercializar masivamente la aplicación, debe ser 100% utilizable y valiosa en su versión gratuita para enganchar al usuario, pero reservar superpoderes avanzados para la suscripción Pro.",
+    "how": "- **Nivel Gratuito (Free Tier)**: Hasta 3 deudas activas, estrategia Bola de Nieve clásica, tipo de cambio diario, libro de transacciones básico y 5 calculadoras esenciales.\n  - **Nivel Pro ($9 USD/mes o $69 USD/año)**: Deudas ilimitadas, Motor Gairo Custom con blindaje de MSI, Comparador de 4 Estrategias, Simulador What-If con slider, Módulo Fiscal SAT completo con declaración anual, las 20 calculadoras y exportador a Excel multihilera.\n  - Los botones de funciones Pro muestran un elegante candado dorado que al tocarlo despliega el modal de beneficios sin ser invasivo.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Tasa de conversión de Free a Pro proyectada superior al 4.5% (estándar de la industria SaaS: 2-3%)."
+  },
+  {
+    "id": 87,
+    "title": "Pasarela de Pago Integrada con Checkout de 1 Clic (Stripe / LemonSqueezy)",
+    "pillarId": 8,
+    "pillarName": "Comercialización SaaS & Viralidad",
+    "why": "Cualquier fricción al momento de pagar hace que el 70% de los compradores abandonen el carrito.",
+    "how": "- Integrar LemonSqueezy o Stripe Customer Portal mediante overlay embebido o redirect ultrarrápido.\n  - Ofrecer métodos de pago locales en México: Tarjetas de crédito/débito, Apple Pay, Google Pay y pagos en efectivo en OXXO.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Proceso de cobro completado en menos de 60 segundos con confirmación inmediata."
+  },
+  {
+    "id": 88,
+    "title": "Validador Criptográfico de Licencias Offline para Licencia Vitalicia (\"Lifetime Access\")",
+    "pillarId": 8,
+    "pillarName": "Comercialización SaaS & Viralidad",
+    "why": "Miles de usuarios odian las suscripciones mensuales (\"fatiga de suscripciones\") pero están felices de pagar $49 o $79 USD en un solo pago por un software que les pertenezca para siempre.",
+    "how": "- Utilizar criptografía asimétrica ED25519 o RSA.\n  - El servidor de pagos genera una clave de licencia firmada digitalmente con la clave privada del negocio.\n  - En la aplicación del usuario (cliente), la clave pública embebida valida la firma matemática del serial sin necesidad de consultar internet, desbloqueando todas las funciones Pro de por vida.",
+    "feasibility": "Alta factibilidad / Complejidad Media (1.5 días).",
+    "kpi": "Flujo de caja inmediato y alta tasa de adquisición en lanzamientos y ofertas especiales."
+  },
+  {
+    "id": 89,
+    "title": "Bucle Viral de Referidos (\"Invita a un Amigo y Gana 1 Mes Pro Gratis\")",
+    "pillarId": 8,
+    "pillarName": "Comercialización SaaS & Viralidad",
+    "why": "El costo de adquisición de clientes (CAC) con anuncios de Facebook o Google es de $15 a $35 USD por usuario en fintech. Un programa de referidos reduce el CAC a $0.",
+    "how": "- Cada usuario tiene un enlace de recomendación único en su perfil: `gairofinances.com?ref=USUARIO`.\n  - Cuando un amigo se registra con su enlace, ambos reciben 30 días de acceso Pro gratuito automáticamente.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Crecimiento exponencial del número de usuarios por red de confianza de boca en boca."
+  },
+  {
+    "id": 90,
+    "title": "Generación de Landing Pages Programáticas para Tráfico SEO Masivo",
+    "pillarId": 8,
+    "pillarName": "Comercialización SaaS & Viralidad",
+    "why": "Cientos de miles de personas buscan en Google todos los días términos exactos como: *\"Calculadora de intereses tarjeta BBVA Oro\"*, *\"Simulador de desendeudamiento Banamex\"*, *\"Cómo calcular retención de honorarios SAT\"*.",
+    "how": "- Crear rutas públicas en la aplicación optimizadas para motores de búsqueda con SSR o SSG:\n    - `/calculadora-deudas-bbva`\n    - `/simulador-resico-vs-pfae`\n    - `/calculadora-aguinaldo-mexico`\n  - Cada página resuelve la duda en 1 segundo y muestra un llamado a la acción: *\"¿Quieres simular todo tu plan de pagos completo? Abre tu cuenta gratis en Gairo Finances\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Media (2 días).",
+    "kpi": "Más de 50,000 visitas orgánicas mensuales gratuitas desde Google en 6 meses."
+  },
+  {
+    "id": 91,
+    "title": "Exportación de Reportes con Marca Blanca para Asesores Financieros y Contadores",
+    "pillarId": 8,
+    "pillarName": "Comercialización SaaS & Viralidad",
+    "why": "Los asesores patrimoniales, coaches financieros y despachos contables cobran a sus clientes por armarles planes de finanzas personales. Si pueden usar Gairo Finances con el logo de su propio despacho en los reportes, pagarán licencias Pro de mayor valor ($29 USD/mes o $299 USD/año).",
+    "how": "- En Ajustes Pro, añadir la sección *\"Marca Blanca / Modo Profesional\"*.\n  - Permitir subir el logotipo del despacho, nombre del asesor y datos de contacto, los cuales reemplazarán automáticamente el branding en los reportes PDF y Excel generados para sus clientes.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Venta recurrente B2B a profesionales de la industria financiera con alto LTV (Lifetime Value)."
+  },
+  {
+    "id": 92,
+    "title": "Widget Gratuito Embebible para Blogs de Finanzas y Medios de Comunicación",
+    "pillarId": 8,
+    "pillarName": "Comercialización SaaS & Viralidad",
+    "why": "Conseguir backlinks de alta autoridad y tráfico desde blogs como El Economista, Expansión, Mi Bolsillo o blogs independientes.",
+    "how": "- Desarrollar un script embebible en iframe responsivo: `<iframe src=\"https://gairofinances.com/embed/calculator\" width=\"100%\" height=\"400\"></iframe>`.\n  - Permite a cualquier creador de contenido incrustar la calculadora de bola de nieve en sus artículos de blog con un enlace de atribución hacia Gairo Finances.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Construcción masiva de autoridad de dominio (Domain Authority) y tráfico de referencia constante."
+  },
+  {
+    "id": 93,
+    "title": "Notificaciones Push Locales de Reactivación y Alerta Temprana",
+    "pillarId": 8,
+    "pillarName": "Comercialización SaaS & Viralidad",
+    "why": "El 60% de los usuarios abandona las apps de finanzas simplemente porque se les olvida abrirlas.",
+    "how": "- Utilizar la Notifications API local del navegador mediante el Service Worker (sin necesidad de servidores externos de mensajería).\n  - Programar avisos amables y oportunos:\n    - 🔔 *\"Tu tarjeta Citibanamex corta en 3 días. Revisa tus gastos antes del corte\"*.\n    - 🔔 *\"¡Llegó la quincena! Entra a apartar tus pagos fijos y tu provisión del SAT\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Media (1.5 días).",
+    "kpi": "Retención semanal (Wau/Mau) incrementada en un 55%."
+  },
+  {
+    "id": 94,
+    "title": "Modo \"Finanzas en Pareja\" con Reparto Equitativo de Gastos del Hogar",
+    "pillarId": 8,
+    "pillarName": "Comercialización SaaS & Viralidad",
+    "why": "El dinero es la principal causa de discusiones en las parejas. Las parejas modernas buscan repartir los gastos comunes proporcionalmente a lo que gana cada quien (no siempre 50/50, sino proporcional al salario).",
+    "how": "- En `TransactionsTracker.jsx`, añadir el campo: *\"Pagado por: [Él / Ella / Ambos]\"* y *\"División: [50/50 o Proporcional a ingresos]\"*.\n  - El sistema calcula al final del mes el saldo neto de compensación: *\"Para quedar a mano, Carlos debe transferirle $2,350 MXN a Sofía\"*.",
+    "feasibility": "Alta factibilidad / Complejidad Media (1.5 días).",
+    "kpi": "Adopción masiva por parejas jóvenes que recomiendan la app a sus círculos sociales."
+  },
+  {
+    "id": 95,
+    "title": "Repositorio Comunitario de Plantillas Abiertas (\"Community Templates Hub\")",
+    "pillarId": 8,
+    "pillarName": "Comercialización SaaS & Viralidad",
+    "why": "A las personas les encanta aprender cómo gestionan su dinero personas exitosas en su misma profesión.",
+    "how": "- Permitir a los usuarios exportar su estructura de categorías y metas (sin datos de saldo personales) y compartirla en una galería comunitaria dentro de la app: *\"Plantilla de Programador Remoto con Ingresos en USD\"*, *\"Plantilla de Médico en Residencia\"*, *\"Plantilla de Mamá Emprendedora\"*.\n  - Los nuevos usuarios pueden instalar cualquier plantilla en 1 solo clic.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Efecto de red comunitaria y contenido generado por los propios usuarios (UGC)."
+  },
+  {
+    "id": 96,
+    "title": "Internacionalización Completa (i18n) con Localización de Términos",
+    "pillarId": 9,
+    "pillarName": "Accesibilidad, i18n & Calidad",
+    "why": "La deuda de tarjetas de crédito y la necesidad de optimizar impuestos no solo afecta a México; el mercado hispano en EE.UU. (con más de 60 millones de personas y créditos al 25% APR) y los mercados de Colombia, Argentina, Chile y España sufren exactamente el mismo dolor.",
+    "how": "- Integrar `i18next` o un sistema de diccionarios JSON modular.\n  - Ofrecer selección de idiomas y dialectos:\n    - *Español (México)*: Terminología Condusef, SAT, Quincenas, MSI.\n    - *Español (América Latina / Internacional)*: Terminología estándar de bancos y cuotas.\n    - *English (USA)*: Terminología APR, Snowball/Avalanche, Paycheck, Bi-weekly, IRS W2/1099.",
+    "feasibility": "Alta factibilidad / Complejidad Media (2 días).",
+    "kpi": "Expansión del mercado potencial accesible de 130 millones a más de 600 millones de personas."
+  },
+  {
+    "id": 97,
+    "title": "Soporte Dinámico para Canasta de Divisas Latinoamericanas (COP, ARS, CLP, PEN, EUR)",
+    "pillarId": 9,
+    "pillarName": "Accesibilidad, i18n & Calidad",
+    "why": "Decenas de miles de trabajadores remotos en Latinoamérica cobran en dólares o euros y gastan en sus monedas locales.",
+    "how": "- Ampliar `src/services/exchangeRate.js` para consultar pares cruzados USD/COP, USD/ARS, USD/CLP, USD/PEN y EUR/USD.\n  - Permitir que cada cuenta o deuda pueda estar denominada en cualquiera de estas monedas, con consolidación automática a la divisa principal de la cuenta.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Adopción masiva entre la creciente comunidad de freelancers y nómadas digitales de LATAM."
+  },
+  {
+    "id": 98,
+    "title": "Paletas de Color Optimizadas para Daltonismo (Deuteranopia, Protanopia y Tritanopia)",
+    "pillarId": 9,
+    "pillarName": "Accesibilidad, i18n & Calidad",
+    "why": "Aproximadamente el 8% de los hombres y el 0.5% de las mujeres padecen algún grado de daltonismo. Si las alertas financieras se basan únicamente en color rojo (peligro) y verde (seguridad), una porción significativa de la población no podrá interpretar los gráficos ni semáforos de deuda.",
+    "how": "- En Ajustes de Accesibilidad, añadir selector de modos de color accesibles (utilizando azul/naranja/amarillo de alto contraste para estados de alerta y éxito).\n  - Acompañar siempre el color con un símbolo geométrico inequívoco: icono de check (`✓`) para pagado, triángulo de advertencia (`⚠`) para corte próximo y cruz (`✕`) para atraso.",
+    "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
+    "kpi": "Accesibilidad visual universal sin barreras de percepción de color."
+  },
+  {
+    "id": 99,
+    "title": "Cumplimiento Estricto de Accesibilidad para Lectores de Pantalla (WCAG 2.1 AAA)",
+    "pillarId": 9,
+    "pillarName": "Accesibilidad, i18n & Calidad",
+    "why": "Las personas con discapacidad visual tienen el mismo derecho a administrar sus finanzas con autonomía y dignidad. Además, el cumplimiento WCAG AAA es un requisito indispensable para licitaciones gubernamentales o adopción institucional por universidades y bancos.",
+    "how": "- Auditar todos los elementos interactivos con atributos `aria-label`, `aria-expanded`, `aria-describedby` y `role` semánticos.\n  - Incorporar regiones activas `aria-live=\"polite\"` para que los lectores de pantalla (NVDA, JAWS, VoiceOver) anuncien en voz alta cuando se completa un cálculo o se guarda una transacción sin necesidad de refrescar la vista.\n  - Navegación completa por teclado con indicadores de foco (`focus-visible:ring-2 focus-visible:ring-emerald-500`) perfectamente visibles.",
+    "feasibility": "Alta factibilidad / Complejidad Media (2 días).",
+    "kpi": "Puntaje de 100/100 en la auditoría de Accesibilidad de Google Lighthouse y certificación WCAG 2.1 AAA."
+  },
+  {
+    "id": 100,
+    "title": "Suite de Pruebas de Extremo a Extremo (E2E) con Playwright",
+    "pillarId": 9,
+    "pillarName": "Accesibilidad, i18n & Calidad",
+    "why": "Con 100 funcionalidades interconectadas (desde calculadoras complejas hasta conversiones de divisas, importaciones y modales), cualquier cambio futuro en el código podría romper un flujo crítico sin que el desarrollador lo note.",
+    "how": "- Configurar Playwright (`playwright.config.js`) con navegadores Chromium, Firefox y WebKit en entornos de escritorio y móvil.\n  - Programar pruebas automatizadas de flujos de usuario completos:\n    1. Flujo de Onboarding completo con registro de credenciales seguras.\n    2. Creación, edición y amortización de deudas a MSI y tasa ordinaria.\n    3. Simulación de las 4 estrategias y verificación de concordancia numérica.\n    4. Registro de transacciones y cálculo del estado de resultados con fórmulas SAT.\n    5. Conmutación de divisa MXN a USD con verificación de tipos de cambio.\n    6. Exportación e importación de copias de seguridad en JSON y Excel.\n  - Integrar los tests en el pipeline de GitHub Actions para que ningún despliegue a producción proceda si una sola prueba falla.",
+    "feasibility": "Alta factibilidad / Complejidad Media (2 días).",
+    "kpi": "Cero regresiones en producción y fiabilidad de grado militar para la plataforma."
+  }
+]

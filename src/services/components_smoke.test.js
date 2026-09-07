@@ -22,6 +22,7 @@ import Simulator from '../components/Simulator.jsx';
 import StrategyCompare from '../components/StrategyCompare.jsx';
 import StrategyPayoff from '../components/StrategyPayoff.jsx';
 import TransactionsTracker from '../components/TransactionsTracker.jsx';
+import Roadmap100Modal from '../components/Roadmap100Modal.jsx';
 import App from '../App.jsx';
 
 describe('Component Module Integrity Smoke Tests', () => {
@@ -48,6 +49,7 @@ describe('Component Module Integrity Smoke Tests', () => {
     { name: 'StrategyCompare', comp: StrategyCompare },
     { name: 'StrategyPayoff', comp: StrategyPayoff },
     { name: 'TransactionsTracker', comp: TransactionsTracker },
+    { name: 'Roadmap100Modal', comp: Roadmap100Modal },
     { name: 'App', comp: App }
   ];
 

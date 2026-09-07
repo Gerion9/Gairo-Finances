@@ -20,6 +20,7 @@ import IncomeStatement from './components/IncomeStatement';
 import BalanceSheet from './components/BalanceSheet';
 import Investments from './components/Investments';
 import SettingsModal from './components/SettingsModal';
+import Roadmap100Modal from './components/Roadmap100Modal';
 
 import { 
   loadFinancialData, 
@@ -57,6 +58,7 @@ export default function App() {
   const [isPricingOpen, setIsPricingOpen] = useState(false);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isRoadmapOpen, setIsRoadmapOpen] = useState(false);
 
   // Atajos de teclado globales (Ctrl+K, P para privacidad, Esc)
   useEffect(() => {
@@ -207,6 +209,8 @@ export default function App() {
       setIsSettingsOpen(true);
     } else if (action === 'openPricing') {
       setIsPricingOpen(true);
+    } else if (action === 'openRoadmap') {
+      setIsRoadmapOpen(true);
     }
   };
 
@@ -225,6 +229,7 @@ export default function App() {
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenPricing={() => setIsPricingOpen(true)}
         onOpenOnboarding={() => setIsOnboardingOpen(true)}
+        onOpenRoadmap={() => setIsRoadmapOpen(true)}
         onLogout={() => { logout(); setAuthenticated(false); }}
         financialData={financialData}
       />
@@ -415,6 +420,11 @@ export default function App() {
         onClose={() => setIsCommandPaletteOpen(false)}
         onNavigateTab={setActiveTab}
         onAction={handleCommandAction}
+      />
+
+      <Roadmap100Modal
+        isOpen={isRoadmapOpen}
+        onClose={() => setIsRoadmapOpen(false)}
       />
 
       {/* Footer */}
