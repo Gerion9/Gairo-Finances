@@ -21,6 +21,8 @@ import BalanceSheet from './components/BalanceSheet';
 import Investments from './components/Investments';
 import SettingsModal from './components/SettingsModal';
 import Roadmap100Modal from './components/Roadmap100Modal';
+import FinancialEducationHub from './components/FinancialEducationHub';
+import AnnualTaxSimulator from './components/AnnualTaxSimulator';
 
 import { 
   loadFinancialData, 
@@ -348,12 +350,27 @@ export default function App() {
           />
         )}
 
-        {/* TAB 9: ESTADO DE RESULTADOS & SAT */}
+        {/* TAB 9: RETOS, GAMIFICACIÓN & ENFRIADOR DE COMPRAS */}
+        {activeTab === 'education' && (
+          <FinancialEducationHub
+            debts={financialData.deudas}
+            cashFlow={cashFlow}
+          />
+        )}
+
+        {/* TAB 10: ESTADO DE RESULTADOS & SAT */}
         {activeTab === 'budget' && (
           <IncomeStatement
             financialData={financialData}
             onUpdateHonorarios={(hon) => setFinancialData({ ...financialData, honorarios: hon })}
             onUpdateGastos={(nec, opc) => setFinancialData({ ...financialData, gastosNecesarios: nec, gastosOpcionales: opc })}
+          />
+        )}
+
+        {/* TAB 11: DECLARACIÓN ANUAL SAT */}
+        {activeTab === 'tax-annual' && (
+          <AnnualTaxSimulator
+            financialData={financialData}
           />
         )}
 

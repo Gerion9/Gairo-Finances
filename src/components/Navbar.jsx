@@ -20,7 +20,9 @@ import {
   Eye,
   EyeOff,
   BookOpen,
-  Rocket
+  Rocket,
+  Trophy,
+  Landmark
 } from 'lucide-react';
 import { exportFinancesToExcel } from '../services/excelExport.js';
 
@@ -58,7 +60,9 @@ export default function Navbar({
     { id: 'health', label: 'Diagnóstico & Salud', icon: Activity },
     { id: 'diagnostics', label: 'Buró & Checklist', icon: BookOpen },
     { id: 'simulator', label: 'Simulador What-If', icon: Sparkles },
+    { id: 'education', label: 'Retos & Insignias', icon: Trophy },
     { id: 'budget', label: 'Resultados & SAT', icon: TrendingUp },
+    { id: 'tax-annual', label: 'Declaración Anual', icon: Landmark },
     { id: 'balance', label: 'Balance General', icon: ShieldCheck },
     { id: 'investments', label: 'Ahorro & CETES', icon: Sparkles },
     { id: 'report', label: 'Reporte PDF', icon: Printer }

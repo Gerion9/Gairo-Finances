@@ -23,6 +23,9 @@ import StrategyCompare from '../components/StrategyCompare.jsx';
 import StrategyPayoff from '../components/StrategyPayoff.jsx';
 import TransactionsTracker from '../components/TransactionsTracker.jsx';
 import Roadmap100Modal from '../components/Roadmap100Modal.jsx';
+import Skeleton from '../components/Skeleton.jsx';
+import FinancialEducationHub from '../components/FinancialEducationHub.jsx';
+import AnnualTaxSimulator from '../components/AnnualTaxSimulator.jsx';
 import App from '../App.jsx';
 
 describe('Component Module Integrity Smoke Tests', () => {
@@ -50,6 +53,9 @@ describe('Component Module Integrity Smoke Tests', () => {
     { name: 'StrategyPayoff', comp: StrategyPayoff },
     { name: 'TransactionsTracker', comp: TransactionsTracker },
     { name: 'Roadmap100Modal', comp: Roadmap100Modal },
+    { name: 'Skeleton', comp: Skeleton },
+    { name: 'FinancialEducationHub', comp: FinancialEducationHub },
+    { name: 'AnnualTaxSimulator', comp: AnnualTaxSimulator },
     { name: 'App', comp: App }
   ];
 

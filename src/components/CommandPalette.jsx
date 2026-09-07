@@ -22,7 +22,9 @@ import {
   Settings,
   Crown,
   BookOpen,
-  Rocket
+  Rocket,
+  Trophy,
+  Landmark
 } from 'lucide-react';
 
 export default function CommandPalette({ isOpen, onClose, onNavigateTab, onAction }) {
@@ -54,7 +56,9 @@ export default function CommandPalette({ isOpen, onClose, onNavigateTab, onActio
     { id: 'health', title: 'Score de Salud Financiera (0 a 100) & Bleed Rate', category: 'Diagnóstico', tab: 'health', icon: Activity },
     { id: 'diagnostics', title: 'Guía Buró de Crédito, Checklist & Carta UNE', category: 'Diagnóstico', tab: 'diagnostics', icon: ShieldCheck },
     { id: 'simulator', title: 'Simulador What-If con Control Deslizante & Confetti', category: 'Simulador', tab: 'simulator', icon: Sparkles },
+    { id: 'education', title: 'Retos de Ahorro, Insignias & Enfriador de Compras', category: 'Gamificación', tab: 'education', icon: Trophy },
     { id: 'budget', title: 'Estado de Resultados Personal & Módulo SAT CFDI', category: 'Fiscal SAT', tab: 'budget', icon: Zap },
+    { id: 'tax-annual', title: 'Simulador de Declaración Anual Personas Físicas (Abril)', category: 'Fiscal SAT', tab: 'tax-annual', icon: Landmark },
     { id: 'balance', title: 'Balance General & Patrimonio Neto (Activos - Pasivos)', category: 'Capital', tab: 'balance', icon: ShieldCheck },
     { id: 'investments', title: 'Fondo de Emergencia & Interés Compuesto CETES', category: 'Inversión', tab: 'investments', icon: TrendingUp },
     { id: 'report', title: 'Generador de Reporte Ejecutivo Imprimible / PDF', category: 'Exportación', tab: 'report', icon: Printer },

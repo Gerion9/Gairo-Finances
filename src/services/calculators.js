@@ -411,3 +411,293 @@ export function calculateResicoVsPfae(facturacionAnualSinIVA = 651549, gastosDed
     regimenMasConveniente: isrResico < isrPfae ? 'RESICO' : 'PFAE'
   };
 }
+
+
+// 14. Simulación Estocástica Monte Carlo (1,000 iteraciones)
+export function calculateMonteCarloSimulation(saldoTotal = 100000, pagoMensual = 5000, tasaMediaAnual = 35, mesesProyectados = 36) {
+  const saldo = Math.max(0, Number(saldoTotal) || 0);
+  const pago = Math.max(100, Number(pagoMensual) || 1000);
+  const tasaMedia = Math.max(0, Number(tasaMediaAnual) || 0) / 100;
+  const meses = Math.max(12, Number(mesesProyectados) || 36);
+
+  if (saldo === 0) {
+    return {
+      percentil10: 0,
+      percentil50: 0,
+      percentil90: 0,
+      mesesHastaLibertadEstimados: 0,
+      probabilidadExito: 100
+    };
+  }
+
+  const iteraciones = 1000;
+  const resultadosMeses = [];
+
+  for (let i = 0; i < iteraciones; i++) {
+    let s = saldo;
+    let m = 0;
+    while (s > 0 && m < 120) {
+      m++;
+      // Variabilidad estocástica normal (desviación estándar del 15% en tasas y gastos imprevistos)
+      const shock = (Math.random() - 0.5) * 0.15;
+      const rMes = Math.max(0, (tasaMedia + shock) / 12);
+      const interes = s * rMes;
+      s = Math.max(0, s + interes - pago);
+    }
+    resultadosMeses.push(m);
+  }
+
+  resultadosMeses.sort((a, b) => a - b);
+  const p10 = resultadosMeses[Math.floor(iteraciones * 0.10)];
+  const p50 = resultadosMeses[Math.floor(iteraciones * 0.50)];
+  const p90 = resultadosMeses[Math.floor(iteraciones * 0.90)];
+
+  return {
+    percentil10MejorCaso: p10,
+    percentil50Esperado: p50,
+    percentil90Pesimista: p90,
+    mesesHastaLibertadEstimados: p50,
+    probabilidadExito: Math.min(100, Math.round((resultadosMeses.filter(m => m <= meses).length / iteraciones) * 100))
+  };
+}
+
+// 15. Optimizador de Consolidación de Deudas
+export function calculateDebtConsolidationOptimizer(deudas = [], tasaPrestamoPersonal = 22, plazoMeses = 24) {
+  const deudasCaras = deudas.filter(d => (Number(d.tasaInteresAnual) || 0) > tasaPrestamoPersonal && (Number(d.saldo) || 0) > 0);
+  const saldoTotalConsolidar = deudasCaras.reduce((sum, d) => sum + (Number(d.saldo) || 0), 0);
+
+  if (saldoTotalConsolidar === 0) {
+    return {
+      aplicaConsolidacion: false,
+      montoConsolidar: 0,
+      cuotaNueva: 0,
+      ahorroTotalIntereses: 0,
+      mensaje: 'No tienes deudas con tasa superior al ' + tasaPrestamoPersonal + '% para consolidar.'
+    };
+  }
+
+  const r = (tasaPrestamoPersonal / 100) / 12;
+  const factor = 1 - Math.pow(1 + r, -plazoMeses);
+  const cuotaNueva = factor > 0 ? (saldoTotalConsolidar * r) / factor : (saldoTotalConsolidar / plazoMeses);
+  const totalPagadoPrestamo = cuotaNueva * plazoMeses;
+
+  // Costo en tarjetas actuales pagando el mínimo (estimado al doble del tiempo)
+  const catPromedioActual = deudasCaras.reduce((acc, d) => acc + ((Number(d.tasaInteresAnual) || 0) * (Number(d.saldo) || 0)), 0) / saldoTotalConsolidar;
+  const costoActualEstimado = saldoTotalConsolidar * (1 + (catPromedioActual / 100) * 1.5);
+  const ahorro = Math.max(0, costoActualEstimado - totalPagadoPrestamo);
+
+  return {
+    aplicaConsolidacion: true,
+    montoConsolidar: Math.round(saldoTotalConsolidar),
+    cuotaNuevaMensual: Math.round(cuotaNueva),
+    plazoMeses,
+    tasaPrestamoPersonal,
+    ahorroTotalIntereses: Math.round(ahorro),
+    deudasInvolucradas: deudasCaras.map(d => d.nombre)
+  };
+}
+
+// 16. Simulador de Estrés Cambiario (Currency Shock)
+export function calculateCurrencyShock(deudas = [], tipoCambioActual = 19.25, tasasEstrés = [22, 24, 26]) {
+  const deudasUSD = deudas.filter(d => d.moneda === 'USD' && (Number(d.saldo) || 0) > 0);
+  const saldoTotalUSD = deudasUSD.reduce((sum, d) => sum + (Number(d.saldo) || 0), 0);
+  const pagosMinimosUSD = deudasUSD.reduce((sum, d) => sum + (Number(d.pagoMinimoMensual) || 0), 0);
+
+  const escenarios = tasasEstrés.map(tc => {
+    const saldoEnMXN = saldoTotalUSD * tc;
+    const pagoMinimoMXN = pagosMinimosUSD * tc;
+    const incrementoSaldo = (saldoTotalUSD * tc) - (saldoTotalUSD * tipoCambioActual);
+
+    return {
+      tipoCambio: tc,
+      saldoMXN: Math.round(saldoEnMXN),
+      pagoMinimoMXN: Math.round(pagoMinimoMXN),
+      impactoExtraMXN: Math.round(incrementoSaldo)
+    };
+  });
+
+  return {
+    tieneDeudasUSD: saldoTotalUSD > 0,
+    saldoTotalUSD: Math.round(saldoTotalUSD),
+    saldoBaseMXN: Math.round(saldoTotalUSD * tipoCambioActual),
+    escenarios
+  };
+}
+
+// 17. Calculadora de Comisiones por Pago Tardío y Moratorios Evitados
+export function calculateLatePaymentCost(deudas = [], comisionPromedio = 550) {
+  const numTarjetas = Math.max(1, deudas.filter(d => (Number(d.saldo) || 0) > 0).length);
+  // Si se incurre en 1 olvido cada 2 meses por tarjeta
+  const costoAnualComisiones = numTarjetas * 6 * comisionPromedio * 1.16; // Con IVA
+  const interesMoratorioEstimado = deudas.reduce((sum, d) => sum + ((Number(d.saldo) || 0) * 0.05), 0); // 5% penalización
+
+  return {
+    costoAnualRiesgoOlvido: Math.round(costoAnualComisiones + interesMoratorioEstimado),
+    ahorroBlindandoFechasLimite: Math.round(costoAnualComisiones + interesMoratorioEstimado)
+  };
+}
+
+// 18. Calculadora de Costo de Oportunidad (Pagar Deuda vs Invertir en CETES)
+export function calculateOpportunityCost(catDeuda = 45, rendimientoCetes = 11, montoDisponible = 10000) {
+  const cat = Math.max(0, Number(catDeuda) || 0);
+  const inv = Math.max(0, Number(rendimientoCetes) || 0);
+  const monto = Math.max(0, Number(montoDisponible) || 0);
+
+  const ahorroPorPagarDeuda = monto * (cat / 100);
+  const gananciaPorInvertir = monto * (inv / 100);
+  const diferenciaNeta = Math.abs(ahorroPorPagarDeuda - gananciaPorInvertir);
+
+  return {
+    ahorroPorPagarDeuda: Math.round(ahorroPorPagarDeuda),
+    gananciaPorInvertir: Math.round(gananciaPorInvertir),
+    diferenciaNeta: Math.round(diferenciaNeta),
+    recomendacion: cat > inv ? 'PAGAR_DEUDA' : 'INVERTIR_CETES',
+    mensaje: cat > inv 
+      ? `Conviene amortizar tu deuda: Ahorras $${Math.round(diferenciaNeta)} MXN más de lo que ganarías invirtiendo.`
+      : `Conviene invertir: La inversión genera $${Math.round(diferenciaNeta)} MXN más de lo que cuesta el crédito.`
+  };
+}
+
+// 19. Detector de "Meses Mágicos" (Meses con 3 Quincenas)
+export function detectMagicMonths(year = new Date().getFullYear()) {
+  const magicMonths = [];
+  const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+  // Para trabajadores que cobran en días 15 y último, o cada 14 días (26 quincenas al año)
+  // Siempre hay 2 meses con 3 pagos en esquemas catorcenales/quincenales
+  for (let m = 0; m < 12; m++) {
+    const daysInMonth = new Date(year, m + 1, 0).getDate();
+    if (daysInMonth === 31 && (m === 4 || m === 9)) {
+      magicMonths.push({
+        mesIndex: m,
+        mesNombre: monthNames[m],
+        descripcion: 'Mes con 3 quincenas: ¡Destina el 100% de la tercera quincena a liquidación express!'
+      });
+    }
+  }
+
+  return magicMonths.length > 0 ? magicMonths : [
+    { mesIndex: 4, mesNombre: 'Mayo', descripcion: 'Mes de alta liquidez: Inyecta el excedente a tu tarjeta más tóxica.' },
+    { mesIndex: 9, mesNombre: 'Octubre', descripcion: 'Mes de 3 pagos: Liquidación express recomendada.' }
+  ];
+}
+
+// 20. El "Truco de los 50 Días de Crédito Gratuito" con Tarjeta de Crédito
+export function calculate50DaysCreditAdvantage(diaCorte = 10, diaPagoLimite = 30, diaCompra = new Date().getDate()) {
+  let diasDeCreditoGratis = 0;
+  if (diaCompra > diaCorte) {
+    const diasRestantesMes = 30 - diaCompra;
+    diasDeCreditoGratis = diasRestantesMes + diaCorte + (diaPagoLimite - diaCorte);
+  } else {
+    diasDeCreditoGratis = diaPagoLimite - diaCompra;
+  }
+
+  diasDeCreditoGratis = Math.min(52, Math.max(15, diasDeCreditoGratis));
+
+  return {
+    diasDeCreditoGratis,
+    esMomentoOptimo: diaCompra === diaCorte + 1 || diaCompra === diaCorte + 2,
+    consejo: diasDeCreditoGratis >= 45 
+      ? '¡Excelente momento para comprar! Tienes hasta ' + diasDeCreditoGratis + ' días de financiamiento al 0% de interés.'
+      : 'Atención: Tu corte está próximo. Tendrás solo ' + diasDeCreditoGratis + ' días para liquidar esta compra.'
+  };
+}
+
+// 21. Simulador de Aceleración por Venta de Activos Ociosos
+export function calculateAssetSaleInjection(deudas = [], valorVentaEstimado = 5000) {
+  const deudasConInteres = deudas.filter(d => (Number(d.saldo) || 0) > 0 && (Number(d.tasaInteresAnual) || 0) > 0);
+  const deudaMasToxica = deudasConInteres.sort((a, b) => (Number(b.tasaInteresAnual) || 0) - (Number(a.tasaInteresAnual) || 0))[0];
+
+  if (!deudaMasToxica) {
+    return {
+      ahorroTotal: 0,
+      semanasAhorradas: 0,
+      mensaje: '¡No tienes deudas con intereses para aplicar la inyección!'
+    };
+  }
+
+  const saldo = Number(deudaMasToxica.saldo);
+  const tasa = (Number(deudaMasToxica.tasaInteresAnual) || 40) / 100;
+  const inyeccion = Math.min(saldo, Number(valorVentaEstimado) || 0);
+
+  // Ahorro en intereses compuesto a 1 año
+  const ahorroInteres = inyeccion * tasa;
+  const semanasAhorradas = Math.round((inyeccion / (Number(deudaMasToxica.pagoMinimoMensual) || 1500)) * 4.3);
+
+  return {
+    deudaBeneficiada: deudaMasToxica.nombre,
+    montoInyectado: Math.round(inyeccion),
+    ahorroInteresesEstimado: Math.round(ahorroInteres),
+    semanasDeVidaGanadas: semanasAhorradas
+  };
+}
+
+// 22. Calculadora de Prestaciones Laborales (Aguinaldo y Vacaciones Dignas LFT)
+export function calculateLaborPrestaciones(sueldoMensualBruto = 25000, anosAntiguedad = 2) {
+  const sueldo = Math.max(0, Number(sueldoMensualBruto) || 0);
+  const antiguedad = Math.max(1, Number(anosAntiguedad) || 1);
+  const salarioDiario = sueldo / 30;
+
+  // Aguinaldo mínimo legal: 15 días
+  const aguinaldo = salarioDiario * 15;
+
+  // Vacaciones Dignas reforma LFT: 12 días año 1, 14 año 2, 16 año 3, 18 año 4, 20 año 5...
+  const diasVacaciones = Math.min(32, 12 + ((antiguedad - 1) * 2));
+  const primaVacacional = diasVacaciones * salarioDiario * 0.25;
+
+  return {
+    salarioDiario: Math.round(salarioDiario),
+    aguinaldoLegalMinimo: Math.round(aguinaldo),
+    diasVacaciones,
+    primaVacacionalMinima: Math.round(primaVacacional),
+    totalPrestacionesAnuales: Math.round(aguinaldo + primaVacacional)
+  };
+}
+
+// 23. Calculadora de Liquidación y Finiquito (Art. 48/50 LFT)
+export function calculateLaborLiquidation(sueldoMensualBruto = 30000, anosAntiguedad = 3, despidoInjustificado = true) {
+  const sueldo = Math.max(0, Number(sueldoMensualBruto) || 0);
+  const anos = Math.max(0.5, Number(anosAntiguedad) || 1);
+  const salarioDiario = sueldo / 30;
+
+  // 3 meses constitucionales
+  const tresMeses = despidoInjustificado ? sueldo * 3 : 0;
+  // 20 días por año de servicio
+  const veinteDiasPorAno = despidoInjustificado ? (20 * salarioDiario * anos) : 0;
+  // Prima de antigüedad: 12 días por año (tope 2 salarios mínimos ~$500/día)
+  const salarioDiarioTopado = Math.min(salarioDiario, 500);
+  const primaAntiguedad = 12 * salarioDiarioTopado * anos;
+
+  // Finiquito proporcional (Aguinaldo + Vacaciones proporcionales)
+  const finiquitoProporcional = (salarioDiario * 15 * 0.5) + (salarioDiario * 14 * 0.25 * 0.5);
+  const totalCompensacion = tresMeses + veinteDiasPorAno + primaAntiguedad + finiquitoProporcional;
+
+  return {
+    tresMesesSalario: Math.round(tresMeses),
+    veinteDiasPorAno: Math.round(veinteDiasPorAno),
+    primaAntiguedad: Math.round(primaAntiguedad),
+    finiquitoProporcional: Math.round(finiquitoProporcional),
+    totalLiquidacionEstimada: Math.round(totalCompensacion)
+  };
+}
+
+// 24. Optimizador de Aportaciones al AFORE / PPR para Maximizar Devolución SAT
+export function calculatePPRTaxMaximizer(ingresoAnualBruto = 650000, aportacionPlaneada = 40000) {
+  const ingreso = Math.max(0, Number(ingresoAnualBruto) || 0);
+  const aportacion = Math.max(0, Number(aportacionPlaneada) || 0);
+
+  // Tope deducible: 10% del ingreso o 5 UMAs anuales (~$198,000)
+  const topeDeducible = Math.min(ingreso * 0.10, 198031);
+  const aportacionEfectivaDeducible = Math.min(aportacion, topeDeducible);
+
+  // Tasa marginal estimada (30% para ingresos medios-altos)
+  const tasaMarginal = ingreso > 500000 ? 0.30 : 0.20;
+  const devolucionExtraEnAbril = aportacionEfectivaDeducible * tasaMarginal;
+
+  return {
+    topeMaximoDeducible: Math.round(topeDeducible),
+    aportacionConsiderada: Math.round(aportacionEfectivaDeducible),
+    devolucionEstimadaSAT: Math.round(devolucionExtraEnAbril),
+    rendimientoFiscalInmediato: Math.round(tasaMarginal * 100)
+  };
+}
