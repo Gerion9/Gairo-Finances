@@ -1,0 +1,17 @@
+{
+  "short_name": "Sifran",
+  "name": "Sifran · Finanzas personales",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#080D14",
+  "theme_color": "#080D14",
+  "display": "standalone",
+  "orientation": "portrait"
+}

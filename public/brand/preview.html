@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sifran · Identidad visual</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #080d14; color: #f4f7fb; font-family: system-ui, sans-serif; }
+    main { max-width: 1060px; margin: 0 auto; padding: 56px 24px; }
+    .eyebrow { color: #7de4bf; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { font-size: clamp(30px, 5vw, 48px); letter-spacing: -.04em; margin: 16px 0; }
+    p { color: #a6b4c5; line-height: 1.65; max-width: 680px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 32px 0; }
+    figure { margin: 0; min-width: 0; border: 1px solid #253247; border-radius: 24px; overflow: hidden; background: #0c131e; }
+    .stage { min-height: 240px; display: grid; place-items: center; padding: 32px; }
+    .stage img { width: 100%; max-width: 310px; height: auto; }
+    .paper { background: #f4f7fb; }
+    figcaption { padding: 18px 24px; border-top: 1px solid #253247; display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 13px; }
+    a { color: #7de4bf; text-underline-offset: 4px; }
+    a:focus-visible { outline: 2px solid #7de4bf; outline-offset: 5px; border-radius: 2px; }
+    .scales { display: flex; align-items: end; flex-wrap: wrap; gap: 38px; padding: 32px; }
+    .scales div { display: grid; justify-items: center; gap: 14px; color: #a6b4c5; font-size: 12px; }
+    .scales img { display: block; }
+    .note { font-size: 13px; }
+    @media (max-width: 640px) { main { padding: 32px 20px; } .grid { grid-template-columns: 1fr; } .stage { min-height: 200px; } .scales { gap: 24px; padding: 24px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <span class="eyebrow">Identidad visual · Sifran</span>
+    <h1>Una nueva perspectiva, desde cero.</h1>
+    <p><strong>Sifran</strong>, pronunciado SÍ-fran, es una marca creada desde la raíz árabe <em>ṣifr</em>. Dos trazos opuestos forman un cero: entradas, salidas y el espacio para entender tus cifras.</p>
+    <div class="grid">
+      <figure><div class="stage"><img src="/brand/sifran-logo.svg" alt="Logotipo Sifran claro sobre fondo oscuro" width="229" height="80" /></div><figcaption><span>Para fondos oscuros</span><a href="/brand/sifran-logo.svg" download>Descargar SVG</a></figcaption></figure>
+      <figure><div class="stage paper"><img src="/brand/sifran-logo-dark.svg" alt="Logotipo Sifran oscuro sobre fondo claro" width="229" height="80" /></div><figcaption><span>Para fondos claros</span><a href="/brand/sifran-logo-dark.svg" download>Descargar SVG</a></figcaption></figure>
+    </div>
+    <figure>
+      <div class="scales">
+        <div><img src="/brand/sifran-mark.svg" alt="Isotipo a 16 píxeles" width="16" height="16" /><span>16 px</span></div>
+        <div><img src="/brand/sifran-mark.svg" alt="Isotipo a 24 píxeles" width="24" height="24" /><span>24 px</span></div>
+        <div><img src="/brand/sifran-mark.svg" alt="Isotipo a 32 píxeles" width="32" height="32" /><span>32 px</span></div>
+        <div><img src="/brand/sifran-mark.svg" alt="Isotipo a 64 píxeles" width="64" height="64" /><span>64 px</span></div>
+        <div><img src="/icon.svg" alt="Icono de aplicación Sifran" width="80" height="80" /><span>App</span></div>
+      </div>
+      <figcaption><a href="/brand/sifran-mark.svg" download>Isotipo SVG</a><a href="/brand/sifran-logo-mono.svg" download>Versión monocroma</a></figcaption>
+    </figure>
+    <p class="note">Vectores editables, fondo transparente y tipografía convertida a trazos. Sin imágenes incrustadas ni fuentes externas.</p>
+    <p class="note">La historia del nombre reconoce el desarrollo del cero en India y su transmisión a través de la matemática árabe. <a href="https://mathshistory.st-andrews.ac.uk/HistTopics/Zero/">Leer la referencia histórica de St Andrews</a>.</p>
+    <p class="note"><a href="/">Volver a Sifran</a></p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Sifran</title>
+  <desc id="desc">Cero formado por dos trazos opuestos que evocan entradas y salidas.</desc>
+  <path d="M12 25v-2c0-9 8-15 20-15s20 6 20 15v2H36 M52 39v2c0 9-8 15-20 15S12 50 12 41v-2h16" fill="none" stroke="#7DE4BF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
