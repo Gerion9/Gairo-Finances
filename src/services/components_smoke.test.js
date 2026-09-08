@@ -1,4 +1,7 @@
 import { describe, it, expect } from 'vitest';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { emptyFinancialData } from './accountData.js';
 
 import AdvancedDiagnosticsHub from '../components/AdvancedDiagnosticsHub.jsx';
 import BalanceSheet from '../components/BalanceSheet.jsx';
@@ -64,5 +67,47 @@ describe('Component Module Integrity Smoke Tests', () => {
       expect(comp).toBeDefined();
       expect(typeof comp).toBe('function');
     });
+  });
+});
+
+describe('Financial calculator account defaults', () => {
+  const inputValues = (component, props) => {
+    const markup = renderToStaticMarkup(createElement(component, props));
+    return [...markup.matchAll(/<input\b[^>]*\btype="number"[^>]*>/g)]
+      .map(match => Number(match[0].match(/\bvalue="([^"]*)"/)?.[1]));
+  };
+
+  it.each(['gairo', 'ricardo'])('starts %s tax scenarios without inherited personal amounts', id => {
+    const financialData = emptyFinancialData(id);
+    expect(inputValues(AnnualTaxSimulator, { financialData })).toEqual([0, 0, 0]);
+    expect(inputValues(FinancialCalculatorsHub, { financialData, initialCalculator: 'resico' })).toEqual([0, 0]);
+  });
+
+  it('initializes annual income and withholding from the active account fields', () => {
+    const financialData = emptyFinancialData('ricardo');
+    financialData.honorarios.importeFacturado = 1000;
+    financialData.honorarios.retencionIsrTasa = 0.10;
+    expect(inputValues(AnnualTaxSimulator, { financialData })).toEqual([12000, 0, 1200]);
+    expect(inputValues(FinancialCalculatorsHub, { financialData, initialCalculator: 'resico' })).toEqual([12000, 0]);
+  });
+
+  it('initializes the budget scenario from recorded account values', () => {
+    const financialData = emptyFinancialData('ricardo');
+    financialData.honorarios.otrosIngresos = 1000;
+    financialData.gastosNecesarios = [{ monto: 50 }];
+    financialData.gastosOpcionales = [{ monto: 25 }];
+    financialData.deudas = [{ saldo: 100, pagoMinimo: 10, moneda: 'MXN' }];
+    expect(inputValues(FinancialCalculatorsHub, { financialData, initialCalculator: 'rule503020' })).toEqual([1000, 50, 25, 10]);
+  });
+
+  it('asks for a retirement scenario instead of presenting the no-projection sentinel as a date', () => {
+    const financialData = emptyFinancialData('ricardo');
+    const empty = renderToStaticMarkup(createElement(FinancialCalculatorsHub, { financialData, initialCalculator: 'fire' }));
+    expect(empty).toContain('Completa los datos del escenario');
+    expect(empty).not.toMatch(/99(?:<!-- -->)? años/);
+    financialData.gastosNecesarios = [{ monto: 100 }];
+    const withoutContributions = renderToStaticMarkup(createElement(FinancialCalculatorsHub, { financialData, initialCalculator: 'fire' }));
+    expect(withoutContributions).toContain('Sin proyección con estos aportes y rendimiento');
+    expect(withoutContributions).not.toMatch(/99(?:<!-- -->)? años/);
   });
 });

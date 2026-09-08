@@ -385,7 +385,7 @@ export function calculatePersonalTaxDeductions(ingresoAnualBruto, gastosMedicosD
 }
 
 // 13. Comparativa Fiscal: RESICO vs PFAE
-export function calculateResicoVsPfae(facturacionAnualSinIVA = 651549, gastosDeduciblesAnuales = 250000) {
+export function calculateResicoVsPfae(facturacionAnualSinIVA = 0, gastosDeduciblesAnuales = 0) {
   const facturacion = Math.max(0, Number(facturacionAnualSinIVA) || 0);
   const gastos = Math.max(0, Number(gastosDeduciblesAnuales) || 0);
 

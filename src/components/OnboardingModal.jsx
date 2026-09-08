@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { X, ArrowRight, Check, TrendingUp, ShieldAlert, Zap, Sparkles } from 'lucide-react';
+import { X, ArrowRight, Check, ShieldAlert, Zap, Sparkles } from 'lucide-react';
+import { BrandMark } from './Brand';
 
 export default function OnboardingModal({ isOpen, onClose }) {
   const [step, setStep] = useState(1);
@@ -9,8 +10,8 @@ export default function OnboardingModal({ isOpen, onClose }) {
   const steps = [
     {
       step: 1,
-      icon: TrendingUp,
-      title: '¡Bienvenido a Gairo Finances!',
+      icon: BrandMark,
+      title: '¡Bienvenido a Sifran!',
       subtitle: 'Tu plataforma inteligente de aceleración de pagos y control fiscal.',
       desc: 'Esta herramienta fue creada tomando como base tus finanzas reales para devolverte el control de tu dinero, evitar penalizaciones costosas y guiarte mes a mes hasta liquidar cada centavo.'
     },

@@ -8,7 +8,7 @@ export function exportFinancesToExcel(data, exchangeRate) {
   // 1. Hoja: Parámetros Fiscales y CFDI
   const fiscal = calculateFiscalOverview(data.honorarios);
   const parametrosData = [
-    ['FINANZAS PERSONALES · GAIRO FINANCES', ''],
+    ['FINANZAS PERSONALES · SIFRAN', ''],
     ['Tipo de cambio USD/MXN aplicado:', exchangeRate],
     ['Fecha de exportación:', new Date().toLocaleString('es-MX')],
     ['', ''],
@@ -87,5 +87,5 @@ export function exportFinancesToExcel(data, exchangeRate) {
   XLSX.utils.book_append_sheet(wb, wsBalance, 'Estructura de Capital');
 
   // Descargar archivo
-  XLSX.writeFile(wb, `Gairo_Finanzas_${new Date().toISOString().split('T')[0]}.xlsx`);
+  XLSX.writeFile(wb, `Sifran_Finanzas_${new Date().toISOString().split('T')[0]}.xlsx`);
 }

@@ -25,7 +25,7 @@ import {
   compareAllStrategies 
 } from './financeEngine.js';
 import { convertCurrency, formatMoney, DEFAULT_USD_MXN } from './exchangeRate.js';
-import { INITIAL_DATA } from './storage.js';
+import { INITIAL_DATA } from './fixtures/legacyData.js';
 
 describe('1. Calculadoras Financieras Avanzadas - Edge Cases & Math Guards', () => {
 
@@ -218,14 +218,14 @@ describe('1. Calculadoras Financieras Avanzadas - Edge Cases & Math Guards', () 
 
   describe('calculatePersonalTaxDeductions & RESICO', () => {
     it('calculates SAT deduction ceiling (15% limit)', () => {
-      const res = calculatePersonalTaxDeductions(651549, 20000, 30000, 0);
+      const res = calculatePersonalTaxDeductions(480000, 20000, 30000, 0);
       expect(res.totalDeducciones).toBe(50000);
       expect(res.devolucionEstimadaSAT).toBe(12500);
     });
 
     it('compares RESICO vs PFAE correctly', () => {
-      const res = calculateResicoVsPfae(651549, 250000);
-      expect(res.facturacionAnual).toBe(651549);
+      const res = calculateResicoVsPfae(480000, 250000);
+      expect(res.facturacionAnual).toBe(480000);
       expect(res.isrResico).toBeLessThan(res.isrPfae);
       expect(res.regimenMasConveniente).toBe('RESICO');
       expect(res.ahorroEstimadoConResico).toBeGreaterThan(0);
@@ -233,46 +233,46 @@ describe('1. Calculadoras Financieras Avanzadas - Edge Cases & Math Guards', () 
   });
 });
 
-describe('2. Motor Financiero Integral (Finanzas Personales.xlsx Precision)', () => {
+describe('2. Motor Financiero Integral (Synthetic Calculation Cases)', () => {
 
-  it('matches Excel CFDI Honorarios and SAT provision to the exact cent', () => {
+  it('calculates synthetic invoice amounts and provisions to the exact cent', () => {
     const honorarios = {
-      importeFacturado: 54295.79,
+      importeFacturado: 40000,
       tasaIva: 0.16,
       retencionIsrTasa: 0.10,
       retencionIvaFraccion: 0.6667,
-      tasaIsrDeclaracion: 0.1725,
-      otrosIngresos: 1446.00
+      tasaIsrDeclaracion: 0.20,
+      otrosIngresos: 1000
     };
 
     const fiscal = calculateFiscalOverview(honorarios);
 
-    // Exact cent assertions from Excel
-    expect(fiscal.importeFacturado).toBe(54295.79);
-    expect(fiscal.ivaCobrado).toBeCloseTo(8687.33, 2);
-    expect(fiscal.subtotalCfdi).toBeCloseTo(62983.12, 2);
-    expect(fiscal.retencionIsr).toBeCloseTo(5429.58, 2);
-    expect(fiscal.retencionIva).toBeCloseTo(5791.84, 2);
-    expect(fiscal.netoEnCuenta).toBeCloseTo(51761.70, 2);
+    // Independent arithmetic: 40,000 * 16% VAT and 6,400 * 0.6667 withheld VAT.
+    expect(fiscal.importeFacturado).toBe(40000);
+    expect(fiscal.ivaCobrado).toBeCloseTo(6400, 2);
+    expect(fiscal.subtotalCfdi).toBeCloseTo(46400, 2);
+    expect(fiscal.retencionIsr).toBeCloseTo(4000, 2);
+    expect(fiscal.retencionIva).toBeCloseTo(4266.88, 2);
+    expect(fiscal.netoEnCuenta).toBeCloseTo(38133.12, 2);
 
     // SAT monthly provision
-    expect(fiscal.isrACargo).toBeCloseTo(3936.44, 2);
-    expect(fiscal.ivaACargo).toBeCloseTo(2895.49, 2);
-    expect(fiscal.totalImpuestosSat).toBeCloseTo(6831.93, 2);
+    expect(fiscal.isrACargo).toBeCloseTo(4000, 2);
+    expect(fiscal.ivaACargo).toBeCloseTo(2133.12, 2);
+    expect(fiscal.totalImpuestosSat).toBeCloseTo(6133.12, 2);
   });
 
   it('calculates full cash flow, minimum debt payments and free cashflow', () => {
     const cashFlow = calculateCashFlow(INITIAL_DATA, 19.25);
-    expect(cashFlow.totalCostodeVida).toBe(27000);
-    expect(cashFlow.totalGastosOpcionales).toBe(5500);
-    expect(cashFlow.totalPagosMinimosMXN).toBeGreaterThan(8000);
-    expect(cashFlow.flujoLibreReal).toBeGreaterThan(0);
+    expect(cashFlow.totalCostodeVida).toBe(12000);
+    expect(cashFlow.totalGastosOpcionales).toBe(2000);
+    expect(cashFlow.totalPagosMinimosMXN).toBe(3262);
+    expect(cashFlow.flujoLibreReal).toBeCloseTo(15738, 2);
   });
 
   it('calculates accurate Interest Bleed Rate (daily, monthly, annual)', () => {
     const bleed = calculateInterestBleed(INITIAL_DATA.deudas, 19.25);
-    expect(bleed.interesMensual).toBeGreaterThan(4000);
-    expect(bleed.interesDiario).toBeGreaterThan(100);
+    expect(bleed.interesMensual).toBe(1113);
+    expect(bleed.interesDiario).toBe(37);
     expect(bleed.interesAnual).toBe(bleed.interesMensual * 12);
   });
 
@@ -288,19 +288,19 @@ describe('2. Motor Financiero Integral (Finanzas Personales.xlsx Precision)', ()
     const { quincena1, quincena2 } = calculateFortnightlyFlow(INITIAL_DATA, 19.25);
     expect(quincena1.totalSalidas).toBeGreaterThan(0);
     expect(quincena2.totalSalidas).toBeGreaterThan(0);
-    expect(quincena1.totalSalidas + quincena2.totalSalidas).toBeGreaterThan(30000);
+    expect(quincena1.totalSalidas + quincena2.totalSalidas).toBe(17262);
   });
 
   it('correctly detects promo deadlines and calculates required quota', () => {
     const promos = analyzePromoDeadlines(INITIAL_DATA.deudas, 19.25);
     expect(promos.length).toBeGreaterThan(0);
-    const macbook = promos.find(p => p.id === 'd_promo_msi');
-    expect(macbook).toBeDefined();
-    expect(macbook.cuotaSugeridaOriginal).toBeGreaterThan(0);
-    expect(['CRITICA', 'ALTA', 'MEDIA', 'NORMAL', 'VENCIDA']).toContain(macbook.urgencia);
+    const promotion = promos.find(p => p.id === 'debt-promo');
+    expect(promotion).toBeDefined();
+    expect(promotion.cuotaSugeridaOriginal).toBeGreaterThan(0);
+    expect(['CRITICA', 'ALTA', 'MEDIA', 'NORMAL', 'VENCIDA']).toContain(promotion.urgencia);
   });
 
-  it('simulates Gairo Custom strategy, Avalanche, Snowball, and Minimums without errors', () => {
+  it('simulates promotion-first, Avalanche, Snowball, and Minimums without errors', () => {
     const comparison = compareAllStrategies(INITIAL_DATA.deudas, 2500, 19.25);
     expect(comparison.gairoCustom.monthsToDebtFree).toBeGreaterThan(0);
     expect(comparison.avalanche.monthsToDebtFree).toBeGreaterThan(0);
@@ -336,7 +336,7 @@ describe('3. Multi-Divisa & Exchange Rate Operations', () => {
 
 describe('4. Almacenamiento & Integridad de Datos (storage.js)', () => {
 
-  it('INITIAL_DATA contains all required sections from Excel', () => {
+  it('the synthetic legacy fixture covers every backup section', () => {
     expect(INITIAL_DATA.honorarios).toBeDefined();
     expect(INITIAL_DATA.gastosNecesarios.length).toBeGreaterThan(0);
     expect(INITIAL_DATA.gastosOpcionales.length).toBeGreaterThan(0);

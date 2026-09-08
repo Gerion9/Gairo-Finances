@@ -1,64 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Trophy, Flame, Award, Clock, HeartHandshake, 
-  Sparkles, CheckCircle, AlertTriangle, ShieldCheck, 
-  Coins, Download, ArrowRight, BookOpen, Share2
-} from 'lucide-react';
+import React, { useState } from 'react';
+import { CreditCard, Flame, Clock, Coins, ArrowRight } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { playVictorySound, playSuccessSound } from '../services/soundEffects.js';
 
-export default function FinancialEducationHub({ debts = [], cashFlow = {}, onAddExtraPayment }) {
+export default function FinancialEducationHub({ debts = [], education = { weeks: [], impulses: [] }, onUpdateEducation = () => {} }) {
   const [activeTab, setActiveTab] = useState('gamification');
   
-  // 52-Week Challenge state
-  const [weeksChecked, setWeeksChecked] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('gairo_52_weeks') || '[]');
-    } catch {
-      return [];
-    }
-  });
-
-  // 72h Impulse Cooling state
-  const [impulseItems, setImpulseItems] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('gairo_impulse_cooling') || '[]');
-    } catch {
-      return [];
-    }
-  });
+  const weeksChecked = education.weeks || [];
+  const impulseItems = education.impulses || [];
   const [impulseName, setImpulseName] = useState('');
   const [impulseAmount, setImpulseAmount] = useState('');
+  const [impulseError, setImpulseError] = useState('');
+  const challengeStorageError = '';
 
-  // Daily Streak
-  const streakDays = 14;
-
-  const totalSaved52Weeks = weeksChecked.reduce((sum, w) => sum + (w * 20), 0);
+  const completedWeeks = weeksChecked.length;
+  const challengeProgress = Math.round((completedWeeks / 52) * 100);
+  const totalRegistered52Weeks = weeksChecked.reduce((sum, week) => sum + (week * 20), 0);
 
   const toggleWeek = (weekNum) => {
-    setWeeksChecked(prev => {
-      const next = prev.includes(weekNum) ? prev.filter(w => w !== weekNum) : [...prev, weekNum];
-      try { localStorage.setItem('gairo_52_weeks', JSON.stringify(next)); } catch {}
-      if (!prev.includes(weekNum)) {
-        playSuccessSound();
-      }
-      return next;
-    });
+    const wasChecked = weeksChecked.includes(weekNum);
+    const next = wasChecked ? weeksChecked.filter(week => week !== weekNum) : [...weeksChecked, weekNum];
+    onUpdateEducation({ ...education, weeks: next });
+    if (!wasChecked) playSuccessSound();
   };
 
   const handleAddImpulse = (e) => {
     e.preventDefault();
-    if (!impulseName || !impulseAmount) return;
+    const name = impulseName.trim();
+    const amount = Number(impulseAmount);
+    if (!name || name.length > 200 || !impulseAmount.trim() || !Number.isFinite(amount) || amount < 0 || amount > 1e14) {
+      setImpulseError('Escribe un nombre de hasta 200 caracteres y un precio válido igual o mayor que cero.');
+      return;
+    }
+    if (impulseItems.length >= 1000) { setImpulseError('Resuelve una compra pendiente antes de añadir otra.'); return; }
+    const createdAt = Date.now();
     const newItem = {
-      id: Date.now(),
-      name: impulseName,
-      amount: Number(impulseAmount),
-      createdAt: Date.now(),
-      expiresAt: Date.now() + (72 * 60 * 60 * 1000)
+      id: crypto.randomUUID(), name, amount, createdAt,
+      expiresAt: createdAt + (72 * 60 * 60 * 1000)
     };
     const updated = [newItem, ...impulseItems];
-    setImpulseItems(updated);
-    try { localStorage.setItem('gairo_impulse_cooling', JSON.stringify(updated)); } catch {}
+    try { onUpdateEducation({ ...education, impulses: updated }); }
+    catch (error) { setImpulseError(error.message); return; }
+    setImpulseError('');
     setImpulseName('');
     setImpulseAmount('');
     playSuccessSound();
@@ -67,85 +50,69 @@ export default function FinancialEducationHub({ debts = [], cashFlow = {}, onAdd
   const handleResolveImpulse = (id, bought) => {
     if (!bought) {
       playVictorySound();
-      confetti({ particleCount: 60, spread: 60 });
+      if (!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) {
+        confetti({ particleCount: 60, spread: 60, disableForReducedMotion: true });
+      }
     }
     const updated = impulseItems.filter(i => i.id !== id);
-    setImpulseItems(updated);
-    try { localStorage.setItem('gairo_impulse_cooling', JSON.stringify(updated)); } catch {}
+    onUpdateEducation({ ...education, impulses: updated });
   };
 
-  // Level calculation (Level 1 to 10)
-  const totalDebt = debts.reduce((sum, d) => sum + (Number(d.saldo) || 0), 0);
-  let currentLevel = 1;
-  let levelTitle = "Nivel 1: Enfoque en Rescate";
-  if (totalDebt === 0) {
-    currentLevel = 10;
-    levelTitle = "Nivel 10: Libertad Financiera Absoluta (FIRE)";
-  } else if (totalDebt < 10000) {
-    currentLevel = 8;
-    levelTitle = "Nivel 8: A Punto de la Libertad";
-  } else if (totalDebt < 30000) {
-    currentLevel = 6;
-    levelTitle = "Nivel 6: Control Acelerado";
-  } else if (totalDebt < 80000) {
-    currentLevel = 4;
-    levelTitle = "Nivel 4: Rompiendo Inercia";
-  } else {
-    currentLevel = 2;
-    levelTitle = "Nivel 2: Diagnóstico Inicial";
-  }
+  // Count recorded balances without summing unlike currencies or inferring financial health.
+  const debtRecords = Array.isArray(debts) ? debts : [];
+  const validBalances = debtRecords.filter(debt =>
+    (typeof debt?.saldo === 'number' || (typeof debt?.saldo === 'string' && debt.saldo.trim() !== ''))
+    && Number.isFinite(Number(debt.saldo)) && Number(debt.saldo) >= 0);
+  const debtsWithBalance = validBalances.filter(debt => Number(debt.saldo) > 0).length;
+  const missingBalances = debtRecords.length - validBalances.length;
 
   return (
     <div className="space-y-6">
       
-      {/* Top Banner: Level & Streak */}
+      {/* Metrics derived from recorded debts and manually checked challenge weeks. */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Level */}
+        {/* Recorded debt count */}
         <div className="p-5 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/40 border border-indigo-500/30 rounded-2xl shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Tu Nivel Financiero</span>
-            <Trophy className="w-5 h-5 text-amber-400" />
+            <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Deudas con saldo registrado</span>
+            <CreditCard className="w-5 h-5 text-indigo-300" aria-hidden="true" />
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">{currentLevel}</span>
-            <span className="text-xs text-slate-400">/ 10</span>
+            <span className="text-3xl font-black text-white">{debtsWithBalance}</span>
+            <span className="text-xs text-slate-400">con saldo positivo</span>
           </div>
-          <p className="text-sm font-bold text-indigo-300 mt-1">{levelTitle}</p>
-          <div className="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
-            <div className="bg-gradient-to-r from-indigo-500 to-emerald-400 h-full rounded-full transition-all duration-500" style={{ width: `${currentLevel * 10}%` }} />
-          </div>
+          <p className="text-sm text-slate-300 mt-1">{debtRecords.length} deudas en tu registro.</p>
+          <p className="text-xs text-slate-400 mt-3">{missingBalances > 0 ? `${missingBalances} sin un saldo válido para este conteo.` : 'Conteo basado en los saldos capturados.'}</p>
         </div>
 
-        {/* Streak */}
+        {/* Manual challenge progress */}
         <div className="p-5 bg-gradient-to-br from-slate-900 via-slate-900 to-amber-950/40 border border-amber-500/30 rounded-2xl shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Racha de Disciplina</span>
-            <Flame className="w-5 h-5 text-amber-500 animate-bounce" />
+            <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Tu avance en el reto</span>
+            <Flame className="w-5 h-5 text-amber-400" aria-hidden="true" />
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">{streakDays}</span>
-            <span className="text-xs text-slate-400">días seguidos</span>
+            <span className="text-3xl font-black text-white">{completedWeeks}</span>
+            <span className="text-xs text-slate-400">de 52 semanas marcadas</span>
           </div>
-          <p className="text-sm text-slate-300 mt-1">¡Mantén el fuego encendido revisando tu presupuesto!</p>
-          <div className="flex gap-1.5 mt-3">
-            {[...Array(7)].map((_, i) => (
-              <div key={i} className="flex-1 h-2 rounded-full bg-amber-500 shadow-sm" />
-            ))}
+          <p className="text-xs text-slate-400 mt-2">Registro manual. No indica semanas consecutivas.</p>
+          <div className="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden" role="progressbar" aria-label="Semanas marcadas en el reto" aria-valuemin={0} aria-valuemax={52} aria-valuenow={completedWeeks}>
+            <div className="bg-amber-400 h-full rounded-full transition-all duration-200" style={{ width: `${challengeProgress}%` }} />
           </div>
         </div>
 
         {/* 52-Week Total */}
         <div className="p-5 bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/40 border border-emerald-500/30 rounded-2xl shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Reto 52 Semanas</span>
+            <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Ahorro marcado en el reto</span>
             <Coins className="w-5 h-5 text-emerald-400" />
           </div>
           <div className="mt-2">
-            <span className="text-3xl font-black text-emerald-400">${totalSaved52Weeks.toLocaleString('es-MX')}</span>
-            <span className="text-xs text-slate-400 ml-1">MXN acumulados</span>
+            <span className="text-3xl font-black text-emerald-400 sensitive-value">${totalRegistered52Weeks.toLocaleString('es-MX')}</span>
+            <span className="text-xs text-slate-400 ml-1">MXN según tu registro</span>
           </div>
           <p className="text-xs text-slate-300 mt-1">
-            {weeksChecked.length} de 52 semanas completadas ({((weeksChecked.length / 52) * 100).toFixed(0)}%)
+            Importe calculado con las semanas marcadas; sin verificación bancaria.
           </p>
           <button
             onClick={() => setActiveTab('challenge52')}
@@ -156,6 +123,7 @@ export default function FinancialEducationHub({ debts = [], cashFlow = {}, onAdd
           </button>
         </div>
       </div>
+      {challengeStorageError && <p role="alert" className="text-sm text-amber-300">{challengeStorageError}</p>}
 
       {/* Tabs */}
       <div className="flex gap-2 border-b border-slate-800 pb-2 overflow-x-auto">
@@ -165,7 +133,7 @@ export default function FinancialEducationHub({ debts = [], cashFlow = {}, onAdd
             activeTab === 'gamification' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
           }`}
         >
-          Insignias & Logros (Badges)
+          Insignias del reto
         </button>
         <button
           onClick={() => setActiveTab('challenge52')}
@@ -187,14 +155,14 @@ export default function FinancialEducationHub({ debts = [], cashFlow = {}, onAdd
 
       {/* TAB 1: BADGES */}
       {activeTab === 'gamification' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="space-y-4">
+          <p className="text-sm text-slate-400">Las insignias reflejan las semanas que marcas manualmente en el reto de ahorro.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { title: 'Primer Golpe a Capital', desc: 'Realizaste un abono por encima del pago mínimo.', unlocked: true, icon: '🥉' },
-            { title: 'Cazador de Intereses', desc: 'Ahorraste más de $5,000 en intereses con la estrategia.', unlocked: true, icon: '🥈' },
-            { title: 'Escudo Fiscal SAT', desc: 'Apartaste tu provisión del SAT a tiempo 3 meses seguidos.', unlocked: true, icon: '🛡️' },
-            { title: 'Cero Gastos Hormiga', desc: 'Una semana completa sin compras por impulso.', unlocked: streakDays >= 7, icon: '☕' },
-            { title: 'Tarjeta Destruida', desc: 'Liquidaste al 100% tu primera tarjeta bancaria.', unlocked: totalDebt < 100000, icon: '💳' },
-            { title: 'Libertad FIRE', desc: 'Cero deudas de consumo y 6 meses de fondo de reserva.', unlocked: totalDebt === 0, icon: '👑' }
+            { title: 'Primer registro', desc: 'Una semana marcada en tu registro manual.', unlocked: completedWeeks >= 1, icon: '🌱' },
+            { title: 'Trece semanas', desc: 'Al menos 13 semanas marcadas en el reto.', unlocked: completedWeeks >= 13, icon: '🥉' },
+            { title: 'Mitad del reto', desc: 'Al menos 26 semanas marcadas en el reto.', unlocked: completedWeeks >= 26, icon: '🥈' },
+            { title: 'Reto completo', desc: 'Las 52 semanas marcadas en tu registro manual.', unlocked: completedWeeks === 52, icon: '🏆' }
           ].map((b, idx) => (
             <div 
               key={idx}
@@ -213,11 +181,12 @@ export default function FinancialEducationHub({ debts = [], cashFlow = {}, onAdd
               </div>
               <div className="mt-3 flex items-center justify-between text-xs">
                 <span className={`font-bold ${b.unlocked ? 'text-emerald-400' : 'text-slate-500'}`}>
-                  {b.unlocked ? '✓ Desbloqueado' : '🔒 Bloqueado'}
+                  {b.unlocked ? '✓ Según tu registro' : 'Por alcanzar'}
                 </span>
               </div>
             </div>
           ))}
+          </div>
         </div>
       )}
 
@@ -226,11 +195,12 @@ export default function FinancialEducationHub({ debts = [], cashFlow = {}, onAdd
         <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-4">
             <div>
-              <h3 className="text-lg font-bold text-white">Matriz Interactiva del Reto de 52 Semanas</h3>
-              <p className="text-xs text-slate-400">Semana 1 = $20 MXN, Semana 52 = $1,040 MXN. Meta anual: $27,560 MXN.</p>
+              <h3 className="text-lg font-bold text-white">Tu registro de 52 semanas</h3>
+              <p className="text-xs text-slate-400">Semana 1 = $20 MXN, semana 52 = $1,040 MXN. Meta del reto: $27,560 MXN.</p>
+              <p className="text-xs text-slate-400 mt-2">Marca tus aportes manualmente. Puedes desmarcar una semana para corregir el registro.</p>
             </div>
             <div className="text-right">
-              <span className="text-sm font-extrabold text-emerald-400">${totalSaved52Weeks.toLocaleString('es-MX')} / $27,560 MXN</span>
+              <span className="text-sm font-extrabold text-emerald-400 sensitive-value">${totalRegistered52Weeks.toLocaleString('es-MX')} / $27,560 MXN</span>
             </div>
           </div>
 
@@ -244,6 +214,8 @@ export default function FinancialEducationHub({ debts = [], cashFlow = {}, onAdd
                 <button
                   key={week}
                   onClick={() => toggleWeek(week)}
+                  aria-pressed={isDone}
+                  aria-label={`Semana ${week}, ${amount} pesos mexicanos, ${isDone ? 'marcada' : 'sin marcar'}`}
                   className={`p-2 rounded-xl text-center border transition-all ${
                     isDone 
                       ? 'bg-emerald-600 text-slate-950 font-black border-emerald-400 shadow-md scale-105' 
@@ -269,12 +241,14 @@ export default function FinancialEducationHub({ debts = [], cashFlow = {}, onAdd
               <span>Antídoto de Compra Impulsiva (Regla de las 72 Horas)</span>
             </h3>
             <p className="text-xs text-slate-400 mt-1">
-              ¿Viste algo que quieres comprar? Anótalo aquí y espera 72 horas. El 80% del deseo compulsivo desaparece al enfriarse la emoción.
+              ¿Viste algo que quieres comprar? Anótalo y date 72 horas para revisar si sigue siendo una prioridad para ti.
             </p>
 
             <form onSubmit={handleAddImpulse} className="mt-4 flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
+                maxLength={200}
+                aria-label="Compra que quieres revisar"
                 placeholder="¿Qué deseas comprar? (ej. Zapatos nuevos, Gadget...)"
                 value={impulseName}
                 onChange={e => setImpulseName(e.target.value)}
@@ -283,6 +257,8 @@ export default function FinancialEducationHub({ debts = [], cashFlow = {}, onAdd
               />
               <input
                 type="number"
+                min="0" max="100000000000000" step="0.01"
+                aria-label="Precio de la compra en pesos mexicanos"
                 placeholder="Precio ($ MXN)"
                 value={impulseAmount}
                 onChange={e => setImpulseAmount(e.target.value)}
@@ -296,13 +272,14 @@ export default function FinancialEducationHub({ debts = [], cashFlow = {}, onAdd
                 Congelar Compra 72h
               </button>
             </form>
+            {impulseError && <p role="alert" className="text-sm text-amber-300 mt-3">{impulseError}</p>}
           </div>
 
           {/* List of cooling items */}
           <div className="space-y-3">
             {impulseItems.length === 0 ? (
               <p className="text-center py-6 text-xs text-slate-500 bg-slate-950/40 rounded-xl border border-slate-800">
-                No tienes compras en periodo de enfriamiento. ¡Excelente autocontrol!
+                No hay compras registradas en periodo de enfriamiento.
               </p>
             ) : (
               impulseItems.map(item => {
@@ -323,7 +300,7 @@ export default function FinancialEducationHub({ debts = [], cashFlow = {}, onAdd
                         onClick={() => handleResolveImpulse(item.id, false)}
                         className="px-3 py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-slate-950 rounded-lg transition-colors"
                       >
-                        ¡No lo compré! (Ahorro)
+                        Decidí no comprarlo
                       </button>
                       <button
                         onClick={() => handleResolveImpulse(item.id, true)}

@@ -5,7 +5,7 @@
     "pillarId": 1,
     "pillarName": "Arquitectura & Rendimiento Extremo",
     "why": "El usuario necesita revisar sus cuentas o registrar un gasto en lugares sin señal (metro, sótanos, vuelos o zonas rurales). Si la app requiere red para cargar, se pierde la retención. Además, una PWA instalable en iOS y Android elimina la necesidad de pagar comisiones del 30% a Apple y Google App Stores.",
-    "how": "- Configurar `vite-plugin-pwa` en `vite.config.js` con estrategia `generateSW` y modo `CacheFirst` para assets estáticos (JS, CSS, SVGs, fuentes).\n  - Implementar un Service Worker personalizado que intercepte peticiones a las APIs de tipos de cambio (`open.er-api.com`), devolviendo la última tasa guardada en caché con timestamp si no hay conexión a internet.\n  - Añadir evento `beforeinstallprompt` capturado en un banner discreto en `Navbar.jsx`: *\"Instala Gairo Finances en tu pantalla de inicio en 1 toque\"*.",
+    "how": "- Configurar `vite-plugin-pwa` en `vite.config.js` con estrategia `generateSW` y modo `CacheFirst` para assets estáticos (JS, CSS, SVGs, fuentes).\n  - Implementar un Service Worker personalizado que intercepte peticiones a las APIs de tipos de cambio (`open.er-api.com`), devolviendo la última tasa guardada en caché con timestamp si no hay conexión a internet.\n  - Añadir evento `beforeinstallprompt` capturado en un banner discreto en `Navbar.jsx`: *\"Instala Sifran en tu pantalla de inicio en 1 toque\"*.",
     "feasibility": "Alta factibilidad / Complejidad Baja (1-2 días).",
     "kpi": "100% de operatividad sin internet y aumento del 45% en aperturas diarias vía acceso directo en pantalla de inicio."
   },
@@ -445,7 +445,7 @@
     "pillarId": 4,
     "pillarName": "Integración Bancaria, Importación & OCR",
     "why": "Los usuarios quieren tener sus datos sincronizados en su laptop y en su teléfono móvil, pero NO quieren que su información bancaria resida en servidores en la nube de empresas externas.",
-    "how": "- Opción A (Rápida): En la computadora, generar un código QR que contenga la base de datos completa comprimida con Brotli y codificada en Base64. Al escanearlo con la cámara del celular en Gairo Finances, los datos se sincronizan al instante.\n  - Opción B (En vivo): Establecer un canal de datos directo WebRTC P2P (Peer-to-Peer) entre los dos navegadores mediante señalización efímera, transmitiendo los cambios cifrados de dispositivo a dispositivo.",
+    "how": "- Opción A (Rápida): En la computadora, generar un código QR que contenga la base de datos completa comprimida con Brotli y codificada en Base64. Al escanearlo con la cámara del celular en Sifran, los datos se sincronizan al instante.\n  - Opción B (En vivo): Establecer un canal de datos directo WebRTC P2P (Peer-to-Peer) entre los dos navegadores mediante señalización efímera, transmitiendo los cambios cifrados de dispositivo a dispositivo.",
     "feasibility": "Alta factibilidad / Complejidad Media (2 días).",
     "kpi": "Sincronización multidispositivo con privacidad criptográfica absoluta y costo de servidor $0."
   },
@@ -465,7 +465,7 @@
     "pillarId": 4,
     "pillarName": "Integración Bancaria, Importación & OCR",
     "why": "Cuando el usuario realiza una compra en Amazon, Mercado Libre o Liverpool, tener que abrir otra pestaña para registrar el gasto genera fricción y olvidos.",
-    "how": "- Desarrollar un Bookmarklet en JavaScript (1 solo enlace que se arrastra a la barra de marcadores del navegador) o una extensión WebExtension ligera.\n  - Al estar en la página de confirmación de pedido de Amazon o Mercado Libre, hacer clic en el botón lee el total de la compra y la tarjeta utilizada, abriendo una micro-ventana emergente que la registra en Gairo Finances en 1 clic.",
+    "how": "- Desarrollar un Bookmarklet en JavaScript (1 solo enlace que se arrastra a la barra de marcadores del navegador) o una extensión WebExtension ligera.\n  - Al estar en la página de confirmación de pedido de Amazon o Mercado Libre, hacer clic en el botón lee el total de la compra y la tarjeta utilizada, abriendo una micro-ventana emergente que la registra en Sifran en 1 clic.",
     "feasibility": "Alta factibilidad / Complejidad Media (2 días).",
     "kpi": "Captura inmediata del 90% de las compras de comercio electrónico en el momento en que suceden."
   },
@@ -475,7 +475,7 @@
     "pillarId": 4,
     "pillarName": "Integración Bancaria, Importación & OCR",
     "why": "Millones de entusiastas de las finanzas personales adoran conservar una copia en Google Sheets para hacer sus propias tablas dinámicas o respaldos en Google Drive.",
-    "how": "- Proveer al usuario un script gratuito de Google Apps Script (5 líneas de código) que él mismo pega en su propia hoja de cálculo.\n  - En Gairo Finances, ingresar la URL del Webhook personal; cada vez que se agregue una transacción o se actualice una deuda, la app envía un payload JSON seguro que actualiza la hoja de cálculo de Google en tiempo real.",
+    "how": "- Proveer al usuario un script gratuito de Google Apps Script (5 líneas de código) que él mismo pega en su propia hoja de cálculo.\n  - En Sifran, ingresar la URL del Webhook personal; cada vez que se agregue una transacción o se actualice una deuda, la app envía un payload JSON seguro que actualiza la hoja de cálculo de Google en tiempo real.",
     "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
     "kpi": "Integración amada por power-users y analistas que garantiza la soberanía de datos del usuario."
   },
@@ -665,7 +665,7 @@
     "pillarId": 6,
     "pillarName": "Psicología Financiera & Gamificación",
     "why": "El crecimiento viral ocurre cuando los usuarios comparten con orgullo sus victorias en Instagram Stories, TikTok, LinkedIn o WhatsApp.",
-    "how": "- Al liquidar una deuda o alcanzar un hito, botón: *\"Compartir mi victoria\"*.\n  - Utilizar `html-to-image` para renderizar al vuelo una imagen gráfica vertical (1080x1920 px) con diseño minimalista oscuro, gradientes modernos y tipografía elegante: *\"¡Hoy liquidé una tarjeta de crédito más y recorté 14 meses de intereses! #GairoFinances\"*.\n  - Ocultar automáticamente montos monetarios sensibles para proteger la privacidad del usuario, mostrando únicamente porcentajes de avance y meses ahorrados.",
+    "how": "- Al liquidar una deuda o alcanzar un hito, botón: *\"Compartir mi victoria\"*.\n  - Utilizar `html-to-image` para renderizar al vuelo una imagen gráfica vertical (1080x1920 px) con diseño minimalista oscuro, gradientes modernos y tipografía elegante: *\"¡Hoy liquidé una tarjeta de crédito más y recorté 14 meses de intereses! #Sifran\"*.\n  - Ocultar automáticamente montos monetarios sensibles para proteger la privacidad del usuario, mostrando únicamente porcentajes de avance y meses ahorrados.",
     "feasibility": "Alta factibilidad / Complejidad Media (1.5 días).",
     "kpi": "Coeficiente viral (K-factor) superior a 1.2 vía menciones orgánicas en redes sociales."
   },
@@ -814,7 +814,7 @@
     "title": "Política Estricta de Cero Telemetría Externa (Zero Third-Party Telemetry)",
     "pillarId": 7,
     "pillarName": "Criptografía, Seguridad & Privacidad",
-    "why": "Las grandes instituciones financieras y fintechs rastrean cada clic y venden hábitos de consumo a agencias publicitarias. Demostrar que Gairo Finances tiene CERO rastreadores (cero Google Analytics, cero Facebook Pixel, cero scripts de terceros) es el argumento de venta ético más fuerte de la plataforma.",
+    "why": "Las grandes instituciones financieras y fintechs rastrean cada clic y venden hábitos de consumo a agencias publicitarias. Demostrar que Sifran tiene CERO rastreadores (cero Google Analytics, cero Facebook Pixel, cero scripts de terceros) es el argumento de venta ético más fuerte de la plataforma.",
     "how": "- Auditar la red con DevTools para asegurar que la app no emita una sola llamada HTTP saliente fuera de los endpoints abiertos de tipos de cambio.\n  - Incluir una política de Content Security Policy (CSP) en los headers de `vercel.json` y `netlify.toml` que bloquee cualquier intento de exfiltración de datos.",
     "feasibility": "Alta factibilidad / Complejidad Muy Baja (0.5 días).",
     "kpi": "Confianza ciega y recomendación entusiasta en comunidades de privacidad y ciberseguridad."
@@ -835,7 +835,7 @@
     "pillarId": 7,
     "pillarName": "Criptografía, Seguridad & Privacidad",
     "why": "Cuando el usuario cambia de pestaña en la computadora o abre el carrusel de aplicaciones en el celular, el sistema operativo genera una captura de pantalla en miniatura que puede verse al conmutar ventanas.",
-    "how": "- Escuchar los eventos `visibilitychange` y `window.onblur`.\n  - En el instante exacto en que la ventana pierde el foco, superponer un filtro opaco con el escudo de Gairo Finances; en cuanto el usuario regresa a la app (`window.onfocus`), la vista se restablece instantáneamente.",
+    "how": "- Escuchar los eventos `visibilitychange` y `window.onblur`.\n  - En el instante exacto en que la ventana pierde el foco, superponer un filtro opaco con el escudo de Sifran; en cuanto el usuario regresa a la app (`window.onfocus`), la vista se restablece instantáneamente.",
     "feasibility": "Alta factibilidad / Complejidad Muy Baja (0.5 días).",
     "kpi": "Prevención total de capturas visuales inadvertidas en el sistema operativo."
   },
@@ -855,7 +855,7 @@
     "pillarId": 8,
     "pillarName": "Comercialización SaaS & Viralidad",
     "why": "Para comercializar masivamente la aplicación, debe ser 100% utilizable y valiosa en su versión gratuita para enganchar al usuario, pero reservar superpoderes avanzados para la suscripción Pro.",
-    "how": "- **Nivel Gratuito (Free Tier)**: Hasta 3 deudas activas, estrategia Bola de Nieve clásica, tipo de cambio diario, libro de transacciones básico y 5 calculadoras esenciales.\n  - **Nivel Pro ($9 USD/mes o $69 USD/año)**: Deudas ilimitadas, Motor Gairo Custom con blindaje de MSI, Comparador de 4 Estrategias, Simulador What-If con slider, Módulo Fiscal SAT completo con declaración anual, las 20 calculadoras y exportador a Excel multihilera.\n  - Los botones de funciones Pro muestran un elegante candado dorado que al tocarlo despliega el modal de beneficios sin ser invasivo.",
+    "how": "- **Nivel Gratuito (Free Tier)**: Hasta 3 deudas activas, estrategia Bola de Nieve clásica, tipo de cambio diario, libro de transacciones básico y 5 calculadoras esenciales.\n  - **Nivel Pro ($9 USD/mes o $69 USD/año)**: Deudas ilimitadas, Motor Sifran con blindaje de MSI, Comparador de 4 Estrategias, Simulador What-If con slider, Módulo Fiscal SAT completo con declaración anual, las 20 calculadoras y exportador a Excel multihilera.\n  - Los botones de funciones Pro muestran un elegante candado dorado que al tocarlo despliega el modal de beneficios sin ser invasivo.",
     "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
     "kpi": "Tasa de conversión de Free a Pro proyectada superior al 4.5% (estándar de la industria SaaS: 2-3%)."
   },
@@ -885,7 +885,7 @@
     "pillarId": 8,
     "pillarName": "Comercialización SaaS & Viralidad",
     "why": "El costo de adquisición de clientes (CAC) con anuncios de Facebook o Google es de $15 a $35 USD por usuario en fintech. Un programa de referidos reduce el CAC a $0.",
-    "how": "- Cada usuario tiene un enlace de recomendación único en su perfil: `gairofinances.com?ref=USUARIO`.\n  - Cuando un amigo se registra con su enlace, ambos reciben 30 días de acceso Pro gratuito automáticamente.",
+    "how": "- Cada usuario tiene un enlace de recomendación único en su perfil: `sifran.example?ref=USUARIO`.\n  - Cuando un amigo se registra con su enlace, ambos reciben 30 días de acceso Pro gratuito automáticamente.",
     "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
     "kpi": "Crecimiento exponencial del número de usuarios por red de confianza de boca en boca."
   },
@@ -895,7 +895,7 @@
     "pillarId": 8,
     "pillarName": "Comercialización SaaS & Viralidad",
     "why": "Cientos de miles de personas buscan en Google todos los días términos exactos como: *\"Calculadora de intereses tarjeta BBVA Oro\"*, *\"Simulador de desendeudamiento Banamex\"*, *\"Cómo calcular retención de honorarios SAT\"*.",
-    "how": "- Crear rutas públicas en la aplicación optimizadas para motores de búsqueda con SSR o SSG:\n    - `/calculadora-deudas-bbva`\n    - `/simulador-resico-vs-pfae`\n    - `/calculadora-aguinaldo-mexico`\n  - Cada página resuelve la duda en 1 segundo y muestra un llamado a la acción: *\"¿Quieres simular todo tu plan de pagos completo? Abre tu cuenta gratis en Gairo Finances\"*.",
+    "how": "- Crear rutas públicas en la aplicación optimizadas para motores de búsqueda con SSR o SSG:\n    - `/calculadora-deudas-bbva`\n    - `/simulador-resico-vs-pfae`\n    - `/calculadora-aguinaldo-mexico`\n  - Cada página resuelve la duda en 1 segundo y muestra un llamado a la acción: *\"¿Quieres simular todo tu plan de pagos completo? Abre tu cuenta gratis en Sifran\"*.",
     "feasibility": "Alta factibilidad / Complejidad Media (2 días).",
     "kpi": "Más de 50,000 visitas orgánicas mensuales gratuitas desde Google en 6 meses."
   },
@@ -904,7 +904,7 @@
     "title": "Exportación de Reportes con Marca Blanca para Asesores Financieros y Contadores",
     "pillarId": 8,
     "pillarName": "Comercialización SaaS & Viralidad",
-    "why": "Los asesores patrimoniales, coaches financieros y despachos contables cobran a sus clientes por armarles planes de finanzas personales. Si pueden usar Gairo Finances con el logo de su propio despacho en los reportes, pagarán licencias Pro de mayor valor ($29 USD/mes o $299 USD/año).",
+    "why": "Los asesores patrimoniales, coaches financieros y despachos contables cobran a sus clientes por armarles planes de finanzas personales. Si pueden usar Sifran con el logo de su propio despacho en los reportes, pagarán licencias Pro de mayor valor ($29 USD/mes o $299 USD/año).",
     "how": "- En Ajustes Pro, añadir la sección *\"Marca Blanca / Modo Profesional\"*.\n  - Permitir subir el logotipo del despacho, nombre del asesor y datos de contacto, los cuales reemplazarán automáticamente el branding en los reportes PDF y Excel generados para sus clientes.",
     "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
     "kpi": "Venta recurrente B2B a profesionales de la industria financiera con alto LTV (Lifetime Value)."
@@ -915,7 +915,7 @@
     "pillarId": 8,
     "pillarName": "Comercialización SaaS & Viralidad",
     "why": "Conseguir backlinks de alta autoridad y tráfico desde blogs como El Economista, Expansión, Mi Bolsillo o blogs independientes.",
-    "how": "- Desarrollar un script embebible en iframe responsivo: `<iframe src=\"https://gairofinances.com/embed/calculator\" width=\"100%\" height=\"400\"></iframe>`.\n  - Permite a cualquier creador de contenido incrustar la calculadora de bola de nieve en sus artículos de blog con un enlace de atribución hacia Gairo Finances.",
+    "how": "- Desarrollar un script embebible en iframe responsivo: `<iframe src=\"https://sifran.example/embed/calculator\" width=\"100%\" height=\"400\"></iframe>`.\n  - Permite a cualquier creador de contenido incrustar la calculadora de bola de nieve en sus artículos de blog con un enlace de atribución hacia Sifran.",
     "feasibility": "Alta factibilidad / Complejidad Baja (1 día).",
     "kpi": "Construcción masiva de autoridad de dominio (Domain Authority) y tráfico de referencia constante."
   },

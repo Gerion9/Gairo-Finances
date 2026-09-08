@@ -60,7 +60,7 @@ export default function Roadmap100Modal({ isOpen, onClose }) {
   }, [searchTerm, selectedPillar]);
 
   const handleCopySummary = () => {
-    const text = `Plan Maestro de 100 Optimizaciones: Gairo Finances\n100/100 optimizaciones estructuradas en 9 pilares estratégicos.\nConsulta el documento completo en PLAN_100_OPTIMIZACIONES.md en el repositorio.`;
+    const text = `Plan Maestro de 100 Optimizaciones: Sifran\n100/100 optimizaciones estructuradas en 9 pilares estratégicos.\nConsulta el documento completo en PLAN_100_OPTIMIZACIONES.md en el repositorio.`;
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -91,7 +91,7 @@ export default function Roadmap100Modal({ isOpen, onClose }) {
                 </span>
               </div>
               <p className="text-sm text-slate-400 mt-1">
-                Blueprint exhaustivo para convertir a Gairo Finances en un producto de clase mundial masivamente comercializable y viral.
+                Blueprint exhaustivo para convertir a Sifran en un producto de clase mundial masivamente comercializable y viral.
               </p>
             </div>
           </div>

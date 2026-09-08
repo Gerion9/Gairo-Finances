@@ -2,29 +2,29 @@
 
 const CACHE_KEY = 'gairo_fx_rate';
 const CACHE_TIME_KEY = 'gairo_fx_timestamp';
-const MANUAL_KEY = 'gairo_fx_manual';
+const localCache = { getItem(key) { try { return globalThis.localStorage.getItem(key); } catch { return null; } }, setItem(key, value) { try { globalThis.localStorage.setItem(key, value); } catch { /* public cache optional */ } } };
 const CACHE_DURATION_MS = 30 * 60 * 1000; // 30 minutos
 
 export const DEFAULT_USD_MXN = 19.25;
 
-export async function fetchExchangeRate(forceRefresh = false) {
+export async function fetchExchangeRate(forceRefresh = false, preference = {}) {
   // Verificar si el usuario configuró un tipo de cambio manual
-  const manual = localStorage.getItem(MANUAL_KEY);
+  const manual = preference.manualRate;
   if (manual) {
     const parsedManual = parseFloat(manual);
     if (!isNaN(parsedManual) && parsedManual > 0) {
       return {
         rate: parsedManual,
         isManual: true,
-        lastUpdated: new Date(parseInt(localStorage.getItem(CACHE_TIME_KEY) || Date.now())),
+        lastUpdated: preference.manualRateUpdatedAt ? new Date(preference.manualRateUpdatedAt) : null,
         source: 'Personalizado (Manual)'
       };
     }
   }
 
   // Verificar caché
-  const cachedRate = localStorage.getItem(CACHE_KEY);
-  const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+  const cachedRate = localCache.getItem(CACHE_KEY);
+  const cachedTime = localCache.getItem(CACHE_TIME_KEY);
   const now = Date.now();
 
   if (!forceRefresh && cachedRate && cachedTime && (now - parseInt(cachedTime) < CACHE_DURATION_MS)) {
@@ -43,8 +43,8 @@ export async function fetchExchangeRate(forceRefresh = false) {
       const data = await res.json();
       if (data && data.rates && data.rates.MXN) {
         const rate = parseFloat(data.rates.MXN.toFixed(4));
-        localStorage.setItem(CACHE_KEY, rate.toString());
-        localStorage.setItem(CACHE_TIME_KEY, now.toString());
+        localCache.setItem(CACHE_KEY, rate.toString());
+        localCache.setItem(CACHE_TIME_KEY, now.toString());
         return {
           rate,
           isManual: false,
@@ -64,8 +64,8 @@ export async function fetchExchangeRate(forceRefresh = false) {
       const data = await res.json();
       if (data && data.rates && data.rates.MXN) {
         const rate = parseFloat(data.rates.MXN.toFixed(4));
-        localStorage.setItem(CACHE_KEY, rate.toString());
-        localStorage.setItem(CACHE_TIME_KEY, now.toString());
+        localCache.setItem(CACHE_KEY, rate.toString());
+        localCache.setItem(CACHE_TIME_KEY, now.toString());
         return {
           rate,
           isManual: false,
@@ -86,20 +86,6 @@ export async function fetchExchangeRate(forceRefresh = false) {
     lastUpdated: cachedTime ? new Date(parseInt(cachedTime)) : new Date(),
     source: cachedRate ? 'Caché previo' : 'Tasa base de contingencia'
   };
-}
-
-export function setManualExchangeRate(rate) {
-  if (rate === null || rate === undefined || rate === '' || isNaN(rate) || rate <= 0) {
-    localStorage.removeItem(MANUAL_KEY);
-  } else {
-    localStorage.setItem(MANUAL_KEY, parseFloat(rate).toString());
-  }
-  localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
-}
-
-export function getManualExchangeRate() {
-  const m = localStorage.getItem(MANUAL_KEY);
-  return m ? parseFloat(m) : null;
 }
 
 // Conversiones

@@ -25,7 +25,7 @@ export function generateQIF(transactions = []) {
   return qif;
 }
 
-export function downloadQIFFile(transactions, filename = 'gairo_finances.qif') {
+export function downloadQIFFile(transactions, filename = 'sifran_movimientos.qif') {
   const content = generateQIF(transactions);
   const blob = new Blob([content], { type: 'application/x-qif' });
   const url = URL.createObjectURL(blob);

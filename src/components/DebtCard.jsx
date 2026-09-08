@@ -1,200 +1,68 @@
-import React, { useState } from 'react';
-import { 
-  CreditCard, 
-  Flame, 
-  Clock, 
-  Shield, 
-  Edit3, 
-  Trash2, 
-  PlusCircle, 
-  DollarSign, 
-  CheckCircle2,
-  Calendar
-} from 'lucide-react';
-import { formatMoney, convertCurrency } from '../services/exchangeRate';
+import React, { useId, useState } from 'react';
+import { CalendarDays, Check, CheckCircle2, Clock3, CreditCard, Edit3, Plus, ShieldCheck, Trash2 } from 'lucide-react';
+import { convertCurrency, formatMoney } from '../services/exchangeRate';
+import { moneyToCents, validateDebtPayment } from '../services/transactionAnalytics';
 
-export default function DebtCard({ 
-  debt, 
-  exchangeRate, 
-  displayCurrency, 
-  onEdit, 
-  onDelete, 
-  onPayment 
-}) {
+export default function DebtCard({ debt, exchangeRate, displayCurrency, onEdit, onDelete, onPayment }) {
   const [showPaymentInput, setShowPaymentInput] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState('');
+  const [paymentError, setPaymentError] = useState('');
+  const inputId = useId();
+  const originalBalance = Number(debt.saldo) || 0;
+  const currency = ['MXN', 'USD'].includes(displayCurrency) ? displayCurrency : debt.moneda;
+  const amount = convertCurrency(originalBalance, debt.moneda, currency, exchangeRate);
+  const paid = originalBalance <= 0;
+  const promo = debt.tipo === 'PROMO_DEADLINE';
+  const highInterest = debt.tipo === 'HIGH_INTEREST';
+  const tag = paid ? 'Liquidada' : promo ? 'Promoción con vencimiento' : highInterest ? 'Interés alto' : 'Interés bajo';
+  const TagIcon = paid ? CheckCircle2 : promo ? Clock3 : highInterest ? CreditCard : ShieldCheck;
+  const tone = paid ? 'border-[#7DE4BF]/20 bg-[#7DE4BF]/10 text-[#7DE4BF]' : promo ? 'border-[#F4C88C]/20 bg-[#F4C88C]/10 text-[#F4C88C]' : highInterest ? 'border-[#F7A9B8]/20 bg-[#F7A9B8]/10 text-[#F7A9B8]' : 'border-[#A4B1C3]/20 bg-[#A4B1C3]/10 text-[#C5D0DD]';
 
-  const saldoOriginal = Number(debt.saldo) || 0;
-  const saldoMXN = convertCurrency(saldoOriginal, debt.moneda, 'MXN', exchangeRate);
-  const saldoUSD = convertCurrency(saldoOriginal, debt.moneda, 'USD', exchangeRate);
-
-  // Valor a mostrar según displayCurrency
-  const displayAmount = displayCurrency === 'USD' 
-    ? formatMoney(saldoUSD, 'USD') 
-    : (displayCurrency === 'MXN' ? formatMoney(saldoMXN, 'MXN') : formatMoney(saldoOriginal, debt.moneda));
-
-  const isPromo = debt.tipo === 'PROMO_DEADLINE';
-  const isHigh = debt.tipo === 'HIGH_INTEREST';
-  const isLow = debt.tipo === 'LOW_INTEREST_HOLD';
-
-  const handleMakePayment = (e) => {
-    e.preventDefault();
-    const amt = parseFloat(paymentAmount);
-    if (!isNaN(amt) && amt > 0) {
-      onPayment(debt.id, amt);
-      setPaymentAmount('');
-      setShowPaymentInput(false);
-    }
+  const handleMakePayment = event => {
+    event.preventDefault();
+    const error = validateDebtPayment(paymentAmount, debt.saldo);
+    if (error) { setPaymentError(error); return; }
+    onPayment(debt.id, moneyToCents(paymentAmount) / 100);
+    setPaymentAmount('');
+    setPaymentError('');
+    setShowPaymentInput(false);
   };
 
   return (
-    <div className="bg-slate-900 border border-slate-800 hover:border-slate-700/80 rounded-2xl p-5 shadow-xl transition-all flex flex-col justify-between relative overflow-hidden">
-      
-      {/* Top Tag & Indicator */}
+    <article className="surface-card group flex min-w-0 flex-col justify-between p-5 transition-colors hover:border-[#344960]">
       <div>
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 ${
-              isPromo
-                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
-                : isHigh
-                ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
-                : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
-            }`}>
-              {isPromo && <Clock className="w-3.5 h-3.5" />}
-              {isHigh && <Flame className="w-3.5 h-3.5" />}
-              {isLow && <Shield className="w-3.5 h-3.5" />}
-              <span>
-                {isPromo ? 'Promo con Deadline (0%)' : isHigh ? 'Alto Interés (Avalancha)' : 'Bajo Interés (Dejar correr)'}
-              </span>
-            </span>
-
-            <span className={`px-2 py-0.5 rounded text-[11px] font-extrabold uppercase font-mono ${
-              debt.moneda === 'USD' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-            }`}>
-              {debt.moneda}
-            </span>
-          </div>
-
-          {/* Edit / Delete actions */}
-          <div className="flex items-center gap-1 text-slate-400">
-            <button
-              onClick={() => onEdit(debt)}
-              className="p-1.5 rounded-lg hover:text-white hover:bg-slate-800 transition-colors"
-              title="Editar deuda"
-            >
-              <Edit3 className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => onDelete(debt.id)}
-              className="p-1.5 rounded-lg hover:text-red-400 hover:bg-slate-800 transition-colors"
-              title="Eliminar deuda"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
+        <div className="mb-5 flex items-start justify-between gap-2">
+          <span className={`inline-flex min-h-8 items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-medium ${tone}`}><TagIcon size={14} aria-hidden="true" />{tag}</span>
+          <div className="-mr-1 -mt-1 flex items-center gap-0.5">
+            <button type="button" onClick={() => onEdit(debt)} aria-label={`Editar ${debt.nombre}`} className="flex h-10 w-10 items-center justify-center rounded-lg text-[#8191A7] transition-colors hover:bg-white/5 hover:text-white"><Edit3 size={16} aria-hidden="true" /></button>
+            <button type="button" onClick={() => onDelete(debt.id)} aria-label={`Eliminar ${debt.nombre}`} className="flex h-10 w-10 items-center justify-center rounded-lg text-[#8191A7] transition-colors hover:bg-rose-300/10 hover:text-rose-300"><Trash2 size={16} aria-hidden="true" /></button>
           </div>
         </div>
-
-        {/* Debt Name & Bank */}
-        <h3 className="text-lg font-extrabold text-white tracking-tight">
-          {debt.nombre}
-        </h3>
-        <p className="text-xs text-slate-400 font-medium">
-          {debt.institucion || 'Institución financiera'}
-        </p>
-
-        {/* Saldo Principal */}
-        <div className="mt-4 p-3 bg-slate-950/60 rounded-xl border border-slate-800/80">
-          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
-            Saldo Actual
-          </span>
-          <div className="flex items-baseline justify-between mt-0.5">
-            <span className="text-2xl font-black text-white">
-              {displayAmount}
-            </span>
-            {displayCurrency !== 'ORIGINAL' && debt.moneda !== displayCurrency && (
-              <span className="text-xs text-slate-400 font-mono">
-                Orig: {formatMoney(saldoOriginal, debt.moneda)}
-              </span>
-            )}
-          </div>
+        <p className="text-xs font-medium text-[#A4B1C3]">{debt.institucion || 'Cuenta de deuda'}</p>
+        <h3 className="mt-1 break-words text-[17px] font-semibold tracking-tight text-white">{debt.nombre}</h3>
+        <div className="my-5">
+          <p className="text-[13px] text-[#A4B1C3]">Saldo pendiente</p>
+          <p data-sensitive className="sensitive-value mt-1 break-words text-[30px] font-semibold leading-tight tracking-tight text-[#EDF2F8] tabular-nums">{formatMoney(amount, currency)} <span className="text-xs font-medium tracking-normal text-[#A4B1C3]">{currency}</span></p>
+          {currency !== debt.moneda && <p data-sensitive className="sensitive-value mt-1.5 text-xs text-[#A4B1C3] tabular-nums">Original: {formatMoney(originalBalance, debt.moneda)} {debt.moneda}</p>}
         </div>
-
-        {/* Metrics Grid */}
-        <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
-          <div className="bg-slate-800/40 p-2.5 rounded-lg">
-            <span className="text-slate-400 text-[10px] uppercase font-semibold block">Tasa Anual</span>
-            <span className={`font-bold text-sm ${debt.tasaAnual > 30 ? 'text-rose-400' : (debt.tasaAnual === 0 ? 'text-emerald-400' : 'text-slate-200')}`}>
-              {debt.tasaAnual}% APR
-            </span>
-          </div>
-
-          <div className="bg-slate-800/40 p-2.5 rounded-lg">
-            <span className="text-slate-400 text-[10px] uppercase font-semibold block">Pago Mínimo</span>
-            <span className="font-bold text-sm text-slate-200">
-              {formatMoney(debt.pagoMinimo, debt.moneda)}
-            </span>
-          </div>
-        </div>
-
-        {/* Deadline Info if applicable */}
-        {isPromo && debt.promoDeadline && (
-          <div className="mt-3 p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-lg text-xs text-amber-300 flex items-center gap-2">
-            <Calendar className="w-4 h-4 shrink-0 text-amber-400" />
-            <div>
-              <span className="font-semibold">Fecha Límite:</span> {debt.promoDeadline}
-            </div>
-          </div>
-        )}
-
-        {/* Notes */}
-        {debt.notas && (
-          <p className="mt-3 text-[11px] text-slate-400 italic line-clamp-2">
-            "{debt.notas}"
-          </p>
-        )}
+        <dl className="grid grid-cols-2 gap-3 border-y border-[#223248] py-4">
+          <div><dt className="text-xs text-[#A4B1C3]">Tasa anual</dt><dd className={`mt-1.5 text-[15px] font-semibold tabular-nums ${Number(debt.tasaAnual) > 30 ? 'text-[#F7A9B8]' : 'text-[#DCE5EF]'}`}>{Number(debt.tasaAnual).toLocaleString('es-MX')}%</dd></div>
+          <div><dt className="text-xs text-[#A4B1C3]">Pago mínimo · {debt.moneda}</dt><dd data-sensitive className="sensitive-value mt-1.5 text-[15px] font-semibold text-[#DCE5EF] tabular-nums">{formatMoney(debt.pagoMinimo, debt.moneda)}</dd></div>
+        </dl>
+        {promo && debt.promoDeadline ? <div className="mt-4 flex items-start gap-2 text-[13px] text-[#F4C88C]"><CalendarDays size={16} className="mt-0.5 shrink-0" aria-hidden="true" /><p>La promoción vence el <time dateTime={debt.promoDeadline} className="font-medium">{debt.promoDeadline}</time></p></div> : debt.diaPagoLimite ? <p className="mt-4 flex items-center gap-2 text-[13px] text-[#A4B1C3]"><CalendarDays size={16} aria-hidden="true" />Pago límite: día {debt.diaPagoLimite} de cada mes</p> : null}
+        {debt.notas && <p className="mt-3 line-clamp-2 text-[13px] leading-relaxed text-[#A4B1C3]">{debt.notas}</p>}
       </div>
-
-      {/* Payment Action Bar */}
-      <div className="mt-5 pt-3 border-t border-slate-800">
-        {!showPaymentInput ? (
-          <button
-            onClick={() => setShowPaymentInput(true)}
-            className="w-full py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors"
-          >
-            <PlusCircle className="w-4 h-4 text-emerald-400" />
-            <span>Registrar Abono / Pago</span>
-          </button>
-        ) : (
-          <form onSubmit={handleMakePayment} className="space-y-2">
-            <div className="flex gap-2">
-              <input
-                type="number"
-                step="any"
-                required
-                placeholder={`Monto en ${debt.moneda}`}
-                value={paymentAmount}
-                onChange={(e) => setPaymentAmount(e.target.value)}
-                className="w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
-              />
-              <button
-                type="submit"
-                className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-xs transition-colors shrink-0"
-              >
-                Abonar
-              </button>
-            </div>
-            <button
-              type="button"
-              onClick={() => setShowPaymentInput(false)}
-              className="text-[11px] text-slate-400 hover:text-white underline w-full text-center"
-            >
-              Cancelar
-            </button>
+      <div className="mt-5">
+        {!showPaymentInput ? <button type="button" disabled={paid} onClick={() => { setPaymentError(''); setShowPaymentInput(true); }} className="button-secondary inline-flex w-full items-center justify-center gap-2 disabled:cursor-default disabled:opacity-60">{paid ? <CheckCircle2 size={16} className="text-[#7DE4BF]" aria-hidden="true" /> : <Plus size={16} className="text-[#7DE4BF]" aria-hidden="true" />}{paid ? 'Saldo liquidado' : 'Registrar abono'}</button> : (
+          <form onSubmit={handleMakePayment} className="space-y-2.5 rounded-xl border border-[#7DE4BF]/25 bg-[#7DE4BF]/[0.03] p-3">
+            <label htmlFor={inputId} className="block text-[13px] font-medium text-[#DCE5EF]">Abono en {debt.moneda}</label>
+            <div className="flex items-start gap-2"><input id={inputId} type="number" inputMode="decimal" step="0.01" min="0.01" max={originalBalance} required autoFocus placeholder="0.00" value={paymentAmount} onChange={event => { setPaymentAmount(event.target.value); setPaymentError(''); }} className="field-input min-w-0 flex-1 tabular-nums" aria-invalid={!!paymentError} aria-describedby={`${inputId}-help${paymentError ? ` ${inputId}-error` : ''}`} /><button type="submit" className="button-primary !px-3" aria-label={`Confirmar abono a ${debt.nombre}`}><Check size={18} aria-hidden="true" /></button></div>
+            <p id={`${inputId}-help`} data-sensitive className="sensitive-value text-xs leading-relaxed text-[#A4B1C3]">Hasta {formatMoney(originalBalance, debt.moneda)} {debt.moneda}. El abono reduce el saldo de esta deuda.</p>
+            {paymentError && <p id={`${inputId}-error`} role="alert" className="text-xs leading-relaxed text-rose-300">{paymentError}</p>}
+            <div className="flex items-center justify-between gap-2"><button type="button" onClick={() => { setPaymentAmount(String(Math.min(Number(debt.pagoMinimo) || 0, originalBalance))); setPaymentError(''); }} disabled={Number(debt.pagoMinimo) <= 0} className="min-h-10 text-xs font-medium text-[#7DE4BF] disabled:hidden">Usar pago mínimo</button><button type="button" onClick={() => { setShowPaymentInput(false); setPaymentError(''); }} className="ml-auto min-h-10 text-xs text-[#A4B1C3] hover:text-white">Cancelar</button></div>
           </form>
         )}
       </div>
-
-    </div>
+    </article>
   );
 }

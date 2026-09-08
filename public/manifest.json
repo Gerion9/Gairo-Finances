@@ -1,16 +1,17 @@
 {
-  "short_name": "GairoFinances",
-  "name": "Gairo Finances - Planificador de Libertad Financiera",
+  "short_name": "Sifran",
+  "name": "Sifran · Finanzas personales",
   "icons": [
     {
-      "src": "/vite.svg",
+      "src": "/icon.svg",
       "type": "image/svg+xml",
-      "sizes": "192x192 512x512"
+      "sizes": "any",
+      "purpose": "any maskable"
     }
   ],
   "start_url": "/",
-  "background_color": "#020617",
-  "theme_color": "#10b981",
+  "background_color": "#080D14",
+  "theme_color": "#080D14",
   "display": "standalone",
   "orientation": "portrait"
 }

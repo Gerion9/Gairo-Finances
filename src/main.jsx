@@ -1,8 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
+import SessionGate from './SessionGate.jsx'
 import './index.css'
-import { ToastProvider } from './components/Toast.jsx'
 
 // Registro del Service Worker PWA Offline-First
 if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
@@ -15,8 +14,6 @@ if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ToastProvider>
-      <App />
-    </ToastProvider>
+    <SessionGate />
   </React.StrictMode>,
 )

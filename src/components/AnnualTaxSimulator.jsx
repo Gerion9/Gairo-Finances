@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
-import { Landmark, Calendar, FileText, CheckCircle, AlertCircle, Upload, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
-import { playVictorySound } from '../services/soundEffects.js';
-import confetti from 'canvas-confetti';
+import React, { useRef, useState } from 'react';
+import { Landmark } from 'lucide-react';
+import { calculateFiscalOverview } from '../services/financeEngine.js';
 
 export default function AnnualTaxSimulator({ financialData = {} }) {
-  const [ingresosAnuales, setIngresosAnuales] = useState((financialData.honorarios?.facturaSinIva || 54295.79) * 12);
-  const [deduccionesPersonales, setDeduccionesPersonales] = useState(35000);
-  const [retencionesEfectuadas, setRetencionesEfectuadas] = useState((financialData.honorarios?.retencionIsr || 5429.58) * 12);
+  const fiscal = calculateFiscalOverview(financialData.honorarios);
+  const [ingresosAnuales, setIngresosAnuales] = useState(fiscal.importeFacturado * 12);
+  const [deduccionesPersonales, setDeduccionesPersonales] = useState(0);
+  const [retencionesEfectuadas, setRetencionesEfectuadas] = useState(fiscal.retencionIsr * 12);
   const [rfcSixthDigit, setRfcSixthDigit] = useState('4');
+  const resultRef = useRef(null);
 
-  // RFC additional business days calculation (Miscelánea Fiscal)
+  // Internal reference table; applicability is not validated for a fiscal year or regime.
   const additionalDays = {
     '1': 1, '2': 1,
     '3': 2, '4': 2,
@@ -21,7 +22,7 @@ export default function AnnualTaxSimulator({ financialData = {} }) {
   // Annual calculation
   const baseGravable = Math.max(0, ingresosAnuales - deduccionesPersonales);
   
-  // ISR Anual aproximado (Tarifa Art. 152 LISR)
+  // Simplified internal formula, not a validated official annual tax table.
   let isrAnual = 0;
   if (baseGravable <= 100000) {
     isrAnual = baseGravable * 0.06;
@@ -36,11 +37,9 @@ export default function AnnualTaxSimulator({ financialData = {} }) {
   const saldoAFavor = retencionesEfectuadas - isrAnual;
   const esSaldoAFavor = saldoAFavor > 0;
 
-  const handleSimulateWin = () => {
-    if (esSaldoAFavor) {
-      playVictorySound();
-      confetti({ particleCount: 80, spread: 70 });
-    }
+  const handleReviewScenario = () => {
+    resultRef.current?.focus({ preventScroll: true });
+    resultRef.current?.scrollIntoView({ block: 'start', behavior: 'auto' });
   };
 
   return (
@@ -53,9 +52,9 @@ export default function AnnualTaxSimulator({ financialData = {} }) {
             <Landmark className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white">Simulador de Declaración Anual Personas Físicas (SAT)</h2>
+            <h2 className="text-xl font-bold text-white">Simulador de escenario fiscal anual</h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Proyección oficial de saldo a favor / en contra para la Declaración Anual de Abril conforme al Art. 151 y 152 de la LISR.
+              Estimación orientativa con una fórmula simplificada. La tarifa y los requisitos del ejercicio fiscal no están validados en esta herramienta.
             </p>
           </div>
         </div>
@@ -65,12 +64,14 @@ export default function AnnualTaxSimulator({ financialData = {} }) {
         
         {/* Form Inputs */}
         <div className="lg:col-span-2 p-6 bg-slate-900 border border-slate-800 rounded-2xl space-y-4">
-          <h3 className="text-base font-bold text-white">Parámetros del Ejercicio Fiscal</h3>
+          <h3 className="text-base font-bold text-white">Supuestos del escenario</h3>
+          <p className="text-xs text-slate-400">Revisa los importes precargados: pueden incluir valores de ejemplo. El resultado se actualiza al editar los campos.</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div>
-              <label className="block text-slate-400 mb-1 font-semibold">Ingresos Brutos Acumulables ($ MXN/año)</label>
+              <label htmlFor="annual-income" className="block text-slate-400 mb-1 font-semibold">Ingresos anuales considerados (MXN)</label>
               <input
+                id="annual-income"
                 type="number"
                 value={ingresosAnuales}
                 onChange={e => setIngresosAnuales(Number(e.target.value))}
@@ -79,19 +80,22 @@ export default function AnnualTaxSimulator({ financialData = {} }) {
             </div>
 
             <div>
-              <label className="block text-slate-400 mb-1 font-semibold">Deducciones Personales (Gastos Médicos, Colegiaturas, PPR)</label>
+              <label htmlFor="annual-deductions" className="block text-slate-400 mb-1 font-semibold">Deducciones consideradas (MXN)</label>
               <input
+                id="annual-deductions"
+                aria-describedby="annual-deductions-note"
                 type="number"
                 value={deduccionesPersonales}
                 onChange={e => setDeduccionesPersonales(Number(e.target.value))}
                 className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:border-rose-500 focus:outline-none"
               />
-              <span className="text-[10px] text-slate-500 mt-1 block">Tope: Menor entre 15% de ingresos o 5 UMAs (~$198,000)</span>
+              <span id="annual-deductions-note" className="text-[10px] text-slate-400 mt-1 block">Se resta el importe capturado sin validar topes, conceptos deducibles ni comprobantes.</span>
             </div>
 
             <div>
-              <label className="block text-slate-400 mb-1 font-semibold">Retenciones de ISR Efectuadas por Empresas (10%)</label>
+              <label htmlFor="annual-withholdings" className="block text-slate-400 mb-1 font-semibold">Retenciones consideradas (MXN)</label>
               <input
+                id="annual-withholdings"
                 type="number"
                 value={retencionesEfectuadas}
                 onChange={e => setRetencionesEfectuadas(Number(e.target.value))}
@@ -100,49 +104,53 @@ export default function AnnualTaxSimulator({ financialData = {} }) {
             </div>
 
             <div>
-              <label className="block text-slate-400 mb-1 font-semibold">Sexto Dígito Numérico de tu RFC</label>
+              <label htmlFor="annual-rfc-digit" className="block text-slate-400 mb-1 font-semibold">Sexto dígito numérico del RFC (referencia)</label>
               <select
+                id="annual-rfc-digit"
+                aria-describedby="annual-rfc-note"
                 value={rfcSixthDigit}
                 onChange={e => setRfcSixthDigit(e.target.value)}
                 className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:border-rose-500 focus:outline-none"
               >
                 {['1','2','3','4','5','6','7','8','9','0'].map(d => (
-                  <option key={d} value={d}>Dígito &quot;{d}&quot; ({additionalDays} días hábiles adicionales)</option>
+                  <option key={d} value={d}>Dígito &quot;{d}&quot;</option>
                 ))}
               </select>
-              <span className="text-[10px] text-emerald-400 mt-1 block">
-                Tu fecha límite mensual es: Día 17 + {additionalDays} días hábiles adicionales.
+              <span id="annual-rfc-note" className="text-[10px] text-slate-400 mt-1 block">
+                Referencia interna no validada: día 17 + {additionalDays} días hábiles. No verifica calendario ni aplicabilidad y no interviene en el cálculo anual.
               </span>
             </div>
           </div>
 
           <div className="pt-2">
             <button
-              onClick={handleSimulateWin}
+              onClick={handleReviewScenario}
               className="w-full py-2.5 font-bold text-xs bg-rose-600 hover:bg-rose-500 text-white rounded-xl transition-all shadow-md"
             >
-              Recalcular Escenario Fiscal Anual
+              Revisar resultado estimado
             </button>
           </div>
         </div>
 
         {/* Results Card */}
-        <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col justify-between space-y-4">
+        <section ref={resultRef} tabIndex={-1} aria-labelledby="annual-result-title" className="p-6 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col justify-between space-y-4">
           <div>
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Dictamen Estimado SAT</span>
+            <h3 id="annual-result-title" className="text-xs font-bold text-slate-400 uppercase tracking-wider">Resultado del escenario</h3>
             <div className="mt-3">
-              <div className="text-xs text-slate-400">Resultado Proyectado:</div>
-              <div className={`text-2xl sm:text-3xl font-black mt-1 ${esSaldoAFavor ? 'text-emerald-400' : 'text-rose-400'}`}>
-                {esSaldoAFavor ? `+$${saldoAFavor.toLocaleString('es-MX', { maximumFractionDigits: 2 })} MXN` : `-$${Math.abs(saldoAFavor).toLocaleString('es-MX', { maximumFractionDigits: 2 })} MXN`}
+              <div className="text-xs text-slate-400">Diferencia estimada: retenciones menos ISR</div>
+              <div className={`text-2xl sm:text-3xl font-black mt-1 ${saldoAFavor === 0 ? 'text-white' : esSaldoAFavor ? 'text-emerald-400' : 'text-rose-400'}`}>
+                {saldoAFavor === 0 ? '$0.00 MXN' : esSaldoAFavor ? `+$${saldoAFavor.toLocaleString('es-MX', { maximumFractionDigits: 2 })} MXN` : `-$${Math.abs(saldoAFavor).toLocaleString('es-MX', { maximumFractionDigits: 2 })} MXN`}
               </div>
               <div className="mt-2 text-xs">
-                {esSaldoAFavor ? (
+                {saldoAFavor === 0 ? (
+                  <span className="px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 font-bold border border-slate-700">Sin diferencia estimada</span>
+                ) : esSaldoAFavor ? (
                   <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
-                    🎉 ¡Saldo a Favor a Devolver en Abril!
+                    Posible saldo a favor
                   </span>
                 ) : (
                   <span className="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30">
-                    ⚠️ Impuesto a Pagar al SAT
+                    Posible importe a cargo
                   </span>
                 )}
               </div>
@@ -150,24 +158,24 @@ export default function AnnualTaxSimulator({ financialData = {} }) {
 
             <div className="space-y-2 mt-5 text-xs text-slate-300 border-t border-slate-800 pt-4">
               <div className="flex justify-between">
-                <span className="text-slate-400">Base Gravable Neta:</span>
+                <span className="text-slate-400">Base utilizada en el cálculo:</span>
                 <span className="font-semibold">${baseGravable.toLocaleString('es-MX')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">ISR Causado Anual:</span>
+                <span className="text-slate-400">ISR estimado con esta fórmula:</span>
                 <span className="font-semibold">${isrAnual.toLocaleString('es-MX', { maximumFractionDigits: 2 })}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Pagos / Retenciones:</span>
+                <span className="text-slate-400">Retenciones capturadas:</span>
                 <span className="font-semibold">${retencionesEfectuadas.toLocaleString('es-MX', { maximumFractionDigits: 2 })}</span>
               </div>
             </div>
           </div>
 
           <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-[11px] text-slate-400">
-            💡 <strong>Consejo SAT:</strong> Aumentar tus aportaciones voluntarias a tu PPR antes del 31 de diciembre maximiza directamente este saldo a favor en abril.
+            <strong>Alcance de la estimación:</strong> El resultado no acredita un saldo fiscal ni garantiza una devolución. Esta herramienta no valida deducciones, aportaciones a PPR, retenciones ni requisitos del ejercicio.
           </div>
-        </div>
+        </section>
 
       </div>
 

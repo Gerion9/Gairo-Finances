@@ -1,191 +1,33 @@
-import React, { useState } from 'react';
-import { X, RefreshCw, Lock, Save, Download, Upload, RotateCcw, ShieldCheck, CheckCircle2 } from 'lucide-react';
-import { setManualExchangeRate, getManualExchangeRate } from '../services/exchangeRate';
-import { changePassword } from '../services/auth';
+import React, { useRef, useState } from 'react';
+import { Download, Upload, RefreshCw, Sparkles, ArrowRight, ShieldCheck } from 'lucide-react';
+import Modal from './ui/Modal';
 
-export default function SettingsModal({ 
-  isOpen, 
-  onClose, 
-  exchangeRateData, 
-  onRefreshRate, 
-  onExportBackup, 
-  onImportBackup, 
-  onResetDefaults 
-}) {
-  const [manualRateInput, setManualRateInput] = useState(getManualExchangeRate() || '');
-  const [currentPass, setCurrentPass] = useState('');
-  const [newPass, setNewPass] = useState('');
-  const [passMsg, setPassMsg] = useState({ error: '', success: '' });
-  const [rateMsg, setRateMsg] = useState('');
-
-  if (!isOpen) return null;
-
-  const handleSaveRate = (e) => {
-    e.preventDefault();
-    setManualExchangeRate(manualRateInput);
-    onRefreshRate();
-    setRateMsg('¡Tipo de cambio actualizado con éxito!');
-    setTimeout(() => setRateMsg(''), 2500);
+export default function SettingsModal({ account, preferences = {}, onUpdatePreferences, isCurrent = () => true, isOpen, onClose, exchangeRateData, onRefreshRate, onExportBackup, onImportBackup, onResetDefaults, onOpenAssistant }) {
+  const [manualRate, setManualRate] = useState(() => preferences.manualRate ?? '');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const inputRef = useRef(null);
+  const saveRate = async (event, automatic = false) => {
+    event?.preventDefault(); setError(''); setMessage('');
+    const value = automatic || manualRate === '' ? null : Number(manualRate);
+    if (value !== null && (!Number.isFinite(value) || value <= 0)) { setError('Ingresa un tipo de cambio mayor que cero.'); return; }
+    try {
+      if (!isCurrent()) return;
+      onUpdatePreferences({ ...preferences, manualRate: value, manualRateUpdatedAt: value ? new Date().toISOString() : null });
+      if (automatic) setManualRate('');
+      await onRefreshRate();
+      if (isCurrent()) setMessage(value === null ? 'Modo automático seleccionado. Revisa la confirmación de guardado.' : 'Tipo de cambio actualizado. Revisa la confirmación de guardado.');
+    } catch (failure) { setError(failure.message); }
   };
-
-  const handleResetToAutoRate = () => {
-    setManualExchangeRate(null);
-    setManualRateInput('');
-    onRefreshRate();
-    setRateMsg('Restablecido a cotización automática de mercado.');
-    setTimeout(() => setRateMsg(''), 2500);
-  };
-
-  const handleChangePassword = async (e) => {
-    e.preventDefault();
-    setPassMsg({ error: '', success: '' });
-
-    const res = await changePassword(currentPass, newPass);
-    if (res.success) {
-      setPassMsg({ error: '', success: '¡Contraseña actualizada correctamente!' });
-      setCurrentPass('');
-      setNewPass('');
-      setTimeout(() => setPassMsg({ error: '', success: '' }), 2500);
-    } else {
-      setPassMsg({ error: res.error || 'Error al cambiar contraseña', success: '' });
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden my-8">
-        
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold text-white">Ajustes & Configuración</h2>
-          </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white p-1 rounded-lg">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <div className="p-6 space-y-6">
-          
-          {/* Section 1: Exchange Rate */}
-          <div className="p-4 bg-slate-950/60 rounded-xl border border-slate-800">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
-              Tipo de Cambio USD/MXN
-            </h3>
-            <p className="text-xs text-slate-400 mb-3">
-              Actualmente: <strong className="text-white">${exchangeRateData?.rate?.toFixed(4)} MXN</strong> ({exchangeRateData?.source}).
-            </p>
-
-            <form onSubmit={handleSaveRate} className="space-y-3">
-              <div className="flex gap-2">
-                <input
-                  type="number"
-                  step="any"
-                  placeholder="Ej. 19.45 (dejar vacío para auto)"
-                  value={manualRateInput}
-                  onChange={(e) => setManualRateInput(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 font-mono"
-                />
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-emerald-500 text-slate-950 font-bold rounded-lg text-xs shrink-0"
-                >
-                  Fijar
-                </button>
-              </div>
-
-              <div className="flex justify-between items-center text-xs">
-                <button
-                  type="button"
-                  onClick={handleResetToAutoRate}
-                  className="text-emerald-400 hover:underline text-[11px]"
-                >
-                  Usar cotización automática en vivo
-                </button>
-                {rateMsg && <span className="text-emerald-400 font-semibold">{rateMsg}</span>}
-              </div>
-            </form>
-          </div>
-
-          {/* Section 2: Password Change */}
-          <div className="p-4 bg-slate-950/60 rounded-xl border border-slate-800">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
-              Seguridad: Cambiar Contraseña Maestra
-            </h3>
-
-            {passMsg.error && (
-              <p className="text-xs text-red-400 mb-2">{passMsg.error}</p>
-            )}
-            {passMsg.success && (
-              <p className="text-xs text-emerald-400 mb-2">{passMsg.success}</p>
-            )}
-
-            <form onSubmit={handleChangePassword} className="space-y-2.5">
-              <input
-                type="password"
-                required
-                placeholder="Contraseña actual"
-                value={currentPass}
-                onChange={(e) => setCurrentPass(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white"
-              />
-              <input
-                type="password"
-                required
-                placeholder="Nueva contraseña"
-                value={newPass}
-                onChange={(e) => setNewPass(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white"
-              />
-              <button
-                type="submit"
-                className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-lg text-xs transition-colors"
-              >
-                Actualizar Contraseña
-              </button>
-            </form>
-          </div>
-
-          {/* Section 3: Data Backup & Reset */}
-          <div className="p-4 bg-slate-950/60 rounded-xl border border-slate-800">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">
-              Respaldo & Sincronización de Datos
-            </h3>
-
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={onExportBackup}
-                className="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
-              >
-                <Download className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Exportar JSON</span>
-              </button>
-
-              <label className="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition-colors">
-                <Upload className="w-3.5 h-3.5 text-teal-400" />
-                <span>Importar JSON</span>
-                <input
-                  type="file"
-                  accept=".json"
-                  className="hidden"
-                  onChange={onImportBackup}
-                />
-              </label>
-            </div>
-
-            <div className="mt-3 pt-3 border-t border-slate-800/80">
-              <button
-                onClick={onResetDefaults}
-                className="w-full py-2 bg-red-950/30 hover:bg-red-900/40 text-red-400 border border-red-500/20 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Restablecer Valores Iniciales del Excel</span>
-              </button>
-            </div>
-          </div>
-
-        </div>
-      </div>
+  return <Modal isOpen={isOpen} onClose={onClose} title="Tu espacio, a tu manera" description="Preferencias y respaldos de tu cuenta sincronizada.">
+    <div className="space-y-7">
+      {message && <p role="status" className="text-sm rounded-xl p-3 bg-emerald-400/10 text-emerald-300">{message}</p>}
+      {error && <p role="alert" className="text-sm rounded-xl p-3 bg-rose-400/10 text-rose-300">{error}</p>}
+      <section className="flex gap-3 rounded-xl border border-slate-700 p-4"><ShieldCheck className="text-emerald-300 shrink-0" size={22} /><div><h3 className="text-base font-semibold text-white">Cuenta de {account?.displayName}</h3><p className="text-sm text-slate-400 mt-1">Tus registros se sincronizan al entrar con esta misma cuenta. El acceso y la recuperación se gestionan desde ChatGPT.</p></div></section>
+      <section><h3 className="text-base font-semibold text-white">Tipo de cambio</h3><p className="text-sm text-slate-400 mt-1 mb-4">1 USD = {Number(exchangeRateData?.rate || 0).toFixed(4)} MXN · {exchangeRateData?.source}</p><form onSubmit={saveRate}><label className="text-sm text-slate-300" htmlFor="settings-fx">MXN por cada USD</label><div className="flex gap-2 mt-2"><input id="settings-fx" type="number" step="0.0001" min="0.0001" value={manualRate} onChange={event => setManualRate(event.target.value)} placeholder="Vacío: automático" className="field-input min-w-0" /><button className="button-primary" type="submit">Guardar</button></div></form><button className="button-ghost mt-2" onClick={event => saveRate(event, true)}><RefreshCw size={15} />Usar cambio automático</button></section>
+      <section className="border-t border-[#223248] pt-6"><h3 className="text-base font-semibold text-white">Tus datos y respaldos</h3><p className="text-sm text-slate-400 mt-1 mb-4">Descarga una copia adicional o importa tus registros. Un respaldo de otra cuenta no reemplazará los tuyos.</p><div className="grid sm:grid-cols-2 gap-2"><button className="button-secondary" onClick={onExportBackup}><Download size={16} />Descargar respaldo</button><button className="button-secondary" onClick={() => inputRef.current?.click()}><Upload size={16} />Importar mis registros</button><input ref={inputRef} type="file" accept=".json,application/json" aria-label="Archivo de respaldo JSON" className="sr-only" tabIndex={-1} onChange={onImportBackup} /></div></section>
+      <section className="border-t border-[#223248] pt-6"><button onClick={onOpenAssistant} className="flex w-full items-center gap-3 rounded-xl p-4 text-left bg-[#B8AFF8]/10 border border-[#B8AFF8]/20"><Sparkles size={23} className="text-[#B8AFF8] shrink-0" /><span className="flex-1"><strong className="block text-sm text-white">Conexión con Claude</strong><span className="text-sm text-slate-400">Consulta el estado de la IA de tu cuenta.</span></span><ArrowRight size={17} className="text-[#B8AFF8]" /></button></section>
+      <details className="border-t border-[#223248] pt-5"><summary className="cursor-pointer text-sm text-slate-400 py-2">Vaciar los registros de {account?.displayName}</summary><p className="text-sm text-slate-400 mt-2 mb-4">Vacía esta cuenta en todos tus dispositivos y conserva tu acceso. Descarga un respaldo primero.</p><button className="button-secondary text-rose-300" onClick={onResetDefaults}>Vaciar esta cuenta</button></details>
     </div>
-  );
+  </Modal>;
 }

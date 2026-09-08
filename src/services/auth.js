@@ -1,69 +1,25 @@
-// Módulo de autenticación simple y seguro para proteger la sesión del usuario
+export const SIGN_IN_PATH = '/signin-with-chatgpt?return_to=%2F';
+export const SIGN_OUT_PATH = '/signout-with-chatgpt?return_to=%2F';
 
-const AUTH_TOKEN_KEY = 'gairo_auth_session';
-const PASS_HASH_KEY = 'gairo_master_pass_hash';
-const DEFAULT_USER = 'gairo';
-const DEFAULT_PASS = 'gairo2026';
-
-// Hashing simple con SHA-256 en navegador
-async function hashString(str) {
-  const msgBuffer = new TextEncoder().encode(str);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+export class AccountError extends Error {
+  constructor(message, code = 'NETWORK_ERROR', status = 0) { super(message); this.code = code; this.status = status; }
 }
-
-export async function initAuth() {
-  if (!localStorage.getItem(PASS_HASH_KEY)) {
-    const defaultHash = await hashString(DEFAULT_PASS);
-    localStorage.setItem(PASS_HASH_KEY, defaultHash);
-  }
-}
-
-export async function login(username, password) {
-  await initAuth();
-  const inputHash = await hashString(password);
-  const storedHash = localStorage.getItem(PASS_HASH_KEY);
-
-  // Permitir usuario 'gairo' (o insensible a mayúsculas) y validación de hash
-  if ((username.trim().toLowerCase() === DEFAULT_USER || username.trim().length > 0) && inputHash === storedHash) {
-    const sessionToken = btoa(JSON.stringify({
-      user: username.trim(),
-      loginTime: Date.now()
-    }));
-    sessionStorage.setItem(AUTH_TOKEN_KEY, sessionToken);
-    return { success: true };
-  }
-  return { success: false, error: 'Usuario o contraseña incorrectos' };
-}
-
-export function isAuthenticated() {
-  const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
-  if (!token) return false;
+export async function accountRequest(path, { accountId, method = 'GET', body, signal } = {}) {
+  let response;
   try {
-    const parsed = JSON.parse(atob(token));
-    return Boolean(parsed && parsed.user);
-  } catch {
-    return false;
+    response = await fetch(path, { method, credentials: 'same-origin', cache: 'no-store', signal,
+      headers: { Accept: 'application/json', ...(accountId ? { 'X-Sifran-Account': accountId } : {}), ...(body ? { 'Content-Type': 'application/json' } : {}) },
+      ...(body ? { body: JSON.stringify(body) } : {}),
+    });
+  } catch (error) {
+    if (error.name === 'AbortError') throw error;
+    throw new AccountError('Sin conexión. Tus cambios pendientes siguen en esta pestaña.');
   }
+  if (!response.headers.get('content-type')?.includes('application/json')) throw new AccountError('Abre la versión de Sifran conectada para iniciar sesión.', 'SERVICE_UNAVAILABLE', response.status);
+  const data = await response.json();
+  if (!response.ok) throw new AccountError(data.error?.message || 'No se pudo completar la operación.', data.error?.code, response.status);
+  if (accountId && data.accountId && accountId !== data.accountId) throw new AccountError('La cuenta cambió. Vuelve a iniciar sesión.', 'ACCOUNT_CHANGED', 409);
+  return data;
 }
-
-export function logout() {
-  sessionStorage.removeItem(AUTH_TOKEN_KEY);
-}
-
-export async function changePassword(currentPassword, newPassword) {
-  const currentHash = await hashString(currentPassword);
-  const storedHash = localStorage.getItem(PASS_HASH_KEY);
-
-  if (currentHash !== storedHash) {
-    return { success: false, error: 'La contraseña actual no coincide' };
-  }
-  if (!newPassword || newPassword.length < 4) {
-    return { success: false, error: 'La nueva contraseña debe tener al menos 4 caracteres' };
-  }
-
-  const newHash = await hashString(newPassword);
-  localStorage.setItem(PASS_HASH_KEY, newHash);
-  return { success: true };
-}
+export const getSession = ({ signal } = {}) => accountRequest('/api/session', { signal });
+export const claimAccount = ({ signal } = {}) => accountRequest('/api/session/claim', { method: 'POST', body: {}, signal });
