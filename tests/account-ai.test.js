@@ -19,7 +19,7 @@ describe('Account-bound Claude with real SQLite quota and workspace', () => {
   beforeEach(async () => {
     DB = await createTestD1(); env = { DB, SIFRAN_GAIRO_EMAIL: 'gairo@example.test', ANTHROPIC_API_KEY: 'synthetic-provider-key' };
     await bindAccount(DB, env, { userId: account.userId, email: env.SIFRAN_GAIRO_EMAIL });
-    await putWorkspace(DB, 'gairo', { schemaVersion: 1, baseRevision: 0, mutationId: crypto.randomUUID(), financialData: data });
+    await putWorkspace(DB, account, { schemaVersion: 1, baseRevision: 0, mutationId: crypto.randomUUID(), financialData: data });
   });
   afterEach(() => DB?.close());
   it('rebuilds only the authorized workspace and releases its lease', async () => {

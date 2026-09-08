@@ -30,30 +30,33 @@ import {
   calculateResicoVsPfae 
 } from '../services/calculators.js';
 import { formatMoney } from '../services/exchangeRate.js';
+import { calculateCashFlow } from '../services/financeEngine.js';
 
-export default function FinancialCalculatorsHub({ financialData, exchangeRate, initialCalculator = 'cat' }) {
+export default function FinancialCalculatorsHub({ financialData = {}, exchangeRate, initialCalculator = 'cat' }) {
+  const cashFlow = calculateCashFlow(financialData, exchangeRate);
+  const annualIncome = cashFlow.fiscal.importeFacturado * 12;
   const validCalculators = ['cat', 'msi', 'windfall', 'hormiga', 'rule503020', 'refinance', 'fire', 'horas', 'rentVsBuy', 'realYield', 'deductions', 'resico'];
   const [activeCalc, setActiveCalc] = useState(validCalculators.includes(initialCalculator) ? initialCalculator : 'cat');
   useEffect(() => { setActiveCalc(validCalculators.includes(initialCalculator) ? initialCalculator : 'cat'); }, [initialCalculator]);
 
   // Estados para cada calculadora
-  const [catInput, setCatInput] = useState({ saldo: 50000, tasa: 49.03, plazo: 12, anualidad: 1131, comision: 0 });
-  const [msiInput, setMsiInput] = useState({ precio: 25000, desc: 10, meses: 12, tasaInv: 9.5 });
-  const [windfallInput, setWindfallInput] = useState(30000);
-  const [hormigaInput, setHormigaInput] = useState({ diario: 85, dias: 24, tasa: 9.5 });
+  const [catInput, setCatInput] = useState({ saldo: 0, tasa: 0, plazo: 12, anualidad: 0, comision: 0 });
+  const [msiInput, setMsiInput] = useState({ precio: 0, desc: 0, meses: 12, tasaInv: 0 });
+  const [windfallInput, setWindfallInput] = useState(0);
+  const [hormigaInput, setHormigaInput] = useState({ diario: 0, dias: 30, tasa: 0 });
   const [rule503020Input, setRule503020Input] = useState({
-    neto: 51761.70,
-    necesidades: 27000,
-    deseos: 5500,
-    ahorroDeuda: 12850
+    neto: cashFlow.fiscal.ingresoDisponibleReal,
+    necesidades: cashFlow.totalCostodeVida,
+    deseos: cashFlow.totalGastosOpcionales,
+    ahorroDeuda: cashFlow.totalPagosMinimosMXN
   });
-  const [refinanceInput, setRefinanceInput] = useState({ saldo: 120000, tasaVieja: 49.03, tasaNueva: 18.5, plazo: 24 });
-  const [fireInput, setFireInput] = useState({ gastosAnuales: 324000, patrimonio: 45000, ahorro: 10000, tasa: 9.0 });
-  const [horasInput, setHorasInput] = useState({ neto: 51761, horas: 160, precio: 3500 });
-  const [rentVsBuyInput, setRentVsBuyInput] = useState({ renta: 8500, precio: 2200000, enganchePct: 20, tasaHip: 10.5 });
-  const [realYieldInput, setRealYieldInput] = useState({ nominal: 9.5, inflacion: 4.5, isr: 0.50 });
-  const [deductionsInput, setDeductionsInput] = useState({ medicos: 18000, ppr: 30000, colegiaturas: 0 });
-  const [resicoInput, setResicoInput] = useState({ facturacion: 651549, gastos: 250000 });
+  const [refinanceInput, setRefinanceInput] = useState({ saldo: 0, tasaVieja: 0, tasaNueva: 0, plazo: 24 });
+  const [fireInput, setFireInput] = useState({ gastosAnuales: (cashFlow.totalCostodeVida + cashFlow.totalGastosOpcionales) * 12, patrimonio: 0, ahorro: 0, tasa: 0 });
+  const [horasInput, setHorasInput] = useState({ neto: cashFlow.fiscal.ingresoDisponibleReal, horas: 160, precio: 0 });
+  const [rentVsBuyInput, setRentVsBuyInput] = useState({ renta: 0, precio: 0, enganchePct: 20, tasaHip: 0 });
+  const [realYieldInput, setRealYieldInput] = useState({ nominal: 0, inflacion: 0, isr: 0 });
+  const [deductionsInput, setDeductionsInput] = useState({ medicos: 0, ppr: 0, colegiaturas: 0 });
+  const [resicoInput, setResicoInput] = useState({ facturacion: annualIncome, gastos: 0 });
 
   // Cálculos reactivos
   const catRes = calculateCATReal(catInput.saldo, catInput.tasa, catInput.plazo, catInput.anualidad, catInput.comision);
@@ -66,7 +69,7 @@ export default function FinancialCalculatorsHub({ financialData, exchangeRate, i
   const horasRes = calculateWorkHoursCost(horasInput.neto, horasInput.horas, horasInput.precio);
   const rentBuyRes = calculateRentVsBuy(rentVsBuyInput.renta, rentVsBuyInput.precio, rentVsBuyInput.enganchePct, rentVsBuyInput.tasaHip);
   const realYieldRes = calculateRealYield(realYieldInput.nominal, realYieldInput.inflacion, realYieldInput.isr);
-  const deductionsRes = calculatePersonalTaxDeductions(651549, deductionsInput.medicos, deductionsInput.ppr, deductionsInput.colegiaturas);
+  const deductionsRes = calculatePersonalTaxDeductions(annualIncome, deductionsInput.medicos, deductionsInput.ppr, deductionsInput.colegiaturas);
   const resicoRes = calculateResicoVsPfae(resicoInput.facturacion, resicoInput.gastos);
 
   const calcList = [
@@ -507,11 +510,17 @@ export default function FinancialCalculatorsHub({ financialData, exchangeRate, i
               <div>
                 <span className="text-[10px] uppercase font-bold text-slate-400 block">Tu Número FIRE (Regla del 4%)</span>
                 <span className="text-2xl font-black text-emerald-400 font-mono mt-0.5 block">{formatMoney(fireRes.numeroFIRE, 'MXN')}</span>
-                <span className="text-[11px] text-slate-400">Patrimonio invertido que te mantiene de por vida</span>
+                <span className="text-[11px] text-slate-400">Meta estimada con una tasa de retiro del 4%</span>
               </div>
               <div>
                 <span className="text-[10px] uppercase font-bold text-teal-400 block">Años para Alcanzar el Retiro</span>
-                <span className="text-2xl font-black text-teal-300 font-mono mt-0.5 block">{fireRes.anosParaRetiro} años</span>
+                {Number(fireInput.gastosAnuales) <= 0 ? (
+                  <span className="text-sm text-slate-300 mt-1 block">Completa los datos del escenario</span>
+                ) : fireRes.anosParaRetiro === 99 ? (
+                  <span className="text-sm text-slate-300 mt-1 block">Sin proyección con estos aportes y rendimiento</span>
+                ) : (
+                  <span className="text-2xl font-black text-teal-300 font-mono mt-0.5 block">{fireRes.anosParaRetiro >= 50 ? '50 años o más' : `${fireRes.anosParaRetiro} años`}</span>
+                )}
                 <span className="text-[11px] text-slate-400">Manteniendo tu ritmo de ahorro e inversión</span>
               </div>
             </div>

@@ -24,6 +24,7 @@ const ACQUIRE_LEASE_SQL = `
   INSERT INTO ai_limits (account_id, window_start, request_count, lease_id, lease_until)
   SELECT ?1, ?2, 1, ?3, ?4
   WHERE EXISTS (SELECT 1 FROM workspaces WHERE account_id = ?1 AND revision = ?5)
+    AND EXISTS (SELECT 1 FROM accounts WHERE account_id = ?1 AND user_id = ?7)
   ON CONFLICT(account_id) DO UPDATE SET
     window_start = CASE WHEN ai_limits.window_start <= ?6 THEN excluded.window_start ELSE ai_limits.window_start END,
     request_count = CASE WHEN ai_limits.window_start <= ?6 THEN 1 ELSE ai_limits.request_count + 1 END,
@@ -84,9 +85,10 @@ export async function validateWebPDF(input) {
   return { name, base64: file.base64, sha256 }
 }
 
-async function readWorkspace(db, accountId, expectedRevision) {
-  const row = await db.prepare('SELECT data_json, revision FROM workspaces WHERE account_id = ?').bind(accountId).first()
-  if (!row) reject(409, 'WORKSPACE_NOT_READY', 'Abre y guarda tu espacio financiero antes de usar Claude.')
+async function readWorkspace(db, account, expectedRevision) {
+  const row = await db.prepare('SELECT a.account_id, w.data_json, w.revision FROM accounts AS a LEFT JOIN workspaces AS w ON w.account_id = a.account_id WHERE a.account_id = ? AND a.user_id = ?').bind(account.id, account.userId).first()
+  if (!row) reject(403, 'ACCOUNT_NOT_ALLOWED', 'Tu acceso ya no tiene esta cuenta asignada.')
+  if (row.revision == null) reject(409, 'WORKSPACE_NOT_READY', 'Abre y guarda tu espacio financiero antes de usar Claude.')
   if (row.revision !== expectedRevision) reject(409, 'WORKSPACE_REVISION_CONFLICT', 'Tus datos cambiaron. Sincroniza el espacio y vuelve a preparar la consulta.')
   let financialData
   try {
@@ -117,13 +119,13 @@ function accountContext(financialData, supplied, time) {
   return rebuilt
 }
 
-async function acquireLease(db, accountId, revision, time) {
+async function acquireLease(db, account, revision, time) {
   const leaseId = crypto.randomUUID()
-  const lease = await db.prepare(ACQUIRE_LEASE_SQL).bind(accountId, time, leaseId, time + LEASE_MS, revision, time - WINDOW_MS).first()
+  const lease = await db.prepare(ACQUIRE_LEASE_SQL).bind(account.id, time, leaseId, time + LEASE_MS, revision, time - WINDOW_MS, account.userId).first()
   if (lease && lease.lease_id === leaseId && Number.isSafeInteger(lease.request_count) && lease.request_count >= 1 && lease.request_count <= MAX_REQUESTS && lease.lease_until === time + LEASE_MS) return lease
-  const workspace = await db.prepare('SELECT revision FROM workspaces WHERE account_id = ?').bind(accountId).first()
-  if (!workspace || workspace.revision !== revision) reject(409, 'WORKSPACE_REVISION_CONFLICT', 'Tus datos cambiaron. Sincroniza el espacio y vuelve a preparar la consulta.')
-  const current = await db.prepare('SELECT window_start, request_count, lease_until FROM ai_limits WHERE account_id = ?').bind(accountId).first()
+  const current = await db.prepare('SELECT a.account_id, w.revision, l.window_start, l.request_count, l.lease_until FROM accounts AS a LEFT JOIN workspaces AS w ON w.account_id = a.account_id LEFT JOIN ai_limits AS l ON l.account_id = a.account_id WHERE a.account_id = ? AND a.user_id = ?').bind(account.id, account.userId).first()
+  if (!current) reject(403, 'ACCOUNT_NOT_ALLOWED', 'Tu acceso ya no tiene esta cuenta asignada.')
+  if (current.revision == null || current.revision !== revision) reject(409, 'WORKSPACE_REVISION_CONFLICT', 'Tus datos cambiaron. Sincroniza el espacio y vuelve a preparar la consulta.')
   if (current?.lease_until > time) reject(429, 'AI_IN_FLIGHT', 'Espera a que termine la solicitud de Claude en esta cuenta.', Math.max(1, Math.ceil((current.lease_until - time) / 1000)))
   if (current && current.window_start > time - WINDOW_MS && current.request_count >= MAX_REQUESTS) reject(429, 'RATE_LIMITED', 'Esta cuenta alcanzó el límite de 20 solicitudes por hora. Inténtalo más tarde.', Math.max(1, Math.ceil((current.window_start + WINDOW_MS - time) / 1000)))
   reject(503, 'AI_QUOTA_UNAVAILABLE', 'No se pudo reservar una solicitud de Claude. Inténtalo más tarde.')
@@ -241,11 +243,12 @@ export async function handleAccountAI(request, env, account, { fetchImpl = fetch
     const data = input.action === 'chat' ? validateChat(payload) : await validateWebPDF(payload)
     if (!env.DB?.prepare) reject(503, 'AI_QUOTA_UNAVAILABLE', 'No se pudo verificar el espacio ni la cuota de Claude.')
     // Primary-first sessions preserve read-your-writes when D1 replication is enabled.
-    db = env.DB.withSession ? env.DB.withSession('first-primary') : env.DB
-    const financialData = await readWorkspace(db, account.id, metadata.workspaceRevision)
+    // Keep authorization reads on the primary; do not reuse replica sessions.
+    db = env.DB
+    const financialData = await readWorkspace(db, account, metadata.workspaceRevision)
     const context = input.action === 'chat' ? accountContext(financialData, data.context, now()) : null
     if (request.signal?.aborted) reject(409, 'AI_CANCELLED', 'La solicitud se canceló antes de enviarse.')
-    lease = await acquireLease(db, account.id, metadata.workspaceRevision, now())
+    lease = await acquireLease(db, account, metadata.workspaceRevision, now())
     const remainingLeaseMs = lease.lease_until - now() - 1000
     if (remainingLeaseMs <= 0) reject(503, 'AI_QUOTA_UNAVAILABLE', 'La reserva de Claude expiró antes de iniciar. Vuelve a intentarlo.')
     const options = { signal: request.signal, timeoutMs: Math.min(UPSTREAM_TIMEOUT_MS, remainingLeaseMs) }

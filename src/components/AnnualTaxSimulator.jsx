@@ -1,10 +1,12 @@
 import React, { useRef, useState } from 'react';
 import { Landmark } from 'lucide-react';
+import { calculateFiscalOverview } from '../services/financeEngine.js';
 
 export default function AnnualTaxSimulator({ financialData = {} }) {
-  const [ingresosAnuales, setIngresosAnuales] = useState((financialData.honorarios?.facturaSinIva || 54295.79) * 12);
-  const [deduccionesPersonales, setDeduccionesPersonales] = useState(35000);
-  const [retencionesEfectuadas, setRetencionesEfectuadas] = useState((financialData.honorarios?.retencionIsr || 5429.58) * 12);
+  const fiscal = calculateFiscalOverview(financialData.honorarios);
+  const [ingresosAnuales, setIngresosAnuales] = useState(fiscal.importeFacturado * 12);
+  const [deduccionesPersonales, setDeduccionesPersonales] = useState(0);
+  const [retencionesEfectuadas, setRetencionesEfectuadas] = useState(fiscal.retencionIsr * 12);
   const [rfcSixthDigit, setRfcSixthDigit] = useState('4');
   const resultRef = useRef(null);
 

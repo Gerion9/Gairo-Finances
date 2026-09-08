@@ -21,7 +21,10 @@ export async function handleSiteRequest(request, env, { html = '', ai = handleAc
     if (!identity && path === '/api/session' && request.method === 'GET') return json({ authenticated: false, access: 'pending', account: null });
     if (!identity) throw new WorkspaceError(401, 'AUTH_REQUIRED', 'Inicia sesión para acceder a tu cuenta.');
     if (!env.DB?.prepare) throw new WorkspaceError(503, 'STORAGE_UNAVAILABLE', 'La sincronización todavía no está disponible. Tus datos no se han reemplazado.');
-    const db = env.DB.withSession ? env.DB.withSession('first-primary') : env.DB;
+    // D1 without Sessions API runs every statement on the primary. Revocation
+    // must not depend on replica lag after the first authorization query.
+    // https://developers.cloudflare.com/d1/best-practices/read-replication/
+    const db = env.DB;
     if (!['GET', 'HEAD'].includes(request.method)) {
       if (request.headers.get('origin') !== SITE_ORIGIN || request.headers.get('sec-fetch-site') === 'cross-site') throw new WorkspaceError(403, 'ORIGIN_DENIED', 'El origen de la solicitud no está autorizado.');
     }
@@ -33,12 +36,12 @@ export async function handleSiteRequest(request, env, { html = '', ai = handleAc
     }
     const account = await requireAccount(db, request, identity);
     if (path === '/api/workspace' && request.method === 'GET') {
-      const { receipts, ...workspace } = await getWorkspace(db, account.id);
+      const { receipts, ...workspace } = await getWorkspace(db, account);
       return json(workspace, 200, { ETag: `"ws-${workspace.revision}"` });
     }
     if ((path === '/api/workspace' && request.method === 'PUT') || (path === '/api/workspace/migrate' && request.method === 'POST')) {
       const input = await readJSON(request, 1_600_000);
-      return json(await putWorkspace(db, account.id, input, { migration: path.endsWith('/migrate') }));
+      return json(await putWorkspace(db, account, input, { migration: path.endsWith('/migrate') }));
     }
     if (path === '/api/ai') {
       const result = await ai(request, { ...env, DB: db }, account);
@@ -51,4 +54,3 @@ export async function handleSiteRequest(request, env, { html = '', ai = handleAc
     return json({ error: { code: safe.code, message: safe.message } }, safe.status);
   }
 }
-

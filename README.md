@@ -22,6 +22,8 @@ El acceso usa las rutas gestionadas `/signin-with-chatgpt` y `/signout-with-chat
 
 Cada solicitud comprueba la cuenta esperada antes de leer finanzas o consumir Claude. Además, Sites limita quién puede abrir el sitio. El proyecto empieza privado para su propietario. Activar Ricardo requiere su correo de acceso y añadirlo al público autorizado del Site. Ricardo comienza vacío; no se comparten contraseñas ni datos entre ambos.
 
+Una corrección de correo de una cuenta ya activada requiere un permiso de transferencia explícito del administrador: `SIFRAN_<CUENTA>_REBIND_FROM_USER_ID`, `SIFRAN_<CUENTA>_REBIND_TO_EMAIL` y `SIFRAN_<CUENTA>_REBIND_UNTIL` (fecha ISO UTC), junto con la invitación al nuevo correo. El identificador anterior debe obtenerse del registro real, nunca inferirse de un nombre o correo. La nueva persona autenticada debe pulsar **Activar mi cuenta** antes de que venza el permiso. La operación conserva los registros y la cuota de la cuenta, reemplaza el sujeto exacto y consume el permiso al cambiarlo. Después, elimina esas tres variables del entorno. Modificar sólo el correo de invitación no transfiere una cuenta ocupada.
+
 Se sincronizan movimientos, deudas, activos, presupuesto, pagos marcados, escenarios de ahorro, progreso de educación, moneda y tipo de cambio manual. La vista privada, sonidos y respuesta háptica son preferencias del dispositivo. Conversaciones y archivos seleccionados permanecen en memoria de la pestaña.
 
 Los cambios se envían automáticamente tras una pausa breve. **«Guardado en la nube» sólo aparece después de la confirmación del servidor.** La app busca cambios cada 15 segundos mientras está visible, al recuperar el foco, al reconectar y mediante el botón de actualización. No promete colaboración en tiempo real.

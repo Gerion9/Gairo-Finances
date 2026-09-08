@@ -94,6 +94,84 @@ describe('Sites account authorization and durable workspace isolation', () => {
     expect((await db.prepare('SELECT user_id FROM accounts WHERE account_id = ?').bind('gairo').first()).user_id).toBe(GAIRO.userId);
   });
 
+  describe('explicit server-authorized email correction', () => {
+    const replacement = { userId: 'siwc-gairo-replacement', email: 'gairo-new@example.test' };
+    const authorizeTransfer = () => Object.assign(env, {
+      SIFRAN_GAIRO_EMAIL: replacement.email,
+      SIFRAN_GAIRO_REBIND_FROM_USER_ID: GAIRO.userId,
+      SIFRAN_GAIRO_REBIND_TO_EMAIL: replacement.email,
+      SIFRAN_GAIRO_REBIND_UNTIL: new Date(Date.now() + 60_000).toISOString(),
+    });
+
+    it('requires activation, preserves the account records and quota, and rejects the previous subject afterward', async () => {
+      await claim();
+      const originalAccount = await db.prepare('SELECT * FROM accounts WHERE account_id = ?').bind('gairo').first();
+      const saved = await call('/api/workspace', { accountId: 'gairo', method: 'PUT', body: mutation(0, financialData('gairo', 'preserved-record', 87)) });
+      expect(saved.response.status).toBe(200);
+      await db.prepare('INSERT INTO ai_limits (account_id, window_start, request_count, lease_id, lease_until) VALUES (?, ?, ?, ?, ?)').bind('gairo', 1000, 2, null, 0).run();
+      const originalWorkspace = await db.prepare('SELECT * FROM workspaces WHERE account_id = ?').bind('gairo').first();
+      const originalQuota = await db.prepare('SELECT * FROM ai_limits WHERE account_id = ?').bind('gairo').first();
+      authorizeTransfer();
+
+      expect((await call('/api/session', { identity: replacement })).value).toMatchObject({ access: 'invited', invitedName: 'Gairo', account: null });
+      expect(await db.prepare('SELECT * FROM accounts WHERE account_id = ?').bind('gairo').first()).toEqual(originalAccount);
+      expect(await claim(replacement)).toMatchObject({ id: 'gairo', userId: replacement.userId });
+      expect(await db.prepare('SELECT * FROM accounts WHERE account_id = ?').bind('gairo').first()).toEqual({ ...originalAccount, user_id: replacement.userId, email_at_binding: replacement.email });
+      expect(await db.prepare('SELECT * FROM workspaces WHERE account_id = ?').bind('gairo').first()).toEqual(originalWorkspace);
+      expect(await db.prepare('SELECT * FROM ai_limits WHERE account_id = ?').bind('gairo').first()).toEqual(originalQuota);
+      expect((await call('/api/workspace', { identity: replacement, accountId: 'gairo' })).response.status).toBe(200);
+      expect((await call('/api/workspace', { identity: GAIRO, accountId: 'gairo' })).response.status).toBe(403);
+      expect((await call('/api/session/claim', { identity: GAIRO, method: 'POST', body: {} })).response.status).toBe(403);
+      expect(await claim(replacement)).toMatchObject({ id: 'gairo', userId: replacement.userId });
+    });
+
+    it.each([
+      ['SIFRAN_GAIRO_REBIND_FROM_USER_ID', ''],
+      ['SIFRAN_GAIRO_REBIND_FROM_USER_ID', RICARDO.userId],
+      ['SIFRAN_GAIRO_REBIND_TO_EMAIL', 'another@example.test'],
+      ['SIFRAN_GAIRO_REBIND_UNTIL', ''],
+      ['SIFRAN_GAIRO_REBIND_UNTIL', 'invalid-date'],
+      ['SIFRAN_GAIRO_REBIND_UNTIL', '2000-01-01T00:00:00.000Z'],
+    ])('keeps the original binding when %s is %s', async (key, value) => {
+      await claim();
+      authorizeTransfer();
+      env[key] = value;
+      expect((await call('/api/session', { identity: replacement })).value.access).toBe('pending');
+      expect((await call('/api/session/claim', { identity: replacement, method: 'POST', body: {} })).response.status).toBe(403);
+      expect((await db.prepare('SELECT user_id FROM accounts WHERE account_id = ?').bind('gairo').first()).user_id).toBe(GAIRO.userId);
+    });
+
+    it('does not transfer from a different email or from an untrusted request origin', async () => {
+      await claim();
+      authorizeTransfer();
+      const wrongEmail = { ...replacement, email: 'gairo-new+other@example.test' };
+      expect((await call('/api/session/claim', { identity: wrongEmail, method: 'POST', body: {} })).response.status).toBe(403);
+      expect((await call('/api/session/claim', { identity: replacement, method: 'POST', body: {}, origin: 'https://untrusted.example.test' })).response.status).toBe(403);
+      expect((await db.prepare('SELECT user_id FROM accounts WHERE account_id = ?').bind('gairo').first()).user_id).toBe(GAIRO.userId);
+    });
+
+    it('consumes the exact previous-subject grant only once when two verified subjects race', async () => {
+      await claim();
+      authorizeTransfer();
+      const contenders = [replacement, { ...replacement, userId: 'another-new-subject' }];
+      const results = await Promise.all(contenders.map(identity => call('/api/session/claim', { identity, method: 'POST', body: {} })));
+      expect(results.map(result => result.response.status).sort()).toEqual([200, 403]);
+      const winner = contenders[results.findIndex(result => result.response.status === 200)];
+      expect((await db.prepare('SELECT user_id FROM accounts WHERE account_id = ?').bind('gairo').first()).user_id).toBe(winner.userId);
+      const replay = { ...replacement, userId: 'later-new-subject' };
+      expect((await call('/api/session/claim', { identity: replay, method: 'POST', body: {} })).response.status).toBe(403);
+    });
+
+    it('does not move an identity that is already bound to the other account', async () => {
+      await claim();
+      await claim(RICARDO);
+      authorizeTransfer();
+      const existingSubject = { ...replacement, userId: RICARDO.userId };
+      expect(await claim(existingSubject)).toMatchObject({ id: 'ricardo', userId: RICARDO.userId });
+      expect((await db.prepare('SELECT user_id FROM accounts WHERE account_id = ?').bind('gairo').first()).user_id).toBe(GAIRO.userId);
+    });
+  });
+
   it('denies ambiguous invitations when both configured slots have the same email', async () => {
     env.SIFRAN_GAIRO_EMAIL = ' SHARED@example.test ';
     env.SIFRAN_RICARDO_EMAIL = 'shared@EXAMPLE.TEST';
@@ -164,7 +242,7 @@ describe('Sites account authorization and durable workspace isolation', () => {
 
   it.each([0, 1])('allows only one simultaneous writer at revision %i', async baseRevision => {
     await claim();
-    if (baseRevision === 1) await putWorkspace(db, 'gairo', mutation(0, financialData('gairo', 'initial')));
+    if (baseRevision === 1) await putWorkspace(db, { id: 'gairo', userId: GAIRO.userId }, mutation(0, financialData('gairo', 'initial')));
     const a = mutation(baseRevision, financialData('gairo', 'writer-a', 101));
     const b = mutation(baseRevision, financialData('gairo', 'writer-b', 202));
     const results = await Promise.all([a, b].map(body => call('/api/workspace', { accountId: 'gairo', method: 'PUT', body })));
@@ -183,7 +261,7 @@ describe('Sites account authorization and durable workspace isolation', () => {
     expect(first.value).toMatchObject({ acceptedRevision: 1, currentRevision: 1, replayed: false });
     const retry = await call('/api/workspace', { accountId: 'gairo', method: 'PUT', body });
     expect(retry.value).toMatchObject({ mutationId: body.mutationId, acceptedRevision: 1, currentRevision: 1, replayed: true });
-    expect((await getWorkspace(db, 'gairo')).receipts).toHaveLength(1);
+    expect((await getWorkspace(db, { id: 'gairo', userId: GAIRO.userId })).receipts).toHaveLength(1);
   });
 
   it('rejects reuse of an operation key for changed data without replacing the first write', async () => {
@@ -194,7 +272,7 @@ describe('Sites account authorization and durable workspace isolation', () => {
     const result = await call('/api/workspace', { accountId: 'gairo', method: 'PUT', body: reused });
     expect(result.response.status).toBe(409);
     expect(result.value.error.code).toBe('IDEMPOTENCY_KEY_REUSED');
-    const stored = await getWorkspace(db, 'gairo');
+    const stored = await getWorkspace(db, { id: 'gairo', userId: GAIRO.userId });
     expect(stored.revision).toBe(1);
     expect(stored.financialData.transacciones[0].id).toBe('first');
   });
@@ -206,7 +284,7 @@ describe('Sites account authorization and durable workspace isolation', () => {
     await call('/api/workspace', { accountId: 'gairo', method: 'PUT', body: mutation(1, financialData('gairo', 'new')) });
     const replay = await call('/api/workspace', { accountId: 'gairo', method: 'PUT', body: first });
     expect(replay.value).toMatchObject({ acceptedRevision: 1, currentRevision: 2, replayed: true });
-    expect((await getWorkspace(db, 'gairo')).financialData.transacciones[0].id).toBe('new');
+    expect((await getWorkspace(db, { id: 'gairo', userId: GAIRO.userId })).financialData.transacciones[0].id).toBe('new');
   });
 
   it('restricts legacy migration to Gairo revision zero while permitting identical migration retries', async () => {
@@ -215,7 +293,7 @@ describe('Sites account authorization and durable workspace isolation', () => {
     const body = mutation(0, financialData('gairo', 'legacy'));
     const denied = await call('/api/workspace/migrate', { identity: RICARDO, accountId: 'ricardo', method: 'POST', body });
     expect(denied.value.error.code).toBe('MIGRATION_NOT_ALLOWED');
-    expect((await getWorkspace(db, 'ricardo')).revision).toBe(0);
+    expect((await getWorkspace(db, { id: 'ricardo', userId: RICARDO.userId })).revision).toBe(0);
     const accepted = await call('/api/workspace/migrate', { accountId: 'gairo', method: 'POST', body });
     expect(accepted.value).toMatchObject({ acceptedRevision: 1, replayed: false });
     const retry = await call('/api/workspace/migrate', { accountId: 'gairo', method: 'POST', body });
@@ -224,17 +302,17 @@ describe('Sites account authorization and durable workspace isolation', () => {
     expect(later.value.error.code).toBe('MIGRATION_NOT_ALLOWED');
     const newOperation = await call('/api/workspace/migrate', { accountId: 'gairo', method: 'POST', body: mutation(0, financialData('gairo', 'other')) });
     expect(newOperation.value.error.code).toBe('REVISION_CONFLICT');
-    expect((await getWorkspace(db, 'gairo')).financialData.transacciones[0].id).toBe('legacy');
+    expect((await getWorkspace(db, { id: 'gairo', userId: GAIRO.userId })).financialData.transacciones[0].id).toBe('legacy');
   });
 
   it('derives backup ownership from the authorized account without mutating the input object', async () => {
     await claim(RICARDO);
     const body = mutation(0, { ...financialData('ricardo'), profileId: 'gairo', profileName: 'Gairo' });
     const before = structuredClone(body);
-    await putWorkspace(db, 'ricardo', body);
+    await putWorkspace(db, { id: 'ricardo', userId: RICARDO.userId }, body);
     expect(body).toEqual(before);
-    expect((await getWorkspace(db, 'ricardo')).financialData).toMatchObject({ profileId: 'ricardo', profileName: 'Ricardo' });
-    expect((await getWorkspace(db, 'gairo')).revision).toBe(0);
+    expect((await getWorkspace(db, { id: 'ricardo', userId: RICARDO.userId })).financialData).toMatchObject({ profileId: 'ricardo', profileName: 'Ricardo' });
+    expect(await db.prepare('SELECT revision FROM workspaces WHERE account_id = ?').bind('gairo').first()).toBeNull();
   });
 
   it('keeps the prior workspace unchanged after validation or size rejection', async () => {
@@ -250,7 +328,7 @@ describe('Sites account authorization and durable workspace isolation', () => {
     const large = await call('/api/workspace', { accountId: 'gairo', method: 'PUT', body: oversized });
     expect(large.response.status).toBe(413);
     expect(large.value.error.code).toBe('WORKSPACE_TOO_LARGE');
-    expect((await getWorkspace(db, 'gairo')).revision).toBe(0);
+    expect((await getWorkspace(db, { id: 'gairo', userId: GAIRO.userId })).revision).toBe(0);
   });
 
   it.each([
@@ -271,7 +349,7 @@ describe('Sites account authorization and durable workspace isolation', () => {
     }];
     const firstWrite = await call('/api/workspace', { accountId: 'gairo', method: 'PUT', body: mutation(0, initial) });
     expect(firstWrite.response.status).toBe(200);
-    const before = await getWorkspace(db, 'gairo');
+    const before = await getWorkspace(db, { id: 'gairo', userId: GAIRO.userId });
     expect(before.revision).toBe(1);
     const invalid = structuredClone(before.financialData);
     invalid[collection][0][field] = invalidValue;
@@ -279,7 +357,7 @@ describe('Sites account authorization and durable workspace isolation', () => {
     const rejected = await call('/api/workspace', { accountId: 'gairo', method: 'PUT', body: mutation(1, invalid) });
     expect(rejected.response.status).toBe(422);
     expect(rejected.value.error.code).toBe('INVALID_WORKSPACE');
-    const after = await getWorkspace(db, 'gairo');
+    const after = await getWorkspace(db, { id: 'gairo', userId: GAIRO.userId });
     expect(after.revision).toBe(1);
     expect(after.financialData).toEqual(before.financialData);
     expect(after.receipts).toEqual(before.receipts);

@@ -18,13 +18,14 @@ const base = () => ({
 });
 
 describe('Financial context sent to Claude', () => {
-  it('matches the canonical budget margin for the saved initial data at FX 16.8894', () => {
+  it('matches the synthetic fixture budget margin at fractional FX 16.8894', () => {
     const rate = 16.8894;
     const canonical = calculateCashFlow(INITIAL_DATA, rate);
     const result = buildAIContext(INITIAL_DATA, { ...fx, rate }, { now });
     expect(fact(result, 'budget.margin').amount).toBe(Number(canonical.flujoLibreReal.toFixed(2)));
     expect(fact(result, 'budget.minimums').amount).toBe(Number(canonical.totalPagosMinimosMXN.toFixed(2)));
-    expect(fact(result, 'budget.margin').amount).toBe(4315.74);
+    // 33,000 available - 14,000 expenses - (2,800 + 24 * 16.8894) minimums.
+    expect(fact(result, 'budget.margin').amount).toBe(15794.65);
   });
 
   it('preserves fractional FX in debt, minimum and asset totals while keeping recorded movements in cents', () => {

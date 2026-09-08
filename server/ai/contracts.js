@@ -26,4 +26,3 @@ export function validatePDF(input) {
   }
   return { name, base64: file.base64, sha256 }
 }
-
