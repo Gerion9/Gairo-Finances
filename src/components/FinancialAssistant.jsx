@@ -13,8 +13,8 @@ const SUGGESTIONS = [
   { icon: CircleHelp, title: 'Aclara tus números', description: 'Una explicación, paso a paso.', question: 'Explícame la diferencia entre mi margen mensual estimado y el resultado de los movimientos que he registrado.' },
 ];
 
-const money = value => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 2 }).format(value);
-const basisLabel = basis => ({ presupuesto: 'Presupuesto', estimacion: 'Estimación', movimientos_registrados: 'Movimientos registrados', saldos_registrados: 'Saldo registrado' }[basis] || basis);
+const money = (value, currency = 'MXN') => value == null ? 'Por confirmar' : new Intl.NumberFormat('es-MX', { style: 'currency', currency, maximumFractionDigits: 2 }).format(value);
+const basisLabel = basis => ({ datos_incompletos: 'Datos incompletos', estimacion_declarada: 'Estimación declarada', presupuesto_incompleto: 'Presupuesto incompleto', presupuesto: 'Presupuesto', estimacion: 'Estimación', movimientos_registrados: 'Movimientos registrados', saldos_registrados: 'Saldo registrado' }[basis] || basis);
 const monthLabel = value => new Date(`${value}-01T12:00:00`).toLocaleDateString('es-MX', { month: 'long', year: 'numeric' });
 const timeLabel = value => new Date(value).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
 
@@ -39,7 +39,7 @@ function EvidenceList({ facts }) {
         <dt className="break-words text-xs leading-relaxed text-slate-300">{fact.label}</dt>
         <dd className="mt-1 text-[10px] text-slate-500">{basisLabel(fact.basis)}</dd>
       </div>
-      <dd data-sensitive="" className="shrink-0 pt-0.5 text-xs font-medium tabular-nums text-slate-100">{money(fact.amount)}</dd>
+      <dd data-sensitive="" className="shrink-0 pt-0.5 text-xs font-medium tabular-nums text-slate-100">{money(fact.amount, fact.currency)} {fact.amount == null ? '' : fact.currency}</dd>
     </div>)}
   </dl>;
 }

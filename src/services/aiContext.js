@@ -1,4 +1,5 @@
 import { calculateCashFlow } from './financeEngine.js';
+import { debtCoverage } from './planning.js';
 import { DEFAULT_USD_MXN } from './exchangeRate.js';
 
 const list = value => Array.isArray(value) ? value : [];
@@ -77,18 +78,24 @@ export function buildAIContext(financialData = {}, exchangeRateData = {}, { now 
     return balance === null ? null : { saldo: balance, pagoMinimo: minimum ?? 0, moneda: 'MXN' };
   }).filter(Boolean);
   const honorarios = {};
+  const pending = list(data.deudasPendientes);
   const fiscalKeys = ['importeFacturado', 'tasaIva', 'retencionIsrTasa', 'retencionIvaFraccion', 'tasaIsrDeclaracion', 'otrosIngresos'];
   for (const key of fiscalKeys) {
     const raw = data.honorarios?.[key];
     const value = Number(raw);
     if (raw !== null && raw !== '' && Number.isFinite(value) && value >= 0) honorarios[key] = value;
   }
-  const fiscalComplete = Object.hasOwn(honorarios, 'importeFacturado')
+  if (data.honorarios?.modo === 'MANUAL') {
+    honorarios.modo = 'MANUAL';
+    honorarios.ingresoMensualRecibido = money(data.honorarios.ingresoMensualRecibido, 'MXN', fx.rate);
+    honorarios.provisionFiscalMensual = money(data.honorarios.provisionFiscalMensual, 'MXN', fx.rate);
+  }
+  const fiscalComplete = honorarios.modo === 'MANUAL' ? honorarios.ingresoMensualRecibido !== null && honorarios.provisionFiscalMensual !== null : Object.hasOwn(honorarios, 'importeFacturado')
     && fiscalKeys.every(key => data.honorarios?.[key] === undefined || Object.hasOwn(honorarios, key));
   const cashFlow = calculateCashFlow({ honorarios, gastosNecesarios: necessary, gastosOpcionales: optional, deudas: debts }, fx.rate);
   const budgetComplete = necessary.length === list(data.gastosNecesarios).length
     && optional.length === list(data.gastosOpcionales).length;
-  const debtsComplete = debts.length === list(data.deudas).length
+  const debtsComplete = pending.length === 0 && debts.length === list(data.deudas).length
     && list(data.deudas).every(row => money(row?.pagoMinimo, row?.moneda, fx.rate, { allowMissingCurrency: true }) !== null);
 
   if (fiscalComplete) {
@@ -107,8 +114,16 @@ export function buildAIContext(financialData = {}, exchangeRateData = {}, { now 
   if (fiscalComplete && budgetComplete && debtsComplete && Array.isArray(data.gastosNecesarios) && Array.isArray(data.gastosOpcionales) && Array.isArray(data.deudas)) {
     addFact('budget.margin', 'Margen mensual estimado antes del aporte extra', cashFlow.flujoLibreReal, 'estimacion');
   }
-  if (Array.isArray(data.deudas) && debts.length === data.deudas.length) {
+  if (pending.length === 0 && Array.isArray(data.deudas) && debts.length === data.deudas.length) {
     addFact('balance.debt', 'Saldo de deudas registrado', debts.reduce((sum, row) => sum + row.saldo, 0), 'saldos_registrados');
+  }
+  if (pending.length > 0) {
+    const coverage = debtCoverage(data);
+    facts.push({ id: 'balance.pending', label: 'Deuda total: faltan datos contractuales; no equivale a cero', amount: null, currency: 'MXN', basis: 'datos_incompletos', period: reportingMonth });
+    for (const currency of ['MXN', 'USD']) {
+      facts.push({ id: 'balance.known.' + currency, label: 'Saldo conocido aproximado; puede faltar deuda', amount: rounded(coverage.totals[currency]), currency, basis: 'estimacion_declarada', period: reportingMonth });
+    }
+    if (fiscalComplete && budgetComplete) addFact('budget.subtotal', 'Subtotal antes de otros gastos y pagos pendientes; no es flujo libre', cashFlow.flujoLibreReal, 'presupuesto_incompleto');
   }
   const assets = list(data.activos).map(row => money(row?.monto, row?.moneda, fx.rate, { allowMissingCurrency: true }));
   if (Array.isArray(data.activos) && assets.every(value => value !== null)) {

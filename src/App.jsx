@@ -11,6 +11,9 @@ import { emptyFinancialData, hasFinancialRecords } from './services/accountData.
 import { fetchExchangeRate } from './services/exchangeRate.js';
 import { calculateCashFlow, analyzePromoDeadlines, compareAllStrategies } from './services/financeEngine.js';
 import { createAccountBackup, restoreAccountBackup } from './services/backup.js';
+import { saveDebtRecord } from './services/planning.js';
+import PendingDebts from './components/PendingDebts.jsx';
+import PlanningOverview from './components/PlanningOverview.jsx';
 
 const DebtCard = lazy(() => import('./components/DebtCard'));
 const DebtModal = lazy(() => import('./components/DebtModal'));
@@ -102,9 +105,10 @@ export default function App({ account, initialData, revision, onDataChange, onLo
   const promoDeadlines = useMemo(() => analyzePromoDeadlines(financialData.deudas, exchangeRate), [financialData.deudas, exchangeRate]);
   const comparisonResult = useMemo(() => {
     if (activeTab !== 'debts') return { value: null, error: '' };
+    if (financialData.deudasPendientes?.length) return { value: null, error: 'Completa saldos, tasas contractuales, pagos mínimos y fechas para proyectar el pago de toda tu deuda.' };
     try { return { value: compareAllStrategies(financialData.deudas, extraPayment, exchangeRate), error: '' }; }
     catch { return { value: null, error: 'Hay datos pendientes en tus deudas. Revisa sus importes y tasas para calcular la proyección.' }; }
-  }, [activeTab, financialData.deudas, extraPayment, exchangeRate]);
+  }, [activeTab, financialData.deudas, financialData.deudasPendientes, extraPayment, exchangeRate]);
 
   useEffect(() => {
     const syncRoute = () => { const next = readRoute(); setRoute(next); setVisited(prev => new Set([...prev, next.tab])); };
@@ -161,15 +165,17 @@ export default function App({ account, initialData, revision, onDataChange, onLo
     addToast({ message: `${result.added} movimientos importados${result.skipped ? ` · ${result.skipped} ya registrados` : ''}.` });
     return { added: result.added, skipped: result.skipped };
   }, [setFinancialData, addToast]);
-  const handleSaveDebt = (debt) => {
-    setFinancialData(previous => ({ ...previous, deudas: previous.deudas.some(item => item.id === debt.id) ? previous.deudas.map(item => item.id === debt.id ? debt : item) : [debt, ...previous.deudas] }));
-    addToast({ message: 'Deuda guardada.' });
+  const handleSaveDebt = (debt, { pending = false } = {}) => {
+    setFinancialData(previous => saveDebtRecord(previous, debt, pending));
+    addToast({ message: pending ? 'Deuda guardada con datos pendientes.' : 'Deuda guardada.' });
   };
   const handleDeleteDebt = (id) => {
-    const removed = dataRef.current.deudas.find(item => item.id === id);
+    const pending = (dataRef.current.deudasPendientes || []).some(row => row.id === id);
+    const key = pending ? 'deudasPendientes' : 'deudas';
+    const removed = dataRef.current[key].find(item => item.id === id);
     if (!removed) return;
-    setFinancialData(previous => ({ ...previous, deudas: previous.deudas.filter(item => item.id !== id) }));
-    addToast({ message: 'Deuda eliminada.', duration: 10000, onUndo: () => setFinancialData(previous => ({ ...previous, deudas: previous.deudas.some(item => item.id === id) ? previous.deudas : [...previous.deudas, removed] })) });
+    setFinancialData(previous => ({ ...previous, [key]: previous[key].filter(item => item.id !== id) }));
+    addToast({ message: 'Deuda eliminada.', duration: 10000, onUndo: () => setFinancialData(previous => saveDebtRecord(previous, removed, pending)) });
   };
   const handleDebtPayment = (id, amount) => {
     const debt = dataRef.current.deudas.find(item => item.id === id);
@@ -192,7 +198,7 @@ export default function App({ account, initialData, revision, onDataChange, onLo
       const imported = JSON.parse(await file.text());
       if (!alive.current || !isCurrent()) return;
       const restored = restoreAccountBackup(imported, account.id);
-      if (!window.confirm(`Importar a ${account.displayName}: ${restored.transacciones.length} movimientos, ${restored.deudas.length} deudas y ${restored.activos.length} activos. Esto reemplaza sus registros actuales; descarga un respaldo antes de continuar. El archivo original se conserva. ¿Continuar?`)) return;
+      if (!window.confirm(`Importar a ${account.displayName}: ${restored.transacciones.length} movimientos, ${restored.deudas.length} deudas completas, ${(restored.deudasPendientes || []).length} registros de deuda pendientes y ${restored.activos.length} activos. Esto reemplaza sus registros actuales; descarga un respaldo antes de continuar. El archivo original se conserva. ¿Continuar?`)) return;
       await onRestore(restored, true);
     } catch (error) { if (alive.current) addToast({ message: error.message || 'No se pudo leer el respaldo.', type: 'error' }); }
     finally { input.value = ''; }
@@ -218,16 +224,21 @@ export default function App({ account, initialData, revision, onDataChange, onLo
   };
   const handleLogout = onLogout;
   const renderPage = (tab) => {
+    const hasPendingDebts = (financialData.deudasPendientes || []).length > 0;
+    const needsCompleteDebts = ['health', 'simulator', 'balance', 'report', 'investments'].includes(tab);
+    if (hasPendingDebts && (tab === 'dashboard' || needsCompleteDebts)) return <div className="space-y-6">{needsCompleteDebts && <div className="surface-card p-5 text-sm text-amber-200">Esta vista necesita los pagos y las tasas contractuales de todas tus deudas. Mientras los completas, aquí tienes tu información registrada.</div>}<PlanningOverview financialData={financialData} cashFlow={cashFlow} onNavigate={navigate} /></div>;
+    if (tab === 'tax-annual' && financialData.honorarios.modo === 'MANUAL') return <section className="surface-card p-7"><h1 className="text-2xl font-semibold text-white">Tu provisión fiscal es un importe declarado</h1><p className="text-slate-400 mt-4">La simulación anual requiere facturación, retenciones y tasas. El ingreso recibido y tu provisión mensual no bastan para calcular tu declaración.</p><button className="button-secondary mt-5" onClick={() => navigate('budget')}>Ver ingreso y provisión mensual</button></section>;
+
     switch (tab) {
       case 'dashboard': return !hasFinancialRecords(financialData) ? <div className="surface-card p-7 sm:p-10"><p className="eyebrow">Tu espacio está listo</p><h1 className="text-3xl font-semibold text-white mt-3">Comienza tu panorama, {account.displayName}.</h1><p className="text-slate-400 mt-4 max-w-xl">Registra tus ingresos y compromisos para ver tu margen. Tus cambios se guardarán para encontrarlos en tus otros dispositivos.</p><div className="flex flex-wrap gap-3 mt-7"><button className="button-primary" onClick={() => navigate('budget')}>Configurar mi presupuesto</button><button className="button-secondary" onClick={quickAdd}>Registrar un movimiento</button>{account.id === 'gairo' && <button className="button-secondary" onClick={() => setIsSettingsOpen(true)}>Importar mis registros</button>}</div></div> : <DashboardOverview financialData={financialData} cashFlow={cashFlow} promoDeadlines={promoDeadlines} exchangeRate={exchangeRate} exchangeRateData={exchangeRateData} displayCurrency={displayCurrency} onNavigateTab={navigate} onOpenDebtModal={openDebt} onQuickAdd={quickAdd} onOpenAssistant={openAssistant} onImportStatement={openImport} />;
-      case 'debts': return <div className="space-y-7"><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="eyebrow">Tu dinero</p><h1 className="text-3xl font-semibold tracking-tight text-white mt-2">Tus deudas, con un plan.</h1><p className="text-sm text-slate-400 mt-2">Saldos registrados, próximos pagos y escenarios para avanzar.</p></div><button onClick={openDebt} className="button-primary"><Plus size={17} />Nueva deuda</button></div><div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">{financialData.deudas.map(debt => <DebtCard key={debt.id} debt={debt} exchangeRate={exchangeRate} displayCurrency={displayCurrency} onEdit={item => { setDebtToEdit(item); setIsDebtModalOpen(true); }} onDelete={handleDeleteDebt} onPayment={handleDebtPayment} />)}</div>{comparisonResult.error ? <p role="alert" className="surface-card p-5 text-amber-300 text-sm">{comparisonResult.error}</p> : <><StrategyPayoff deudas={financialData.deudas} cashFlow={cashFlow} extraPayment={extraPayment} exchangeRate={exchangeRate} displayCurrency={aggregateCurrency} /><StrategyCompare comparison={comparisonResult.value} exchangeRate={exchangeRate} displayCurrency={aggregateCurrency} /></>}</div>;
-      case 'calendar': return <PaymentCalendar financialData={financialData} onTogglePagoMes={payments => setFinancialData(previous => ({ ...previous, pagosRealizadosMes: payments }))} exchangeRate={exchangeRate} displayCurrency={displayCurrency} />;
+      case 'debts': return <div className="space-y-7"><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="eyebrow">Tu dinero</p><h1 className="text-3xl font-semibold tracking-tight text-white mt-2">Tus deudas, con un plan.</h1><p className="text-sm text-slate-400 mt-2">Saldos registrados, próximos pagos y escenarios para avanzar.</p></div><button onClick={openDebt} className="button-primary"><Plus size={17} />Nueva deuda</button></div><PendingDebts financialData={financialData} onEdit={item => { setDebtToEdit(item); setIsDebtModalOpen(true); }} onDelete={handleDeleteDebt} /><div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">{financialData.deudas.map(debt => <DebtCard key={debt.id} debt={debt} exchangeRate={exchangeRate} displayCurrency={displayCurrency} onEdit={item => { setDebtToEdit(item); setIsDebtModalOpen(true); }} onDelete={handleDeleteDebt} onPayment={handleDebtPayment} />)}</div>{comparisonResult.error ? <p role="alert" className="surface-card p-5 text-amber-300 text-sm">{comparisonResult.error}</p> : <><StrategyPayoff deudas={financialData.deudas} cashFlow={cashFlow} extraPayment={extraPayment} exchangeRate={exchangeRate} displayCurrency={aggregateCurrency} /><StrategyCompare comparison={comparisonResult.value} exchangeRate={exchangeRate} displayCurrency={aggregateCurrency} /></>}</div>;
+      case 'calendar': return <><div className={hasPendingDebts ? 'surface-card p-5 mb-5 text-sm text-amber-200' : 'hidden'}>Tus créditos con datos pendientes todavía no tienen pagos programados. Completa su fecha y pago mínimo en Deudas.</div><PaymentCalendar financialData={financialData} onTogglePagoMes={payments => setFinancialData(previous => ({ ...previous, pagosRealizadosMes: payments }))} exchangeRate={exchangeRate} displayCurrency={displayCurrency} /></>;
       case 'transactions': return <TransactionsTracker financialData={financialData} onUpdateTransactions={handleUpdateTransactions} exchangeRate={exchangeRate} displayCurrency={displayCurrency} quickAddRequest={quickAddRequest} onImportStatement={openImport} onOpenAssistant={openAssistant} />;
       case 'calculators': return <FinancialCalculatorsHub financialData={financialData} exchangeRate={exchangeRate} initialCalculator={route.calculator} />;
       case 'health': return !hasFinancialRecords(financialData) ? <div className="surface-card p-8"><h1 className="text-2xl text-white font-semibold">Primero, tu información</h1><p className="text-slate-400 mt-3">Configura tus ingresos y gastos para evaluar tu salud financiera.</p><button className="button-primary mt-5" onClick={() => navigate('budget')}>Configurar presupuesto</button></div> : <FinancialHealthScore financialData={financialData} exchangeRate={exchangeRate} onNavigateTab={navigate} />;
       case 'diagnostics': return <AdvancedDiagnosticsHub />;
       case 'simulator': return <Simulator deudas={financialData.deudas} exchangeRate={exchangeRate} initialExtra={extraPayment} displayCurrency={aggregateCurrency} cashFlow={cashFlow} onSaveExtra={value => setFinancialData(previous => ({ ...previous, config: { ...previous.config, aportacionExtraMensual: value } }))} />;
-      case 'education': return <FinancialEducationHub debts={financialData.deudas} education={financialData.education} onUpdateEducation={education => setFinancialData(previous => ({ ...previous, education }))} />;
+      case 'education': return <FinancialEducationHub debts={financialData.deudas} pendingDebts={financialData.deudasPendientes} education={financialData.education} onUpdateEducation={education => setFinancialData(previous => ({ ...previous, education }))} />;
       case 'budget': return <IncomeStatement financialData={financialData} onUpdateHonorarios={honorarios => setFinancialData(previous => ({ ...previous, honorarios }))} onUpdateGastos={(gastosNecesarios, gastosOpcionales) => setFinancialData(previous => ({ ...previous, gastosNecesarios, gastosOpcionales }))} />;
       case 'tax-annual': return <AnnualTaxSimulator financialData={financialData} />;
       case 'balance': return <BalanceSheet financialData={financialData} onUpdateActivos={activos => setFinancialData(previous => ({ ...previous, activos }))} exchangeRate={exchangeRate} displayCurrency={displayCurrency} />;

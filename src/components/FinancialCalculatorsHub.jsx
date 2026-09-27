@@ -72,6 +72,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
   const deductionsRes = calculatePersonalTaxDeductions(annualIncome, deductionsInput.medicos, deductionsInput.ppr, deductionsInput.colegiaturas);
   const resicoRes = calculateResicoVsPfae(resicoInput.facturacion, resicoInput.gastos);
 
+  const contextIncomplete = (financialData.deudasPendientes?.length > 0 && ['windfall', 'rule503020', 'fire'].includes(activeCalc))
+    || (financialData.honorarios?.modo === 'MANUAL' && ['deductions', 'resico'].includes(activeCalc));
   const calcList = [
     { id: 'cat', title: 'CAT Real & Costo Total', icon: Percent },
     { id: 'msi', title: 'MSI vs Descuento Contado', icon: Sparkles },
@@ -130,6 +132,7 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
       </div>
 
       {/* Active Calculator Card */}
+      {contextIncomplete ? <div className="surface-card p-6 text-slate-300"><h3 className="text-xl text-white font-semibold">Faltan datos para este cálculo</h3><p className="text-sm mt-3">Completa tus pagos y tasas contractuales para las proyecciones de deuda. Los cálculos fiscales requieren facturación y retenciones; tu ingreso recibido no sustituye esos datos.</p></div> : <>
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
         
         {/* 1. CAT Real */}
@@ -779,6 +782,7 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
 
       </div>
 
+      </>}
     </div>
   );
 }

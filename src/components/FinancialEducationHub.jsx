@@ -3,7 +3,7 @@ import { CreditCard, Flame, Clock, Coins, ArrowRight } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { playVictorySound, playSuccessSound } from '../services/soundEffects.js';
 
-export default function FinancialEducationHub({ debts = [], education = { weeks: [], impulses: [] }, onUpdateEducation = () => {} }) {
+export default function FinancialEducationHub({ debts = [], pendingDebts = [], education = { weeks: [], impulses: [] }, onUpdateEducation = () => {} }) {
   const [activeTab, setActiveTab] = useState('gamification');
   
   const weeksChecked = education.weeks || [];
@@ -60,6 +60,7 @@ export default function FinancialEducationHub({ debts = [], education = { weeks:
 
   // Count recorded balances without summing unlike currencies or inferring financial health.
   const debtRecords = Array.isArray(debts) ? debts : [];
+  const pendingCount = pendingDebts.reduce((sum, debt) => sum + debt.numeroCuentas, 0);
   const validBalances = debtRecords.filter(debt =>
     (typeof debt?.saldo === 'number' || (typeof debt?.saldo === 'string' && debt.saldo.trim() !== ''))
     && Number.isFinite(Number(debt.saldo)) && Number(debt.saldo) >= 0);
@@ -74,15 +75,15 @@ export default function FinancialEducationHub({ debts = [], education = { weeks:
         {/* Recorded debt count */}
         <div className="p-5 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/40 border border-indigo-500/30 rounded-2xl shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Deudas con saldo registrado</span>
+            <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">{pendingCount ? 'Créditos registrados' : 'Deudas con saldo registrado'}</span>
             <CreditCard className="w-5 h-5 text-indigo-300" aria-hidden="true" />
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">{debtsWithBalance}</span>
-            <span className="text-xs text-slate-400">con saldo positivo</span>
+            <span className="text-3xl font-black text-white">{pendingCount ? debtRecords.length + pendingCount : debtsWithBalance}</span>
+            <span className="text-xs text-slate-400">{pendingCount ? 'incluidos los pendientes' : 'con saldo positivo'}</span>
           </div>
-          <p className="text-sm text-slate-300 mt-1">{debtRecords.length} deudas en tu registro.</p>
-          <p className="text-xs text-slate-400 mt-3">{missingBalances > 0 ? `${missingBalances} sin un saldo válido para este conteo.` : 'Conteo basado en los saldos capturados.'}</p>
+          <p className="text-sm text-slate-300 mt-1">{pendingCount ? `${debtRecords.length} completos · ${pendingCount} por completar.` : `${debtRecords.length} deudas en tu registro.`}</p>
+          <p className="text-xs text-slate-400 mt-3">{pendingCount ? 'Los grupos se cuentan por número de créditos; no se infieren sus saldos individuales.' : missingBalances > 0 ? `${missingBalances} sin un saldo válido para este conteo.` : 'Conteo basado en los saldos capturados.'}</p>
         </div>
 
         {/* Manual challenge progress */}

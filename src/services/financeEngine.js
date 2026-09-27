@@ -5,6 +5,13 @@ import { convertCurrency } from './exchangeRate.js';
 // 1. Cálculo Fiscal y CFDI
 export function calculateFiscalOverview(honorarios = {}) {
   const safeHon = honorarios || {};
+  if (safeHon.modo === 'MANUAL') {
+    const netoEnCuenta = Number(safeHon.ingresoMensualRecibido) || 0;
+    const totalImpuestosSat = Number(safeHon.provisionFiscalMensual) || 0;
+    return { importeFacturado: 0, ivaCobrado: 0, subtotalCfdi: 0, retencionIsr: 0, retencionIva: 0,
+      isrACargo: 0, ivaACargo: 0, otrosIngresos: 0, netoEnCuenta, totalImpuestosSat,
+      ingresoDisponibleReal: netoEnCuenta - totalImpuestosSat, desgloseFiscalDisponible: false };
+  }
   const importeFacturado = Number(safeHon.importeFacturado) || 0;
   const ivaCobrado = importeFacturado * (safeHon.tasaIva ?? 0.16);
   const subtotalCfdi = importeFacturado + ivaCobrado;
@@ -214,8 +221,11 @@ export function calculateFortnightlyFlow(data, exchangeRate) {
   };
 
   // Clasificar gastos necesarios y opcionales según diaPago
-  [...data.gastosNecesarios, ...data.gastosOpcionales].forEach(g => {
-    const dia = g.diaPago || 15;
+  const gastosProgramados = [...data.gastosNecesarios, ...data.gastosOpcionales];
+  if (data.honorarios?.modo === 'MANUAL' && data.honorarios.provisionFiscalMensual > 0) gastosProgramados.push({ id: 'provision-fiscal', nombre: 'Provisión de impuestos', categoria: 'Impuestos', monto: data.honorarios.provisionFiscalMensual, diaPago: data.honorarios.diaPagoImpuestos });
+  gastosProgramados.forEach(g => {
+    if (g.diaPago == null) return;
+    const dia = g.diaPago;
     const item = { ...g, tipoConcepto: 'GASTO' };
     if (dia <= 15) {
       quincena1.gastos.push(item);

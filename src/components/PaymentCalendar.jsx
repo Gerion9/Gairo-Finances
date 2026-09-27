@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Calendar, CheckCircle2, Circle, Clock, DollarSign, AlertCircle, ChevronRight } from 'lucide-react';
+import { undatedCommitments } from '../services/planning.js';
 import { calculateFortnightlyFlow } from '../services/financeEngine';
 import { formatMoney, convertCurrency } from '../services/exchangeRate';
 
@@ -9,7 +10,8 @@ export default function PaymentCalendar({
   exchangeRate, 
   displayCurrency 
 }) {
-  const currentMonthKey = new Date().toISOString().slice(0, 7); // '2026-09'
+  const today = new Date();
+  const currentMonthKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`; // '2026-09'
   const pagosMes = financialData.pagosRealizadosMes?.[currentMonthKey] || {};
 
   const { quincena1, quincena2 } = calculateFortnightlyFlow(financialData, exchangeRate);
@@ -79,6 +81,7 @@ export default function PaymentCalendar({
   return (
     <div className="space-y-6">
       
+      {undatedCommitments(financialData).length > 0 && <section className="surface-card p-6"><h2 className="text-xl text-white font-semibold">Pagos con fecha pendiente</h2><p className="text-sm text-slate-400 mt-2">Ya están en tu presupuesto mensual. Confirma la fecha para asignarlos a una quincena.</p><ul className="mt-4 space-y-3">{undatedCommitments(financialData).map(row => <li key={row.id} className="flex justify-between gap-4 text-sm text-slate-200"><span>{row.nombre}</span><span>≈ {formatMoney(row.monto)} MXN · Fecha pendiente</span></li>)}</ul></section>}
       {/* Header */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">

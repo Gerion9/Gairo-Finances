@@ -2,12 +2,17 @@
 import * as XLSX from 'xlsx';
 import { calculateFiscalOverview } from './financeEngine.js';
 
-export function exportFinancesToExcel(data, exchangeRate) {
+export function buildFinancialWorkbook(data, exchangeRate) {
+  const hasPending = Boolean(data.deudasPendientes?.length);
   const wb = XLSX.utils.book_new();
 
   // 1. Hoja: Parámetros Fiscales y CFDI
   const fiscal = calculateFiscalOverview(data.honorarios);
-  const parametrosData = [
+  const parametrosData = data.honorarios?.modo === 'MANUAL' ? [
+    ['INGRESOS DECLARADOS · MXN', ''], ['Régimen indicado', data.honorarios.regimen],
+    ['Ingreso mensual recibido', fiscal.netoEnCuenta], ['Provisión fiscal mensual aproximada', fiscal.totalImpuestosSat],
+    ['Después de impuestos', fiscal.ingresoDisponibleReal], ['ISR e IVA desglosados', 'No disponibles: importes declarados, no cálculo fiscal'],
+  ] : [
     ['FINANZAS PERSONALES · SIFRAN', ''],
     ['Tipo de cambio USD/MXN aplicado:', exchangeRate],
     ['Fecha de exportación:', new Date().toLocaleString('es-MX')],
@@ -51,6 +56,11 @@ export function exportFinancesToExcel(data, exchangeRate) {
   const wsDeudas = XLSX.utils.aoa_to_sheet([...deudasHeaders, ...deudasRows]);
   XLSX.utils.book_append_sheet(wb, wsDeudas, 'Deudas');
 
+  if (hasPending) {
+    const pendingRows = [['DEUDAS CON DATOS PENDIENTES · SALDOS APROXIMADOS'], ['Nombre', 'Institución', 'Moneda', 'Saldo aproximado', 'Créditos agrupados', 'Tasa contractual', 'Pago mínimo', 'Fecha límite', 'Referencia pública', 'Fuente', 'Consulta', 'Notas'],
+      ...data.deudasPendientes.map(d => [d.nombre, d.institucion, d.moneda, d.saldoEstimado ?? 'Por confirmar', d.numeroCuentas, d.tasaAnual ?? 'Por confirmar', d.pagoMinimo ?? 'Por confirmar', d.diaPagoLimite ?? 'Por confirmar', d.referenciaTasa || '', d.fuenteTasa || '', d.consultaTasa || '', d.notas || ''])];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(pendingRows), 'Deudas pendientes');
+  }
   // 3. Hoja: Presupuesto y Gastos
   const gastosData = [
     ['PRESUPUESTO MENSUAL DE GASTOS', ''],
@@ -80,12 +90,17 @@ export function exportFinancesToExcel(data, exchangeRate) {
     ...activosRows,
     ['TOTAL ACTIVOS', '', '', '', totalActivosMXN],
     ['', '', '', '', ''],
-    ['TOTAL PASIVOS (DEUDAS)', '', '', '', totalPasivosMXN],
-    ['PATRIMONIO NETO (ACTIVOS − PASIVOS)', '', '', '', totalActivosMXN - totalPasivosMXN]
+    [hasPending ? 'PASIVOS COMPLETOS EXCLUIDOS LOS PENDIENTES' : 'TOTAL PASIVOS (DEUDAS)', '', '', '', totalPasivosMXN],
+    ['PATRIMONIO NETO (ACTIVOS − PASIVOS)', '', '', '', hasPending ? 'Pendiente: faltan datos de deudas' : totalActivosMXN - totalPasivosMXN]
   ];
   const wsBalance = XLSX.utils.aoa_to_sheet(balanceData);
   XLSX.utils.book_append_sheet(wb, wsBalance, 'Estructura de Capital');
 
+  return wb;
+}
+
+export function exportFinancesToExcel(data, exchangeRate) {
+  const wb = buildFinancialWorkbook(data, exchangeRate);
   // Descargar archivo
   XLSX.writeFile(wb, `Sifran_Finanzas_${new Date().toISOString().split('T')[0]}.xlsx`);
 }
