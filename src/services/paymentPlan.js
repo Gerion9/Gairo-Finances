@@ -302,6 +302,7 @@ export function simulatePaymentPlan(plan, { scenario = null, fx = 19.25, horizon
     const possibleUSD = Math.min(sum(accounts.filter(a => a.currency === 'USD').flatMap(a => a.tranches.map(t => t.remaining))), requiredUSD + fromMXN(Math.max(0, paymentBudget - required), 'USD'));
     const possibleRemittanceFee = possibleUSD > usdLiquidity
       ? toMXN(cents((plan.settings.remittanceFeeUSD || 0) + (plan.settings.receiverFeeUSD || 0)), 'USD') : 0;
+    if (plan.settings.monthlyDebtBudget === null && plan.budget.livingExpenses === null) paymentBudget += possibleRemittanceFee;
     let remainingBudget = Math.max(0, paymentBudget - unknownRequirements - possibleRemittanceFee);
     const paidByAccount = new Map(accounts.map(a => [a.id, 0]));
     const pay = (a, t, desired) => {

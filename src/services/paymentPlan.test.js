@@ -126,6 +126,10 @@ describe('Pagos, intereses y suficiencia', () => {
     const p = fixture({ accounts: [account({ currency: 'USD', tranches: [tranche({ apr: 0 })] })], assets: [{ id: 'usd', name: 'Efectivo USD', currency: 'USD', balance: 200, balanceDate: '2026-09-27' }], settings: { monthlyDebtBudget: 100, remittanceFeeUSD: 10, horizon: 1 } });
     expect(simulate(p).history[1]).toMatchObject({ paid: 100, fees: 0, minimumShortfall: 0 });
   });
+  it('el presupuesto provisional de mínimos incluye el costo de remesa conocido', () => {
+    const p = fixture({ accounts: [account({ currency: 'USD', tranches: [tranche({ apr: 0 })] })], budget: { livingExpenses: null }, settings: { monthlyDebtBudget: null, remittanceFeeUSD: 10, horizon: 1 } });
+    expect(simulate(p).history[1]).toMatchObject({ paid: 100, fees: 10, minimumShortfall: 0, fundingGap: 0 });
+  });
   it('no reutiliza dólares que se convirtieron para pagar una deuda en pesos', () => {
     const p = fixture({ accounts: [account({ minimum: 0, tranches: [tranche({ apr: 0 })] }), account({ id: 'usdcard', currency: 'USD', minimum: 0, tranches: [tranche({ apr: 0 })] })], assets: [{ id: 'usd', name: 'Dólares disponibles', currency: 'USD', balance: 1000, balanceDate: '2026-09-27' }], budget: { monthlyIncome: 0 }, settings: { monthlyDebtBudget: 0, horizon: 2, strategy: 'AVALANCHE', remittanceFeeUSD: 10 } });
     const r = simulate(p, { useSavings: true, savingsAmount: 1000, bonus: { enabled: true, amount: 1000, date: '2026-11-01' } });
