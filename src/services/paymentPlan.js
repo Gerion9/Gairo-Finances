@@ -78,6 +78,7 @@ export function normalizePaymentPlan(value) {
   const assets = unique(list(value.assets, 'ahorros', 30).map(a => ({ id: id(a.id, 'ahorro'), name: text(a.name, 'ahorro', 200), currency: currency(a.currency), balance: num(a.balance, 'ahorro', false), balanceDate: date(a.balanceDate, 'ahorro', false), reserved: num(a.reserved, 'apartado') ?? 0, annualRate: num(a.annualRate, 'rendimiento', true, 1000), rateCap: num(a.rateCap, 'tope de rendimiento'), excessRate: num(a.excessRate, 'rendimiento del excedente', true, 1000), note: text(a.note, 'condiciones de ahorro') })), 'ahorros');
   if (assets.some(a => a.reserved > a.balance)) throw new Error('Un apartado supera el saldo de ahorro.');
   const settings = isRecord(value.settings) ? value.settings : {};
+  const recommendation = isRecord(value.recommendation) ? value.recommendation : {};
   const result = {
     version: 1, asOf: date(value.asOf, 'conciliación', false), sources, accounts, assets, notes: flags(value.notes),
     budget: {
@@ -90,6 +91,21 @@ export function normalizePaymentPlan(value) {
     },
     settings: { fx: num(settings.fx, 'tipo de cambio', true, 1000), monthlyDebtBudget: num(settings.monthlyDebtBudget, 'presupuesto de deuda'), horizon: num(settings.horizon ?? 24, 'horizonte', false, 120), strategy: enumValue(settings.strategy, ['AVALANCHE', 'PROMO_FIRST', 'MINIMUMS'], 'AVALANCHE'), remittanceFeeUSD: num(settings.remittanceFeeUSD, 'comisión de envío'), receiverFeeUSD: num(settings.receiverFeeUSD, 'comisión receptora'), interestTaxPercentMXN: num(settings.interestTaxPercentMXN, 'IVA estimado de intereses', true, 100) },
     scenario: normalizeScenario(value.scenario),
+    recommendation: {
+      from: date(recommendation.from, 'fecha de la recomendación'), emergencyMXN: num(recommendation.emergencyMXN, 'fondo de emergencia'), loanMonthlyUSD: num(recommendation.loanMonthlyUSD, 'reserva mensual de préstamos'),
+      expenseEstimates: unique(list(recommendation.expenseEstimates, 'presupuestos propuestos', 40).map(e => ({ id: id(e.id, 'presupuesto propuesto'), amount: num(e.amount, 'presupuesto propuesto', false) })), 'presupuestos propuestos'),
+      protectReported: recommendation.protectReported !== false,
+      savingsDays: num(recommendation.savingsDays ?? 30, 'días de rendimiento', false, 365),
+      nuRateEnd: date(recommendation.nuRateEnd, 'vigencia de rendimiento Nu'), plataRateEnd: date(recommendation.plataRateEnd, 'vigencia de rendimiento Plata'),
+      plataExtraCost: num(recommendation.plataExtraCost, 'costo incremental de Plata'),
+      transferDepositConfirmed: recommendation.transferDepositConfirmed === true,
+      transferPrincipalUSD: num(recommendation.transferPrincipalUSD, 'transferencia propuesta') ?? 0,
+      transferNetMXN: num(recommendation.transferNetMXN, 'pesos netos de transferencia'),
+      transferQuotePrincipalUSD: num(recommendation.transferQuotePrincipalUSD, 'principal de la cotización'),
+      transferRepaymentFX: num(recommendation.transferRepaymentFX, 'cambio para pagar transferencia', true, 1000),
+      usdBuffer: num(recommendation.usdBuffer, 'reserva operativa USD') ?? 50,
+      discoverMinimumAllocationUSD: num(recommendation.discoverMinimumAllocationUSD, 'mínimo supuesto después de transferencia'),
+    },
     quotes: list(value.quotes, 'cotizaciones', 30).map(q => ({ id: id(q.id, 'cotización'), provider: text(q.provider, 'proveedor', 100), debitMXN: num(q.debitMXN, 'pesos debitados'), netUSD: num(q.netUSD, 'dólares netos'), allCostsIncluded: q.allCostsIncluded === true, eligible: q.eligible === true, quotedAt: text(q.quotedAt, 'fecha de cotización', 40), expiresAt: text(q.expiresAt, 'vigencia', 40), arrivalDate: date(q.arrivalDate, 'llegada'), note: text(q.note, 'cotización') })),
     offers: { plata: { annualRate: 15, cap: 25000, excessRate: 9, confirmed: value.offers?.plata?.confirmed === true, note: text(value.offers?.plata?.note, 'oferta Plata') }, discover: { maximum: 4500, months: 10, feePercent: 5, note: text(value.offers?.discover?.note, 'oferta Discover') } },
   };
@@ -171,6 +187,7 @@ export function transferTerms(plan, scenario) {
   const destination = plan.accounts.find(a => /discover/i.test(a.name));
   const errors = [];
   if (!source || source.currency !== 'USD' || source.kind !== 'CARD' || source.id === destination?.id) errors.push('Elige una tarjeta estadounidense distinta de Discover.');
+  if (source && /capital\s*one|savor/i.test(source.name + ' ' + source.institution)) errors.push('Discover no permite transferir saldos de Capital One, incluidos Savor y SavorOne.');
   if (!destination) errors.push('Falta la cuenta Discover de destino.');
   if (!t.date) errors.push('Indica la fecha hipotética de transferencia.');
   if (t.date && t.date < plan.asOf) errors.push('La transferencia hipotética debe ser posterior a la fecha de revisión.');
@@ -209,6 +226,7 @@ export function simulatePaymentPlan(plan, { scenario = null, fx = 19.25, horizon
   const fromMXN = (amount, currency) => currency === 'USD' ? Math.floor(amount / rate) : amount;
   const accounts = structuredClone(plan.accounts).map(a => ({ ...a, tranches: a.tranches.map(t => ({ ...t, remaining: cents(t.balance), deferred: cents(t.deferredAccrued || 0) })) }));
   const warnings = [];
+  warnings.push('El flujo mensual no suma rendimientos de ahorro: faltan saldos diarios, fechas de abono y tasas posteriores. Consulta la comparación diaria de la recomendación; sus rendimientos no financian pagos por adelantado.');
   if (plan.budget.livingExpenses === null) warnings.push('Gastos de vida pendientes: se modelan mínimos y cuotas conocidos, salvo que definas un presupuesto para deudas.');
   if (!plan.budget.payday) warnings.push('Fecha de ingreso pendiente: el flujo mensual no acredita liquidez en cada vencimiento.');
   if (plan.accounts.some(a => a.minimum === null)) warnings.push('Faltan mensualidades exigibles de algunos créditos; no se confirma la viabilidad del presupuesto.');
@@ -412,10 +430,9 @@ export function simulatePaymentPlan(plan, { scenario = null, fx = 19.25, horizon
       usdLiquidity = 0;
     } else usdLiquidity -= usdPaid;
     const debt = sum(accounts.flatMap(a => a.tranches.filter(t => t.modeled).map(t => toMXN(t.remaining, a.currency))));
-    const grossYield = sum(plan.assets.map(a => {
-      const applied = initialContribution > 0 ? Math.max(0, 1 - initialContribution / Math.max(1, savingsAvailable)) : 1;
-      return toMXN(cents(estimateYield((a.balance - a.reserved) * applied, a.annualRate, a.rateCap, a.excessRate, days) || 0), a.currency);
-    }));
+    // No phantom yield on an original asset balance after withdrawals. Daily rate and
+    // crediting assumptions are explored separately, never used as guaranteed cash.
+    const grossYield = 0;
     const surplus = available - periodPaid - unknownRequirements - cashFees;
     const requirementGap = sum(commitments.map(c => toMXN(Math.max(0, c.amount - paidByAccount.get(c.account.id) - c.unknownRequirement), c.account.currency)));
     const minimumShortfall = Math.max(requirementGap, Math.max(0, required - paymentBudget));

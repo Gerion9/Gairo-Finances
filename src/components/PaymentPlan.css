@@ -1,4 +1,10 @@
 .payment-plan { display: grid; gap: 22px; max-width: 1600px; margin: 0 auto; }
+.payment-strategy { display: grid; gap: 22px; }
+.payment-strategy p { font-size: 16px; }
+.payment-strategy .plan-field,.payment-strategy .plan-table,.payment-strategy .plan-details { font-size: 14px; }
+.payment-strategy .plan-field small,.payment-strategy .plan-table small,.payment-strategy .plan-metric > small { font-size: 12px; }
+.payment-strategy .plan-metric > span { font-size: 14px; }
+.strategy-intro { border-top: 3px solid #7de4bf; }
 .payment-plan h1 { margin: 6px 0 8px; font-weight: 650; }
 .payment-plan h2 { font-size: 20px; line-height: 1.3; font-weight: 620; color: #f4f7fb; margin: 0 0 10px; letter-spacing: -.02em; }
 .payment-plan h3 { font-size: 15px; font-weight: 600; margin: 0 0 8px; }
