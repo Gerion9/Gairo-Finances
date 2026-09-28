@@ -32,7 +32,7 @@ export default function PaymentStrategy({ plan, editableRecommendation, fx, onCh
   const bridgeChart = bridge?.monthly.map(row => ({ ...row, date: row.date, debt: bridgeInvalidFrom && row.date >= bridgeInvalidFrom.slice(0, 8) + '01' ? null : row.legacy + row.transfer }));
   const sensitivity = bridge ? [
     ...[1.05, 1.10].map(factor => ({ label: `Dólar ${Math.round((factor - 1) * 100)}% más caro al recomprar`, result: bridgeCapacity(plan, { ...r, config: { ...config, transferRepaymentFX: bridge.repaymentFX * factor } }, fx) })),
-    ...[25, 50, 100].map(amount => ({ label: `Préstamos: ${cash(amount, 'USD')} al mes, cuota hipotética`, result: bridgeCapacity(plan, r, fx, { loanMonthlyUSD: Math.max(amount, r.loanMonthlyUSDUsed) }) })),
+    ...[...new Set([25, 50, 100].map(amount => Math.max(amount, r.loanMonthlyUSDUsed)))].map(amount => ({ label: `Préstamos: ${cash(amount, 'USD')} al mes, cuota hipotética`, result: bridgeCapacity(plan, r, fx, { loanMonthlyUSD: amount }) })),
   ] : [];
   return <div className="payment-strategy">
     <section className="surface-card plan-section strategy-intro">
