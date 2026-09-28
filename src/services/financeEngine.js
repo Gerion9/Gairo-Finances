@@ -177,7 +177,7 @@ export function calculateFinancialHealthScore(data = {}, exchangeRate = 19.25) {
     recomendaciones.push({
       tipo: 'IMPORTANTE',
       titulo: 'Proteger Promociones con Deadline',
-      descripcion: 'Asegura tu cuota mensual requerida de promociones al 0% para evitar que el banco te cobre intereses retroactivos.'
+      descripcion: 'Revisa las fechas y condiciones de cada promoción. Una oferta de interés diferido puede generar cargos acumulados si no se liquida a tiempo; una APR promocional ordinaria tiene otras condiciones.'
     });
   }
 
@@ -413,9 +413,12 @@ export function runStrategySimulation(deudas, extraMonthlyCash, exchangeRate, st
   let month = 0;
   let totalInterestPaid = 0;
   let promoShortfallMonths = 0;
+  let incompleteReason = null;
   const history = [{ month: 0, totalBalance: initialTotalDebt, totalInterest: 0, payment: 0, debts: debts.map(debt => ({ id: debt.id, balance: debt.balance })) }];
 
   while (debts.some(debt => debt.balance > 0) && month < SIMULATION_LIMIT) {
+    const missingTerms = debts.find(debt => debt.balance > 0 && debt.tipo === 'PROMO_DEADLINE' && (debt.promoMonths === null || (month + 1 > debt.promoMonths && debt.postPromoRate === null)));
+    if (missingTerms) { incompleteReason = 'Faltan la fecha o la tasa posterior de una promoción; la proyección se detiene sin extender su tasa actual.'; break; }
     month++;
     let monthInterest = 0;
     debts.forEach(debt => {
@@ -443,7 +446,7 @@ export function runStrategySimulation(deudas, extraMonthlyCash, exchangeRate, st
   const paidOff = remainingBalance === 0;
   const warnings = [];
   if (debts.some(debt => debt.tipo === 'PROMO_DEADLINE' && debt.postPromoRate === null)) {
-    warnings.push('Hay promociones sin tasa posterior registrada: se conserva su tasa actual después del vencimiento.');
+    warnings.push('Hay promociones sin tasa posterior registrada: la proyección se detiene si queda saldo al vencer.');
   }
   if (debts.some(debt => debt.tipo === 'PROMO_DEADLINE' && debt.promoMonths === null)) {
     warnings.push('Hay promociones sin fecha registrada: no se puede calcular su cuota objetivo ni el cambio de tasa.');
@@ -451,6 +454,7 @@ export function runStrategySimulation(deudas, extraMonthlyCash, exchangeRate, st
   if (promoShortfallMonths > 0) warnings.push('El presupuesto no cubre la cuota objetivo de todas las promociones en algunos meses.');
   return {
     strategyType,
+    incompleteReason,
     paidOff,
     remainingBalance,
     capped: !paidOff && month === SIMULATION_LIMIT,

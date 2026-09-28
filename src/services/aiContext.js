@@ -121,7 +121,7 @@ export function buildAIContext(financialData = {}, exchangeRateData = {}, { now 
     const coverage = debtCoverage(data);
     facts.push({ id: 'balance.pending', label: 'Deuda total: faltan datos contractuales; no equivale a cero', amount: null, currency: 'MXN', basis: 'datos_incompletos', period: reportingMonth });
     for (const currency of ['MXN', 'USD']) {
-      facts.push({ id: 'balance.known.' + currency, label: 'Saldo conocido aproximado; puede faltar deuda', amount: rounded(coverage.totals[currency]), currency, basis: 'estimacion_declarada', period: reportingMonth });
+      facts.push({ id: 'balance.known.' + currency, label: data.planFinanciero ? 'Saldos conciliados de distintas fechas; no consulta bancaria actual' : 'Saldo conocido aproximado; puede faltar deuda', amount: rounded(coverage.totals[currency]), currency, basis: data.planFinanciero ? 'saldos_documentados_y_declarados' : 'estimacion_declarada', period: reportingMonth });
     }
     if (fiscalComplete && budgetComplete) addFact('budget.subtotal', 'Subtotal antes de otros gastos y pagos pendientes; no es flujo libre', cashFlow.flujoLibreReal, 'presupuesto_incompleto');
   }
@@ -155,6 +155,19 @@ export function buildAIContext(financialData = {}, exchangeRateData = {}, { now 
     addFact('recorded.net', 'Ingresos menos gastos registrados', income - spending, 'movimientos_registrados');
     [...categories].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'es')).slice(0, 6)
       .forEach(([label, amount], index) => addFact(`recorded.category.${index + 1}`, `Gasto registrado · ${label}`, amount, 'movimientos_registrados'));
+  }
+
+  // Only bounded numeric facts enter the assistant. Never include statements,
+  // account numbers, document paths, account notes or editable source content.
+  if (data.planFinanciero?.version === 1) {
+    const plan = data.planFinanciero;
+    for (const account of list(plan.accounts)) {
+      if (facts.length >= 38) break;
+      const name = categoryLabel(account.name);
+      facts.push({ id: 'plan.balance.' + account.id, label: name + ' · saldo a ' + account.balanceDate, amount: account.balance, currency: account.currency, basis: 'saldo_documentado_o_declarado', period: account.balanceDate.slice(0, 7) });
+      if (facts.length < 39) facts.push({ id: 'plan.minimum.' + account.id, label: name + ' · mínimo, sin sumar cuotas; vence ' + (account.dueDate || 'fecha pendiente'), amount: account.minimum, currency: account.currency, basis: account.minimum === null ? 'dato_pendiente' : 'pago_del_estado_no_conciliado', period: reportingMonth });
+    }
+    if (facts.length < 40) facts.push({ id: 'plan.coverage', label: 'Bono y aumento excluidos del plan base; gastos de vida y algunas condiciones siguen pendientes', amount: null, currency: 'MXN', basis: 'plan_parcial_no_es_flujo_libre', period: reportingMonth });
   }
 
   return {

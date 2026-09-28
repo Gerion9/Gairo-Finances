@@ -5,7 +5,7 @@ export function emptyFinancialData(accountId) {
   return {
     profileId: accountId, profileName: ACCOUNT_NAMES[accountId],
     honorarios: { importeFacturado: 0, tasaIva: 0, retencionIsrTasa: 0, retencionIvaFraccion: 0, tasaIsrDeclaracion: 0, otrosIngresos: 0 },
-    gastosNecesarios: [], gastosOpcionales: [], deudas: [], deudasPendientes: [], activos: [], transacciones: [], pagosRealizadosMes: {},
+    gastosNecesarios: [], gastosOpcionales: [], deudas: [], deudasPendientes: [], activos: [], transacciones: [], pagosRealizadosMes: {}, planFinanciero: null,
     ahorro: { porcentajeObjetivo: 0, tasaRendimientoAnual: 0, horizonteAnos: 10 },
     licencia: { esPro: false, tipoPlan: 'PERSONAL' },
     config: { displayCurrency: 'MXN', aportacionExtraMensual: 0, tema: 'dark', diasAlertaVencimiento: 45, onboardingCompletado: false },

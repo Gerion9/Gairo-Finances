@@ -7,6 +7,7 @@ import {
 // Shared route vocabulary for the sidebar, mobile navigation and command menu.
 export const NAVIGATION_ITEMS = [
   { id: 'dashboard', label: 'Resumen', description: 'Tu panorama financiero y próximos pasos', group: 'Tu día a día', icon: LayoutDashboard },
+  { id: 'plan', label: 'Plan de pagos', description: 'Saldos conciliados, promociones, ahorros y escenarios', group: 'Tu día a día', icon: ChartNoAxesCombined },
   { id: 'transactions', label: 'Movimientos', description: 'Ingresos, gastos y registro de transacciones', group: 'Tu día a día', icon: ListFilter },
   { id: 'calendar', label: 'Calendario', description: 'Pagos, vencimientos y quincenas', group: 'Tu día a día', icon: CalendarDays },
   { id: 'debts', label: 'Deudas', description: 'Créditos y estrategias para liquidarlos', group: 'Tu día a día', icon: Layers3 },

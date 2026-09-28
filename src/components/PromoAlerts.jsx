@@ -61,7 +61,7 @@ export default function PromoAlerts({ promoDeadlines, displayCurrency, exchangeR
                     {formatMoney(item.saldo, item.moneda)}
                   </span>
                   {' · '}
-                  Si no se liquida antes del <span className="underline font-semibold">{item.promoDeadline}</span>, se cobrarán intereses al {item.tasaRegularPostPromo || 40}%.
+                  Vencimiento: <span className="underline font-semibold">{item.promoDeadline}</span>. {item.tasaRegularPostPromo == null ? 'Tasa posterior pendiente de confirmar.' : <>Tasa posterior registrada: {item.tasaRegularPostPromo}%.</>}
                 </p>
 
                 <div className="flex items-center gap-2 mt-2 text-xs">

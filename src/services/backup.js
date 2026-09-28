@@ -1,4 +1,5 @@
 import { emptyFinancialData, ACCOUNT_NAMES } from './accountData.js';
+import { normalizePaymentPlan } from './paymentPlan.js';
 
 const record = value => value && typeof value === 'object' && !Array.isArray(value);
 function number(value, label, fallback) {
@@ -105,6 +106,7 @@ export function normalizeBackup(imported, accountId = 'gairo') {
   if (!record(prefs)) throw new Error('Las preferencias no son válidas.');
   normalized.preferences = { manualRate: prefs.manualRate == null ? null : number(prefs.manualRate, 'tipo de cambio'), manualRateUpdatedAt: typeof prefs.manualRateUpdatedAt === 'string' ? prefs.manualRateUpdatedAt.slice(0, 40) : null };
   if (normalized.preferences.manualRate === 0) throw new Error('El tipo de cambio debe ser mayor que cero.');
+  normalized.planFinanciero = normalizePaymentPlan(imported.planFinanciero);
   return normalized;
 }
 

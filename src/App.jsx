@@ -14,6 +14,9 @@ import { createAccountBackup, restoreAccountBackup } from './services/backup.js'
 import { saveDebtRecord } from './services/planning.js';
 import PendingDebts from './components/PendingDebts.jsx';
 import PlanningOverview from './components/PlanningOverview.jsx';
+import { applyPaymentPlan } from './services/paymentPlan.js';
+
+const PaymentPlan = lazy(() => import('./components/PaymentPlan.jsx'));
 
 const DebtCard = lazy(() => import('./components/DebtCard'));
 const DebtModal = lazy(() => import('./components/DebtModal'));
@@ -38,7 +41,7 @@ const AnnualTaxSimulator = lazy(() => import('./components/AnnualTaxSimulator'))
 const FinancialAssistant = lazy(() => import('./components/FinancialAssistant'));
 const StatementImport = lazy(() => import('./components/StatementImport'));
 
-const TABS = ['dashboard', 'debts', 'calendar', 'transactions', 'calculators', 'health', 'diagnostics', 'simulator', 'education', 'budget', 'tax-annual', 'balance', 'investments', 'report', 'assistant', 'statements'];
+const TABS = ['dashboard', 'plan', 'debts', 'calendar', 'transactions', 'calculators', 'health', 'diagnostics', 'simulator', 'education', 'budget', 'tax-annual', 'balance', 'investments', 'report', 'assistant', 'statements'];
 const PERSISTENT_TABS = ['transactions', 'assistant', 'statements'];
 function readRoute() {
   const [path, query = ''] = window.location.hash.replace(/^#\/?/, '').split('?');
@@ -224,6 +227,8 @@ export default function App({ account, initialData, revision, onDataChange, onLo
   };
   const handleLogout = onLogout;
   const renderPage = (tab) => {
+    const planPanels = { dashboard: 'overview', plan: 'overview', debts: 'accounts', simulator: 'overview', calendar: 'calendar', investments: 'savings', balance: 'savings', budget: 'overview' };
+    if (tab === 'plan' || (financialData.planFinanciero && Object.hasOwn(planPanels, tab))) return <PaymentPlan key={tab} plan={financialData.planFinanciero} accountName={account.displayName} initialPanel={planPanels[tab]} exchangeRate={exchangeRate} onSave={plan => { setFinancialData(previous => applyPaymentPlan(previous, plan)); addToast({ message: 'Plan financiero guardado.' }); }} />;
     const hasPendingDebts = (financialData.deudasPendientes || []).length > 0;
     const needsCompleteDebts = ['health', 'simulator', 'balance', 'report', 'investments'].includes(tab);
     if (hasPendingDebts && (tab === 'dashboard' || needsCompleteDebts)) return <div className="space-y-6">{needsCompleteDebts && <div className="surface-card p-5 text-sm text-amber-200">Esta vista necesita los pagos y las tasas contractuales de todas tus deudas. Mientras los completas, aquí tienes tu información registrada.</div>}<PlanningOverview financialData={financialData} cashFlow={cashFlow} onNavigate={navigate} /></div>;

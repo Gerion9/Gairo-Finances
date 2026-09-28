@@ -1,6 +1,7 @@
 // Exportación completa a formato Excel (.xlsx) usando SheetJS
 import * as XLSX from 'xlsx';
 import { calculateFiscalOverview } from './financeEngine.js';
+import { planTotals, simulatePaymentPlan } from './paymentPlan.js';
 
 export function buildFinancialWorkbook(data, exchangeRate) {
   const hasPending = Boolean(data.deudasPendientes?.length);
@@ -96,6 +97,40 @@ export function buildFinancialWorkbook(data, exchangeRate) {
   const wsBalance = XLSX.utils.aoa_to_sheet(balanceData);
   XLSX.utils.book_append_sheet(wb, wsBalance, 'Estructura de Capital');
 
+  if (data.planFinanciero) {
+    const plan = data.planFinanciero;
+    const totals = planTotals(plan);
+    const addSheet = (name, rows) => XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), name);
+    addSheet('Créditos conciliados', [
+      ['SALDOS DE FECHAS DISTINTAS · NO SON UNA CONSULTA BANCARIA ACTUAL'],
+      ['Cuenta', 'Moneda', 'Saldo total', 'Fecha del saldo', 'Base', 'Saldo del corte', 'Mínimo', 'Mínimo con cuotas', 'Pago sin intereses', 'Pago declarado', 'Vencimiento', 'Fuente', 'Observaciones'],
+      ...plan.accounts.map(a => [a.name, a.currency, a.balance, a.balanceDate, a.balanceBasis, a.statementBalance, a.minimum ?? 'Pendiente', a.requiredPayment ?? 'Pendiente', a.paymentToAvoidInterest ?? 'Pendiente', a.reportedPayment, a.dueDate, plan.sources.find(s => s.id === a.sourceId)?.label, [a.note, ...a.issues].join(' · ')]),
+      ['Total MXN', 'MXN', totals.debts.MXN], ['Total USD', 'USD', totals.debts.USD],
+    ]);
+    addSheet('Tramos y promociones', [
+      ['Cuenta', 'Tramo', 'Moneda', 'Saldo incluido', 'APR', 'Tipo', 'Cuota', 'Cuotas incluidas', 'Fin promoción', 'APR posterior', 'Interés diferido no facturado', 'Notas'],
+      ...plan.accounts.flatMap(a => a.tranches.map(t => [a.name, t.label, a.currency, t.balance, t.apr ?? 'Pendiente', t.type, t.monthlyPayment, t.paymentsRemaining, t.promoEnd, t.postApr ?? 'Pendiente', t.deferredAccrued, t.note])),
+    ]);
+    addSheet('Compromisos del plan', [
+      ['Concepto', 'Fecha', 'MXN'], ...plan.budget.tuitionPayments.map(p => ['Maestría', p.date, p.amount]),
+      ['Costo del siguiente periodo', plan.budget.tuitionProvisionStart, plan.budget.quarterlyTuition],
+      ['Número de pagos', '', plan.budget.tuitionPaymentCount],
+      ['Provisión mensual equivalente · no cargo adicional', '', plan.budget.quarterlyTuition / plan.budget.tuitionPaymentCount],
+      ['Gastos de vida mensuales', '', plan.budget.livingExpenses ?? 'Pendiente'],
+      ...(plan.budget.expenses || []).map(e => [e.name + ' · ' + (e.basis === 'BUDGET' ? 'presupuesto' : e.basis === 'ESTIMATE' ? 'estimación' : 'declarado'), '', e.amount ?? 'Pendiente']),
+      ['Impuestos mensuales', '', plan.budget.monthlyTax],
+    ]);
+    const result = simulatePaymentPlan(plan, { fx: exchangeRate });
+    addSheet('Proyección base parcial', [
+      ['ESTIMACIÓN · SIN COMPRAS NUEVAS · FX CONSTANTE', result.fx],
+      ['Cobertura', result.fullCoverage ? 'Tramos conocidos' : 'Parcial; revisar exclusiones'],
+      ['Interrupción', result.stopped ? result.stopped.account + ': ' + result.stopped.reason : ''],
+      ...result.excluded.map(x => ['Excluido', x.account + ': ' + x.tranche + ' · ' + x.reason]),
+      ['Periodo hasta', 'Saldo modelado MXN', 'Pago MXN', 'Interés e IVA estimado MXN', 'Comisiones MXN', 'Maestría MXN', 'Margen MXN', 'Faltante de mínimos MXN', 'Faltante de fondos MXN'],
+      ...result.history.map(r => [r.date, r.debt ?? 'Pendiente', r.paid, r.interest, r.fees, r.tuition, r.surplus ?? 'Pendiente', r.minimumShortfall, r.fundingGap]),
+    ]);
+    addSheet('Fuentes del plan', [['Documento', 'Archivo original', 'Fecha', 'Páginas', 'Observaciones'], ...plan.sources.map(s => [s.label, s.fileName, s.date, s.pages, s.note])]);
+  }
   return wb;
 }
 
