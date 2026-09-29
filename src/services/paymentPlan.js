@@ -120,12 +120,23 @@ export function normalizePaymentPlan(value) {
 export function normalizeScenario(value = {}) {
   if (!isRecord(value)) throw new Error('Revisa el escenario.');
   const raise = value.raise || {}, bonus = value.bonus || {}, transfer = value.transfer || {};
+  const cashflow = value.cashflow || {}, loan = cashflow.loan || {}, discover = cashflow.discover || {};
+  if (!isRecord(cashflow) || !isRecord(loan) || !isRecord(discover)) throw new Error('Revisa el escenario por fecha.');
+  const allocation = p => ({ id: id(p.id, 'asignación'), accountId: text(p.accountId, 'cuenta', 100), date: date(p.date, 'asignación', false), dueDate: date(p.dueDate, 'vencimiento de asignación'), amount: num(p.amount, 'asignación', false), funding: enumValue(p.funding, ['MXN', 'USD'], 'MXN'), assetId: text(p.assetId, 'cuenta de origen', 100) });
   return {
     raise: { enabled: raise.enabled === true, amount: num(raise.amount, 'aumento') ?? 0, date: date(raise.date, 'aumento') },
     bonus: { enabled: bonus.enabled === true, amount: num(bonus.amount, 'bono') ?? 0, date: date(bonus.date, 'bono') },
     useSavings: value.useSavings === true, savingsAmount: num(value.savingsAmount, 'abono desde ahorros') ?? 0,
     transfer: { enabled: transfer.enabled === true, sourceId: text(transfer.sourceId, 'origen', 100), amount: num(transfer.amount, 'transferencia') ?? 0, date: date(transfer.date, 'transferencia'), limitIncludesFee: transfer.limitIncludesFee !== false, feeAtZero: transfer.feeAtZero === true, postApr: num(transfer.postApr, 'APR posterior de transferencia', true, 1000) },
     rateOverrides: list(value.rateOverrides, 'supuestos de tasas', 100).map(r => ({ accountId: text(r.accountId, 'cuenta', 100), trancheId: text(r.trancheId, 'tramo', 100), apr: num(r.apr, 'APR hipotética', true, 1000), promoEnd: date(r.promoEnd, 'fin hipotético'), postApr: num(r.postApr, 'APR posterior hipotética', true, 1000) })),
+    cashflow: {
+      reserveMXN: num(cashflow.reserveMXN, 'reserva del escenario'),
+      currentExpensesMXN: num(cashflow.currentExpensesMXN, 'gastos pendientes antes del ingreso'),
+      payments: unique(list(cashflow.payments, 'asignaciones', 200).map(allocation), 'asignaciones'),
+      extraPayments: unique(list(cashflow.extraPayments, 'abonos adicionales', 100).map(allocation), 'abonos adicionales'),
+      loan: { enabled: loan.enabled === true, amount: num(loan.amount, 'desembolso') ?? 0, date: date(loan.date, 'desembolso'), apr: num(loan.apr, 'tasa del préstamo', true, 1000), fee: num(loan.fee, 'comisión del préstamo') ?? 0, monthlyPayment: num(loan.monthlyPayment, 'cuota del préstamo'), firstPaymentDate: date(loan.firstPaymentDate, 'primera cuota') },
+      discover: { enabled: discover.enabled === true, amount: num(discover.amount, 'principal Discover') ?? 0, date: date(discover.date, 'llegada de Discover'), currency: enumValue(discover.currency, ['MXN', 'USD'], 'USD'), netMXN: num(discover.netMXN, 'pesos netos de Discover'), quotePrincipalUSD: num(discover.quotePrincipalUSD, 'principal cotizado Discover'), assetId: text(discover.assetId, 'cuenta receptora Discover', 100), limitIncludesFee: discover.limitIncludesFee !== false, monthlyPayment: num(discover.monthlyPayment, 'abono adicional Discover'), firstPaymentDate: date(discover.firstPaymentDate, 'primer abono Discover'), funding: enumValue(discover.funding, ['MXN', 'USD'], 'USD'), paymentAssetId: text(discover.paymentAssetId, 'cuenta para abonos Discover', 100) },
+    },
   };
 }
 

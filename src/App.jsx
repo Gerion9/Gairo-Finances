@@ -59,6 +59,16 @@ export default function App({ account, initialData, revision, onDataChange, onLo
   const activeTab = route.tab;
   const [financialData, setFinancialDataState] = useState(() => initialData);
   const dataRef = useRef(financialData);
+  // The simulation draft stays in this authenticated session, never in browser storage.
+  const paymentDraftCache = useRef(null);
+  useEffect(() => {
+    const protectDraft = event => {
+      const cached = paymentDraftCache.current;
+      if (cached && JSON.stringify(cached.value) !== cached.source) { event.preventDefault(); event.returnValue = ''; }
+    };
+    window.addEventListener('beforeunload', protectDraft);
+    return () => window.removeEventListener('beforeunload', protectDraft);
+  }, []);
   const [exchangeRateData, setExchangeRateData] = useState({ rate: 19.25, isManual: false, source: 'Tasa base · conectando', lastUpdated: null });
   const [privacyMode, setPrivacyMode] = useState(() => { try { return localStorage.getItem('sifran_device_privacy') === 'true'; } catch { return false; } });
   const [isDebtModalOpen, setIsDebtModalOpen] = useState(false);
@@ -227,8 +237,8 @@ export default function App({ account, initialData, revision, onDataChange, onLo
   };
   const handleLogout = onLogout;
   const renderPage = (tab) => {
-    const planPanels = { dashboard: 'overview', plan: 'overview', debts: 'accounts', simulator: 'overview', calendar: 'calendar', investments: 'savings', balance: 'savings', budget: 'overview' };
-    if (tab === 'plan' || (financialData.planFinanciero && Object.hasOwn(planPanels, tab))) return <PaymentPlan key={tab} plan={financialData.planFinanciero} accountName={account.displayName} initialPanel={planPanels[tab]} exchangeRate={exchangeRate} onSave={plan => { setFinancialData(previous => applyPaymentPlan(previous, plan)); addToast({ message: 'Plan financiero guardado.' }); }} />;
+    const planPanels = { dashboard: 'overview', plan: 'overview', debts: 'accounts', simulator: 'overview', calendar: 'calendar', investments: 'savings', balance: 'savings', budget: 'analysis' };
+    if (tab === 'plan' || (financialData.planFinanciero && Object.hasOwn(planPanels, tab))) return <PaymentPlan key={account.id} draftCache={paymentDraftCache} plan={financialData.planFinanciero} accountName={account.displayName} initialPanel={planPanels[tab]} exchangeRate={exchangeRate} onSave={plan => { setFinancialData(previous => applyPaymentPlan(previous, plan)); addToast({ message: 'Plan preparado. Revisa el estado de sincronización para confirmar el guardado.' }); }} />;
     const hasPendingDebts = (financialData.deudasPendientes || []).length > 0;
     const needsCompleteDebts = ['health', 'simulator', 'balance', 'report', 'investments'].includes(tab);
     if (hasPendingDebts && (tab === 'dashboard' || needsCompleteDebts)) return <div className="space-y-6">{needsCompleteDebts && <div className="surface-card p-5 text-sm text-amber-200">Esta vista necesita los pagos y las tasas contractuales de todas tus deudas. Mientras los completas, aquí tienes tu información registrada.</div>}<PlanningOverview financialData={financialData} cashFlow={cashFlow} onNavigate={navigate} /></div>;

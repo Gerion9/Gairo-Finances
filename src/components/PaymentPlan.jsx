@@ -1,15 +1,16 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Area, AreaChart, CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { AlertTriangle, ArrowRight, CalendarDays, Check, Download, Plus, Save, Wallet } from 'lucide-react';
 import { normalizePaymentPlan, planTotals, simulatePaymentPlan, upcomingPlanPayments, estimateYield, compareRemittanceQuotes, transferTerms, mergePlanHistories, livingBudgetSummary, tuitionForPeriod, addMonths } from '../services/paymentPlan.js';
 import { downloadJSON } from '../services/storage.js';
 import './PaymentPlan.css';
 import PaymentStrategy from './PaymentStrategy.jsx';
+import PaymentWorkbench from './PaymentWorkbench.jsx';
 
 const currency = (value, code = 'MXN') => value == null ? 'Por confirmar' : new Intl.NumberFormat('es-MX', { style: 'currency', currency: code, maximumFractionDigits: 2 }).format(value) + ' ' + code;
 const dateLabel = value => value ? new Intl.DateTimeFormat('es-MX', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(value + 'T12:00:00Z')) : 'Fecha pendiente';
 const numberValue = value => value === '' ? null : Number(value);
-const panelNames = [['overview', 'Plan de pagos'], ['accounts', 'Mis créditos'], ['calendar', 'Próximos pagos'], ['savings', 'Ahorros'], ['transfers', 'Enviar USD'], ['data', 'Datos y fuentes']];
+const panelNames = [['overview', 'Simular pagos'], ['accounts', 'Mis créditos'], ['calendar', 'Calendario documentado'], ['monthly', 'Proyección mensual'], ['analysis', 'Presupuesto y estrategia'], ['savings', 'Ahorros'], ['transfers', 'Enviar USD'], ['data', 'Datos y fuentes']];
 const sourceLabel = (plan, id) => plan.sources.find(s => s.id === id)?.label || 'Dato declarado';
 function Field({ label, value, onChange, type = 'number', hint, ...props }) {
   return <label className="plan-field"><span>{label}</span><input className="field-input" type={type} value={value ?? ''} min={type === 'number' ? 0 : undefined} step={type === 'number' ? 'any' : undefined} onChange={e => onChange(type === 'number' ? numberValue(e.target.value) : e.target.value || null)} {...props} />{hint && <small>{hint}</small>}</label>;
@@ -25,8 +26,10 @@ function ChartTooltip({ active, payload, label }) {
   return <div className="plan-tooltip"><strong>{dateLabel(label)}</strong>{payload.map(p => <div key={p.dataKey}><span style={{ color: p.color }}>{p.name}</span><b>{currency(p.value)}</b></div>)}</div>;
 }
 
-export default function PaymentPlan({ plan, onSave, exchangeRate = 19.25, initialPanel = 'overview', accountName = '' }) {
-  const [draft, setDraft] = useState(plan ? structuredClone(plan) : null);
+export default function PaymentPlan({ plan, onSave, exchangeRate = 19.25, initialPanel = 'overview', accountName = '', draftCache }) {
+  const sourceKey = JSON.stringify(plan);
+  const lastSource = useRef(sourceKey);
+  const [draft, setDraft] = useState(() => draftCache?.current?.source === sourceKey ? structuredClone(draftCache.current.value) : plan ? structuredClone(plan) : null);
   const [panel, setPanel] = useState(initialPanel);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -35,7 +38,8 @@ export default function PaymentPlan({ plan, onSave, exchangeRate = 19.25, initia
   const [showImport, setShowImport] = useState(!plan);
   const [yieldAmount, setYieldAmount] = useState(10000);
   const [allocationPeriod, setAllocationPeriod] = useState(0);
-  useEffect(() => { setDraft(plan ? structuredClone(plan) : null); }, [plan]);
+  useEffect(() => { if (lastSource.current !== sourceKey) { lastSource.current = sourceKey; setDraft(plan ? structuredClone(plan) : null); } }, [plan, sourceKey]);
+  useEffect(() => { if (draftCache) draftCache.current = { source: sourceKey, value: structuredClone(draft) }; }, [draft, sourceKey, draftCache]);
   useEffect(() => { setPanel(initialPanel); }, [initialPanel]);
   const validated = useMemo(() => { try { return draft ? { plan: normalizePaymentPlan(draft) } : {}; } catch (e) { return { error: e.message }; } }, [draft]);
   const results = useMemo(() => {
@@ -44,6 +48,7 @@ export default function PaymentPlan({ plan, onSave, exchangeRate = 19.25, initia
     catch (e) { return { error: e.message }; }
   }, [validated.plan, exchangeRate]);
   const dirty = JSON.stringify(plan) !== JSON.stringify(draft);
+  useEffect(() => { if (!dirty || draftCache || typeof window === 'undefined') return; const warn = event => { event.preventDefault(); event.returnValue = ''; }; window.addEventListener('beforeunload', warn); return () => window.removeEventListener('beforeunload', warn); }, [dirty, draftCache]);
   const change = (section, key, value) => { setDraft(d => ({ ...d, [section]: { ...d[section], [key]: value } })); setMessage(''); };
   const changeScenario = (section, key, value) => setDraft(d => ({ ...d, scenario: { ...d.scenario, [section]: { ...d.scenario[section], [key]: value } } }));
   const save = () => {
@@ -78,8 +83,10 @@ export default function PaymentPlan({ plan, onSave, exchangeRate = 19.25, initia
     {dirty && <p className="plan-unsaved">Estás explorando cambios sin guardar.</p>}
     <nav className="plan-tabs" aria-label="Secciones del plan">{panelNames.map(([id, label]) => <button key={id} aria-current={panel === id ? 'page' : undefined} onClick={() => setPanel(id)}>{label}</button>)}</nav>
 
-    {panel === 'overview' && <>
-      {(activePlan || plan) && <PaymentStrategy plan={activePlan || plan} editableRecommendation={draft.recommendation} fx={fx} onChange={recommendation => setDraft(d => ({ ...d, recommendation }))} />}
+    {panel === 'overview' && (activePlan || plan) && <PaymentWorkbench plan={activePlan || plan} fx={fx} onChangeScenario={scenario => setDraft(d => ({ ...d, scenario }))} onChangeAsset={(assetId, patch) => setDraft(d => ({ ...d, assets: d.assets.map(a => a.id === assetId ? { ...a, ...patch } : a) }))} onOpenAccounts={() => setPanel('accounts')} onOpenProjection={() => setPanel('analysis')} />}
+    {panel === 'analysis' && (activePlan || plan) && <PaymentStrategy plan={activePlan || plan} editableRecommendation={draft.recommendation} fx={fx} onChange={recommendation => setDraft(d => ({ ...d, recommendation }))} />}
+    {panel === 'monthly' && <>
+      <Notice>Esta vista usa reglas automáticas por mes. Los abonos por fecha y el préstamo nuevo del simulador diario no se aplican aquí. Para comprobar fondos antes de cada vencimiento, vuelve a Simular pagos.</Notice>
       <div className="plan-metrics"><Metric title="Deuda en pesos" value={currency(totals.debts.MXN)} detail="Incluye cuotas futuras; no es el pago de este mes." /><Metric title="Deuda en dólares" value={currency(totals.debts.USD, 'USD')} detail={draft.accounts.filter(a => a.currency === 'USD').length + ' créditos documentados'} /><Metric title="Ahorro registrado" value={currency(totals.assets.MXN)} detail={currency(totals.assets.USD, 'USD') + ' adicionales'} /></div>
       <p className="plan-caption">{sourceNote}</p>
       <BudgetAllocation draft={draft} setDraft={setDraft} base={base} />

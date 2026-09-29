@@ -1,0 +1,179 @@
+.payment-workbench { display: grid; gap: 20px; min-width: 0; --wb-muted: #a8b8cd; }
+.payment-workbench p { font-size: 16px; line-height: 1.65; }
+.payment-workbench h2 { font-size: clamp(21px, 2vw, 28px); margin: 7px 0; }
+.payment-workbench h3 { font-size: 17px; margin: 0; }
+.payment-workbench button, .payment-workbench input, .payment-workbench select { font-size: 14px; }
+.payment-workbench button:focus-visible, .payment-workbench input:focus-visible, .payment-workbench select:focus-visible, .payment-workbench summary:focus-visible { outline: 2px solid #7de4bf; outline-offset: 4px; }
+.payment-workbench input[type="range"] { accent-color: #7de4bf; width: 100%; min-height: 44px; cursor: pointer; }
+.payment-workbench button:disabled { opacity: .45; cursor: not-allowed; }
+.wb-toolbar, .wb-period, .wb-chart-heading, .wb-next-heading { display: flex; justify-content: space-between; gap: 16px; align-items: center; flex-wrap: wrap; }
+.wb-toolbar p { margin: 6px 0 0; }
+.wb-toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.wb-kicker { color: #92deca; font-size: 12px; font-weight: 650; letter-spacing: .12em; display: flex; align-items: center; gap: 8px; }
+.wb-period { background: #101c2b; padding: 16px 20px; border: 1px solid #2c3d53; border-radius: 14px; }
+.wb-period .wb-field { margin: 0; width: 190px; }
+.wb-label { display: block; font-size: 14px; color: #bfd0e2; margin-bottom: 8px; }
+.wb-period-end { font-size: 14px; color: #dae5f2; }
+.wb-period-end small { display: block; margin-top: 5px; font-size: 12px; color: var(--wb-muted); }
+.wb-segment { display: inline-flex; gap: 3px; padding: 4px; background: #091320; border-radius: 10px; border: 1px solid #263b51; }
+.wb-segment button { padding: 9px 12px; color: #a8b8cd; min-height: 40px; white-space: nowrap; border-radius: 7px; }
+.wb-segment button[aria-pressed="true"] { background: #203c3c; color: #b4f9dd; box-shadow: inset 0 0 0 1px #5d9d8745; }
+.wb-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid #2c3e54; border-radius: 16px; overflow: hidden; background: linear-gradient(120deg, #142537, #111c2a); }
+.wb-summary > div { padding: 22px 24px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.wb-summary > div + div { border-left: 1px solid #2c3e54; }
+.wb-summary > div > span:first-child { color: #bed0df; font-size: 14px; }
+.wb-summary strong { font-size: clamp(22px, 2vw, 32px); font-weight: 600; line-height: 1.2; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; letter-spacing: -.035em; }
+.wb-summary .wb-usd { color: #b5c7dc; font-size: 16px; font-variant-numeric: tabular-nums; }
+.wb-summary small { color: #9dafc5; font-size: 12px; line-height: 1.6; }
+.wb-summary .wb-summary-alert { background: #d5713610; }
+.wb-summary-alert strong { color: #ffd39a; }
+.wb-assumption { display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; padding: 16px 20px; border: 1px solid #80633f66; background: #352a1b44; border-radius: 12px; }
+.wb-assumption > div { flex: 1 1 300px; }
+.wb-assumption strong { color: #f4d4a9; font-size: 14px; }
+.wb-assumption p { margin: 5px 0 0; font-size: 13px; }
+.wb-assumption button { flex: 0 0 auto; }
+.wb-next-heading { margin-top: 2px; }
+.wb-next-heading .button-ghost { font-size: 14px; display: flex; gap: 8px; }
+.wb-next { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.wb-deadline { text-align: left; display: flex; flex-direction: column; gap: 8px; background: #101b2a; border: 1px solid #2c3e54; border-radius: 13px; padding: 17px 19px; min-width: 0; border-top: 3px solid #6c9db7; transition: border-color .15s; }
+.wb-deadline:hover, .wb-deadline.selected { background: #172838; box-shadow: inset 0 0 0 1px #80c1af66; }
+.wb-deadline.danger { border-top-color: #f093a2; }
+.wb-deadline.warning { border-top-color: #efbc73; }
+.wb-deadline.covered { border-top-color: #7de4bf; }
+.wb-deadline-top { color: #c1cfe0; display: flex; align-items: center; gap: 7px; font-size: 14px; }
+.wb-deadline-top > span { margin-left: auto; font-size: 12px; }
+.wb-deadline > strong { font-size: 16px; line-height: 1.3; }
+.wb-deadline-amount { font-size: 22px; color: #e7eef7; font-weight: 550; font-variant-numeric: tabular-nums; }
+.wb-status { color: #a8b8cd; font-size: 14px; line-height: 1.45; }
+.wb-deadline.danger .wb-status, .wb-deadline.danger > small { color: #ffb4be; }
+.wb-deadline.warning .wb-status, .wb-deadline.warning > small { color: #f3cc99; }
+.wb-deadline.covered .wb-status { color: #a7ebd4; }
+.wb-deadline small { font-size: 12px; }
+.wb-workspace { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(300px, .95fr); gap: 20px; align-items: start; }
+.wb-chart-panel { padding: clamp(18px, 2vw, 28px); min-width: 0; position: sticky; top: 20px; }
+.wb-chart-heading h2 { font-size: 23px; }
+.wb-chart-heading .wb-segment button { padding: 7px 12px; }
+.wb-legend { display: flex; gap: 12px 20px; flex-wrap: wrap; margin: 17px 0; color: #bfd0e0; font-size: 12px; }
+.wb-legend > span { display: inline-flex; align-items: center; gap: 7px; }
+.wb-legend i { width: 20px; border-top: 3px solid #7de4bf; display: inline-block; }
+.wb-legend i.base { border-top: 2px dashed #8e9eb7; }
+.wb-legend i.reserve { border-top: 2px dashed #efbc73; }
+.wb-cash-status { display: flex; align-items: center; gap: 9px; color: #acded0; background: #112820; border-radius: 8px; padding: 10px 12px; font-size: 14px; }
+.wb-cash-status.danger { color: #ffc0cb; background: #361e2b; }
+.wb-cash-status.warning { color: #f4ce9b; background: #2c281f; }
+.wb-cash-status > svg { flex: 0 0 auto; }
+.wb-cash-status small { display: block; color: #b4c1d1; font-size: 12px; margin-top: 3px; }
+.wb-chart { width: 100%; height: 290px; margin-top: 16px; min-width: 0; }
+.wb-date-scrubber { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+.wb-date-scrubber > button { flex-shrink: 0; display: grid; place-items: center; width: 44px; height: 44px; color: #b8d2de; border: 1px solid #31495c; border-radius: 9px; }
+.wb-date-scrubber label { flex: 1; min-width: 0; font-size: 13px; color: #a8b8cd; }
+.wb-date-scrubber label > span { display: flex; justify-content: space-between; gap: 6px; flex-wrap: wrap; }
+.wb-day-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 16px 0; gap: 10px; border-top: 1px solid #2a3d52; border-bottom: 1px solid #2a3d52; }
+.wb-day-summary > div { display: flex; flex-direction: column; gap: 7px; }
+.wb-day-summary span { color: var(--wb-muted); font-size: 12px; }
+.wb-day-summary strong { font-size: clamp(14px, 1.3vw, 20px); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.wb-day-summary > div:nth-child(2) strong { color: #a7f1d2; }
+.wb-day-events { display: grid; gap: 10px; padding: 16px 0 0; }
+.wb-day-events > div { display: flex; justify-content: space-between; gap: 16px; font-size: 13px; color: #c3d3e5; }
+.wb-day-events span { display: flex; align-items: center; gap: 8px; }
+.wb-day-events b { white-space: nowrap; font-weight: 550; }
+.payment-workbench .wb-note { color: #a4b7cb; font-size: 12px; line-height: 1.65; margin: 11px 0 0; }
+.wb-editor { padding: 20px; min-width: 0; }
+.wb-editor-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding-bottom: 16px; border-bottom: 1px solid #2b3e52; margin-bottom: 18px; }
+.wb-editor-tabs button { display: flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 6px; min-height: 44px; color: #9db0c6; border-radius: 8px; }
+.wb-editor-tabs button[aria-pressed="true"] { background: #223f40; color: #b7f7df; }
+.wb-field { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; font-size: 14px; color: #d1deeb; }
+.wb-field .field-input { min-height: 44px; min-width: 0; width: 100%; color-scheme: dark; }
+.wb-field small { color: #a1b6cd; font-size: 12px; line-height: 1.6; }
+.wb-account-context { padding: 14px; border-radius: 10px; background: #0c1622; display: grid; gap: 7px; font-size: 12px; color: #a9bbce; }
+.wb-account-context > strong { color: #efcda1; font-size: 14px; }
+.wb-slider-field .wb-field { margin-bottom: 0; }
+.wb-range-labels { display: flex; justify-content: space-between; font-size: 12px; color: #95a8bf; gap: 10px; }
+.wb-presets { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 17px; }
+.wb-presets button { padding: 8px 10px; min-height: 38px; font-size: 12px; color: #c0dfd6; border: 1px solid #34534f; border-radius: 8px; }
+.wb-presets button:hover { background: #243a39; }
+.wb-inline-warning { display: flex; gap: 8px; color: #f2c28d!important; background: #30271d; border: 1px solid #71503277; border-radius: 9px; padding: 12px; font-size: 13px!important; line-height: 1.55; margin: 14px 0; }
+.wb-inline-warning > svg { flex-shrink: 0; }
+.wb-full { width: 100%; justify-content: center; margin-top: 16px; }
+.wb-allocation-result { display: grid; gap: 6px; margin: 17px 0 8px; padding: 15px; border: 1px solid #36534d; background: #172c2a; border-radius: 10px; font-size: 13px; color: #bddbd1; }
+.wb-allocation-result.danger { background: #2e202b; border-color: #6a3947; color: #eeb3c0; }
+.wb-allocation-result.warning { background: #2e2a21; border-color: #685332; color: #ecd0a2; }
+.wb-allocation-result strong { font-size: 19px; font-variant-numeric: tabular-nums; }
+.wb-editor .button-ghost { display: flex; align-items: center; gap: 7px; font-size: 13px; }
+.wb-funds { display: grid; gap: 7px; color: #b3c5d9; font-size: 14px; }
+.wb-funds strong { font-size: 26px; font-weight: 550; }
+.wb-funds small { font-size: 12px; color: #98aec4; }
+.wb-funding-option { border-top: 1px solid #2d4056; margin-top: 18px; padding-top: 9px; }
+.wb-toggle { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 48px; font-size: 14px; color: #d7e5f1; cursor: pointer; }
+.wb-toggle input { width: 21px; height: 21px; accent-color: #7de4bf; }
+.wb-fields-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.wb-agenda { padding: clamp(18px, 2vw, 28px); min-width: 0; scroll-margin-top: 20px; }
+.wb-agenda-head, .wb-agenda-row { display: grid; grid-template-columns: minmax(180px, 1.8fr) repeat(3, minmax(110px, 1fr)) 100px; gap: 18px; }
+.wb-agenda-head { color: #92a7be; font-size: 12px; padding: 22px 0 14px; border-bottom: 1px solid #304158; }
+.wb-agenda-row { align-items: center; padding: 18px 0; border-bottom: 1px solid #24354b; font-size: 14px; }
+.wb-agenda-row > div { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.wb-agenda-row strong { font-size: 15px; }
+.wb-agenda-row b { font-variant-numeric: tabular-nums; font-weight: 550; overflow-wrap: anywhere; }
+.wb-agenda-row span { color: #adc0d3; font-size: 12px; }
+.wb-agenda-row small { color: #92a7bf; font-size: 12px; line-height: 1.5; }
+.wb-agenda-row.danger > div:last-of-type b { color: #ffadbc; }
+.wb-agenda-row.warning > div:last-of-type b { color: #f1c993; }
+.wb-agenda-row .button-secondary { justify-content: center; }
+.wb-mobile-label { display: none; }
+.wb-disclosure { padding: 18px 24px; min-width: 0; color: #b0c4d9; font-size: 14px; }
+.wb-disclosure > summary { display: flex; align-items: center; gap: 10px; cursor: pointer; min-height: 40px; color: #d0deed; list-style: none; }
+.wb-disclosure > summary::after { content: '+'; margin-left: auto; font-size: 22px; color: #7de4bf; }
+.wb-disclosure[open] > summary::after { content: '−'; }
+.wb-disclosure ul { list-style: disc; padding-left: 22px; line-height: 1.7; margin-top: 15px; }
+.wb-disclosure li { margin-bottom: 8px; }
+.wb-disclosure .plan-table { font-size: 14px; }
+.wb-promos { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; margin-top: 20px; }
+.wb-promos > div { display: grid; gap: 7px; background: #0e1826; padding: 16px; border: 1px solid #2a3b51; border-radius: 9px; }
+.wb-promos small { font-size: 12px; line-height: 1.6; color: #9eb1c8; }
+.wb-empty { padding: 24px; border: 1px dashed #3c536b; color: #b2c7dc; border-radius: 12px; font-size: 14px; }
+@media (max-width: 1100px) { .wb-workspace { grid-template-columns: minmax(0, 1.2fr) minmax(295px, 1fr); } .wb-agenda-head, .wb-agenda-row { grid-template-columns: minmax(150px, 1.6fr) repeat(3, minmax(95px, 1fr)) 85px; gap: 10px; } .wb-summary > div { padding: 18px; } }
+@media (max-width: 850px) { .wb-workspace { grid-template-columns: 1fr; } .wb-chart-panel { position: static; } .wb-editor { scroll-margin-top: 15px; } .wb-next { grid-template-columns: 1fr; } .wb-deadline { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; padding: 15px; gap: 7px 15px; } .wb-deadline-top { grid-column: 1 / -1; } .wb-deadline-amount { font-size: 20px; } .wb-status { grid-column: 1; } .wb-summary strong { font-size: 21px; } .wb-agenda-head { display: none; } .wb-agenda-row { grid-template-columns: 1fr 1fr; gap: 12px; } .wb-agenda-row > div:first-child { grid-column: 1 / -1; } .wb-agenda-row > button { grid-column: 1 / -1; } .wb-agenda-row > div:nth-child(2) { grid-column: 1 / -1; } .wb-agenda-row .wb-mobile-label { display: block; font-size: 12px; } }
+@media (max-width: 560px) { .payment-workbench { gap: 16px; } .wb-summary { grid-template-columns: 1fr; } .wb-summary > div { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; padding: 16px; } .wb-summary > div + div { border-left: 0; border-top: 1px solid #2c3e54; } .wb-summary > div > span:first-child { grid-column: 1 / -1; } .wb-summary strong { font-size: 23px; } .wb-summary .wb-usd { align-self: center; font-size: 14px; } .wb-summary small { grid-column: 1 / -1; } .wb-period { padding: 14px; } .wb-period .wb-field { width: 100%; } .wb-period > div { width: 100%; } .wb-period .wb-segment { width: 100%; } .wb-period .wb-segment button { flex: 1; padding: 8px 7px; font-size: 13px; } .wb-next-heading { gap: 8px; } .wb-chart-panel, .wb-editor, .wb-agenda { padding: 16px; } .wb-chart { height: 265px; } .wb-chart-heading h2 { font-size: 21px; } .wb-chart-heading .wb-kicker { font-size: 10px; } .wb-chart-heading { gap: 10px; } .wb-day-events > div { flex-wrap: wrap; gap: 4px; } .wb-day-events b { margin-left: 22px; } .wb-day-summary { grid-template-columns: 1fr; } .wb-day-summary > div { flex-direction: row; justify-content: space-between; } .wb-day-summary strong { font-size: 16px; } .wb-day-summary span { font-size: 14px; } .wb-date-scrubber { gap: 6px; } .wb-date-scrubber > button { width: 36px; } .wb-disclosure { padding: 14px 18px; } .wb-toolbar-actions { width: 100%; } .wb-toolbar-actions .button-secondary { width: 100%; justify-content: center; } }
+@media (prefers-reduced-motion: reduce) { .payment-workbench *, .wb-deadline { transition: none; scroll-behavior: auto; } }
+.wb-filter { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.wb-filter .wb-label { margin: 0; font-weight: 600; }
+.wb-filter small { color: #9bafc6; font-size: 12px; }
+.wb-accounts h3 { display: flex; align-items: center; gap: 8px; }
+.wb-asset-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(235px, 1fr)); gap: 12px; margin-top: 14px; align-items: start; }
+.wb-asset { border: 1px solid #344e60; background: #122331; border-radius: 12px; padding: 16px; display: grid; gap: 9px; min-width: 0; }
+.wb-asset > div:first-child { display: flex; flex-direction: column; gap: 5px; }
+.wb-asset strong { font-size: 15px; }
+.wb-asset span, .wb-asset small { color: #a6bfd0; font-size: 12px; }
+.wb-asset b { font-size: 23px; font-weight: 550; color: #d0f4e7; font-variant-numeric: tabular-nums; }
+.wb-asset-actions { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.wb-asset .button-ghost { font-size: 12px; padding: 6px 0; min-height: 32px; color: #a4ddcf; }
+.wb-asset .wb-field { margin: 5px 0; }
+.wb-scenario-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; align-items: start; margin-top: 14px; }
+.wb-scenario-grid .wb-funding-option { margin: 0; padding: 12px 16px; border: 1px solid #30475e; border-radius: 12px; background: #111e2d; min-width: 0; }
+.wb-scenario-grid .wb-funding-option:has(.wb-toggle > input:checked) { border-color: #598b7b; }
+.wb-toggle > span { font-weight: 600; line-height: 1.5; }
+.wb-toggle small { display: block; color: #9eb3c8; font-size: 12px; font-weight: 400; }
+.wb-toggle > input { flex-shrink: 0; }
+.wb-scenario-grid .wb-discover { border-color: #775c38; background: #28251f; }
+.wb-scenario-grid .wb-discover .wb-toggle > span { color: #f5d5a5; }
+.wb-scenario-grid .wb-field { font-size: 13px; }
+.wb-scenario-grid .wb-note { margin-top: 5px; }
+.wb-scenario-grid .plan-check { font-size: 12px; line-height: 1.5; margin: 14px 0; }
+.wb-payment-direction { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 12px; color: #c4dcdf; border: 1px solid #35504e; border-radius: 8px; padding: 12px; background: #162f2e; }
+.wb-payment-direction svg { flex-shrink: 0; }
+.wb-graph-scope { margin: 16px 0 0; }
+.wb-scenario-shortcuts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.wb-scenario-shortcuts button { min-height: 72px; padding: 13px 16px; display: grid; text-align: left; gap: 5px; border: 1px solid #3b546c; border-radius: 11px; background: #152536; color: #d6e8f1; }
+.wb-scenario-shortcuts button.active { background: #183c32; border-color: #629f84; color: #baf6db; }
+.wb-scenario-shortcuts button:nth-child(3) { border-color: #8c7049; }
+.wb-scenario-shortcuts small { color: #9fb8cd; font-size: 12px; }
+.wb-editor .wb-scenario-grid { grid-template-columns: 1fr; }
+.wb-editor .wb-next-heading > .wb-note { margin: 0; }
+.wb-editor .wb-scenarios { margin-bottom: 22px; }
+.wb-scenario-result { position: sticky; top: 10px; z-index: 2; display: flex; flex-wrap: wrap; gap: 6px 12px; padding: 13px; margin: 15px 0 24px; border: 1px solid #40675e; background: #18302b; border-radius: 10px; box-shadow: 0 5px 18px #0005; font-size: 12px; }
+.wb-scenario-result > span { width: 100%; color: #afc4d0; }
+.wb-scenario-result > strong { font-weight: 550; color: #c4f7df; }
+.wb-scenario-result button { padding: 0; margin-left: auto; }
+@media (max-width: 1100px) { .wb-scenario-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 850px) { .wb-scenario-shortcuts { grid-template-columns: repeat(2, minmax(0, 1fr)); } .wb-scenario-result { top: 8px; } }
+@media (max-width: 560px) { .wb-filter { gap: 10px; } .wb-filter .wb-label, .wb-filter .wb-segment { width: 100%; } .wb-filter .wb-segment button { flex: 1; } .wb-asset-grid { grid-template-columns: 1fr; } .wb-asset { padding: 14px; } .wb-asset b { font-size: 21px; } .wb-scenario-grid { grid-template-columns: 1fr; } .wb-scenarios h3 { font-size: 17px; } }
