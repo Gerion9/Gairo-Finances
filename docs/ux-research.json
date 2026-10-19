@@ -1,0 +1,212 @@
+{
+  "product": "Sifran",
+  "consultedOn": "2026-10-18",
+  "scope": "Investigación de producto, foros y visualización aplicada a la interfaz local.",
+  "method": "Documentación oficial para funciones existentes; foros como evidencia cualitativa de necesidades, sin tratarlos como muestras representativas. Inspección del código para factibilidad. No se ejecutaron las aplicaciones competidoras ni se midió satisfacción de usuarios.",
+  "implemented": [
+    {
+      "decision": "Revisión contextual breve con tres pasos y navegación al dato de origen.",
+      "evidence": [
+        "copilot-review",
+        "monarch-review",
+        "ynab-routine",
+        "forum-overload"
+      ],
+      "detail": "Fechas, movimientos y datos; motivos consultables. Recorrer o cerrar nunca confirma un pago. Los asuntos desaparecen únicamente al corregir registros."
+    },
+    {
+      "decision": "Categoría → movimientos → edición → deshacer, manteniendo mes y fecha límite.",
+      "evidence": [
+        "forum-navigation",
+        "forum-mexico"
+      ],
+      "detail": "Edición por ID que conserva metadatos de importación. Ausencia de categoría distinta de Otros. Los filtros muestran el alcance y se pueden retirar."
+    },
+    {
+      "decision": "Explicar el margen antes de deudas y después de mínimos.",
+      "evidence": [
+        "simplifi-spending"
+      ],
+      "detail": "El resultado viene del presupuesto configurado, no del saldo bancario. Puente de cálculo y cascada con tabla."
+    },
+    {
+      "decision": "Comparar referencia y escenario por cuenta, moneda y fecha.",
+      "evidence": [
+        "monarch-forecast",
+        "simplifi-cashflow",
+        "ons-lines",
+        "wai-complex"
+      ],
+      "detail": "Mínimo, primer faltante, cierre, apertura y movimientos de ambas versiones. Escala estable con ajuste explícito. Cuentas negativas visibles aunque el total sea positivo."
+    },
+    {
+      "decision": "Conservar el significado de las gráficas en móvil.",
+      "evidence": [
+        "ons-lines",
+        "wai-complex",
+        "wai-contrast"
+      ],
+      "detail": "Cascada horizontal con el mismo acumulado y cero común; cifras HTML legibles. Curva escalonada sin suavización, tablas por el mismo alcance, navegación por teclado y movimiento reducido."
+    }
+  ],
+  "futureHypotheses": [
+    {
+      "idea": "Recurrentes propuestos con aprobación y evidencia de las ocurrencias.",
+      "evidence": [
+        "actual-schedules",
+        "lunchmoney-recurring",
+        "forum-recurring"
+      ],
+      "prerequisite": "Identidad de comercio/cuenta, política de coincidencias, persistencia revisada y confirmación. No detectar suscripciones ni marcar pagos por similitud."
+    },
+    {
+      "idea": "Escenarios guardados y comparación causal entre varias alternativas.",
+      "evidence": [
+        "monarch-forecast"
+      ],
+      "prerequisite": "Versiones persistentes, autoría y contratos de comparación. La comparación actual trabaja con referencia y escenario; no es un historial de escenarios."
+    },
+    {
+      "idea": "Seguimiento por comercio, categoría o meta con umbrales elegidos por el usuario.",
+      "evidence": [
+        "simplifi-watchlists",
+        "ynab-goals"
+      ],
+      "prerequisite": "Cobertura de movimientos y categorías, frecuencia de aviso y control para evitar ruido."
+    }
+  ],
+  "notClaimed": [
+    "Exclusividad de las ideas en el mercado.",
+    "Mejoras de conversión, retención o comprensión sin pruebas con usuarios.",
+    "Cobertura bancaria completa, pagos acreditados o una proyección garantizada.",
+    "Disponibilidad actual verificada mediante uso de las apps competidoras."
+  ],
+  "sources": [
+    {
+      "id": "copilot-review",
+      "type": "official",
+      "title": "Copilot Dashboard overview",
+      "url": "https://help.copilot.money/en/articles/6045480-dashboard-tab-overview",
+      "finding": "Revisión de movimientos desde el dashboard."
+    },
+    {
+      "id": "monarch-review",
+      "type": "official",
+      "title": "Monarch Tips & Tricks",
+      "url": "https://help.monarch.com/hc/en-us/articles/28953573066260-Tips-Tricks-for-Using-Monarch",
+      "finding": "Opciones para organizar y revisar movimientos."
+    },
+    {
+      "id": "ynab-routine",
+      "type": "official",
+      "title": "YNAB five-minute budget routine",
+      "url": "https://www.ynab.com/blog/five-minute-budget-routine",
+      "finding": "Guía de rutina; no se trata de una revisión autónoma de producto."
+    },
+    {
+      "id": "simplifi-spending",
+      "type": "official",
+      "title": "Understanding your Spending Plan",
+      "url": "https://support.simplifi.quicken.com/en/articles/4212702-understanding-your-spending-plan",
+      "finding": "Restante mensual explicado por ingresos y compromisos; no equivale al saldo bancario."
+    },
+    {
+      "id": "simplifi-cashflow",
+      "type": "official",
+      "title": "Using Projected Cash Flow",
+      "url": "https://support.simplifi.quicken.com/en/articles/3357429-using-projected-cash-flow",
+      "finding": "Proyección desde saldos y eventos; sus exclusiones son específicas, no copiar su fórmula."
+    },
+    {
+      "id": "monarch-forecast",
+      "type": "official",
+      "title": "Forecasting in Monarch",
+      "url": "https://help.monarch.com/hc/en-us/articles/48344305092244-Forecasting-in-Monarch",
+      "finding": "Escenarios independientes y comparaciones; función documentada como Plus."
+    },
+    {
+      "id": "actual-schedules",
+      "type": "official",
+      "title": "Actual Budget schedules",
+      "url": "https://actualbudget.org/docs/schedules/",
+      "finding": "Programación y coincidencias con control de aprobación."
+    },
+    {
+      "id": "lunchmoney-recurring",
+      "type": "official",
+      "title": "Creating recurring items",
+      "url": "https://support.lunchmoney.app/finances/recurring-items/creating-recurring-items",
+      "finding": "Creación y aprobación de elementos recurrentes."
+    },
+    {
+      "id": "simplifi-watchlists",
+      "type": "official",
+      "title": "Using Watchlists",
+      "url": "https://support.simplifi.quicken.com/en/articles/3472367-using-watchlists-on-the-web-app",
+      "finding": "Seguimiento por categoría, comercio o etiqueta."
+    },
+    {
+      "id": "ynab-goals",
+      "type": "official",
+      "title": "YNAB goal tracking",
+      "url": "https://www.ynab.com/features/goal-tracking",
+      "finding": "Metas con fechas y opciones de ajuste; fuente de producto."
+    },
+    {
+      "id": "forum-overload",
+      "type": "forum-anecdote",
+      "title": "YNAB: feeling behind and overwhelmed",
+      "url": "https://www.reddit.com/r/ynab/comments/1wq25mb/feeling_really_behind_and_overwhelmed_help/",
+      "finding": "Acumulación de movimientos sin revisar y balances desactualizados pueden hacer difícil retomar una rutina."
+    },
+    {
+      "id": "forum-navigation",
+      "type": "forum-anecdote",
+      "title": "Monarch: discussion of Cash Flow navigation",
+      "url": "https://www.reddit.com/r/MonarchMoney/comments/1vksxn1/why_removing_cash_flow_tab/",
+      "finding": "Usuarios valoran acceso directo y conservar filtros al regresar; no acredita que la función se haya retirado."
+    },
+    {
+      "id": "forum-mexico",
+      "type": "forum-anecdote",
+      "title": "México Financiero: apps para gastos personales",
+      "url": "https://www.reddit.com/r/MexicoFinanciero/comments/1n5so4s/con_que_app_administran_sus_gastos_personales/",
+      "finding": "Importar estados y corregir categorías/importes son necesidades mencionadas; no confirma bugs actuales de competidores."
+    },
+    {
+      "id": "forum-recurring",
+      "type": "forum-anecdote",
+      "title": "Copilot recurring transactions discussion",
+      "url": "https://www.reddit.com/r/copilotmoney/comments/1jw1wk5/can_someone_explain_how_reoccurring_transactions/",
+      "finding": "Es necesario explicar la diferencia entre movimiento esperado y movimiento registrado."
+    },
+    {
+      "id": "ons-lines",
+      "type": "official-guidance",
+      "title": "ONS line chart guidance",
+      "url": "https://service-manual.ons.gov.uk/data-visualisation/chart-types/line-chart",
+      "finding": "Elección y lectura de series temporales; aplicar geometría según el dato."
+    },
+    {
+      "id": "wai-complex",
+      "type": "official-guidance",
+      "title": "WAI complex images",
+      "url": "https://www.w3.org/WAI/tutorials/images/complex/",
+      "finding": "Descripción breve y alternativa estructurada para gráficas complejas."
+    },
+    {
+      "id": "wai-contrast",
+      "type": "official-guidance",
+      "title": "WAI non-text contrast",
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html",
+      "finding": "Contraste de marcas gráficas esenciales."
+    },
+    {
+      "id": "nng-disclosure",
+      "type": "ux-research",
+      "title": "Progressive disclosure",
+      "url": "https://www.nngroup.com/articles/progressive-disclosure/",
+      "finding": "Mostrar primero información necesaria y permitir profundizar."
+    }
+  ]
+}

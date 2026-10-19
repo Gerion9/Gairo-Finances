@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "contract": "EXCELLENCE-INTEGRATED-QA r2",
+  "verifiedOn": "2026-10-18",
+  "timezone": "America/Mexico_City",
+  "generatedAt": "2026-10-19T00:42:06.420Z",
+  "status": "passed_with_documented_limits",
+  "delivery": "Implementación local; no se desplegó ni se realizaron transacciones financieras.",
+  "coverage": {
+    "directoryCards": 192,
+    "financingProductsAndPrograms": 109,
+    "cardsWithCostSheets": 17,
+    "loanOffersWithCostSheets": 13,
+    "cardsWithPublishedBenefits": 30,
+    "benefitPrograms": 25,
+    "calculableBenefitPrograms": 5,
+    "savingsModalities": 65
+  },
+  "automated": {
+    "uniqueTestsPassed": 878,
+    "testFiles": 38,
+    "finalAffectedTestsPassed": 60,
+    "finalAffectedTestsAreSubset": true,
+    "fullSuiteReport": "artifacts/ui-review/market-final-tests-summary-r2.json",
+    "finalDeltaReport": "artifacts/ui-review/market-final-tests-summary-r21.json",
+    "buildPassed": true,
+    "diffCheckPassed": true,
+    "integrity": "Paridad de auditorías y datos, identidad, fuentes HTTPS, rangos y fechas aprobados; no es una comprobación de vigencia de todas las fuentes ni de exhaustividad.",
+    "unchangedFilesDuringFinalChecks": 233,
+    "bundleWarning": {
+      "path": "client/assets/CreditLibrary-2jOqUxCl.js",
+      "bytes": 636525,
+      "minifiedKB": 636.53,
+      "gzipKB": 90.88,
+      "thresholdKB": 600,
+      "limitation": "Bundle-size warning, not a runtime/device performance measurement."
+    },
+    "productionMarkerScan": {
+      "checkedMarkers": 28,
+      "matches": 0,
+      "files": 56,
+      "limitation": "Búsqueda finita de marcadores de QA; no demuestra ausencia de todo valor sintético posible."
+    }
+  },
+  "reviews": {
+    "code": {
+      "contract": "MARKET-REVIEW r2.1",
+      "status": "passed",
+      "pendingFindings": [],
+      "fixes": [
+        "Comisión de apertura Stori visible en lista, ficha y comparación.",
+        "Rótulos de comisión por disposición conservados.",
+        "Singular y plural en el recuento de tarjetas."
+      ]
+    },
+    "ux": {
+      "contract": "EXCELLENCE-UX r3.2",
+      "status": "approved_observed_surfaces",
+      "scope": [
+        "Costos y beneficios de tarjetas",
+        "Préstamos en escritorio y móvil",
+        "Membresías y comparación de ahorro",
+        "Resultado y editor contextual de compra",
+        "Modal de cobro con concepto y pendiente visibles"
+      ]
+    },
+    "visualization": {
+      "contract": "EXCELLENCE-VIZ r2",
+      "status": "approved_observed_representation",
+      "rationale": "Atributos alineados y tasas separadas por naturaleza; los datos no justifican un eje común ni una clasificación única. Ausencia de dato no equivale a cero."
+    }
+  },
+  "browser": {
+    "report": "artifacts/ui-review/excellence-browser-validation.json",
+    "reportContract": "EXCELLENCE-BROWSER r3.2",
+    "method": "Chrome mediante CUA; aplicación integrada con fixture sintético aislado en memoria y sin escrituras a una cuenta privada real.",
+    "confirmed": [
+      "Costos, tasas, beneficios y condiciones visibles sin abrir cada ficha.",
+      "Selección de ahorro limitada a tres y comparación legible en móvil.",
+      "Preferencias recuperadas al remontar y separadas entre espacios de prueba.",
+      "Controles de edición deshabilitados en modo de solo lectura; comparación consultable.",
+      "Compra evaluada antes de confirmar condiciones; aplicar, cancelar y proteger borradores.",
+      "Sin recomendación de devolución comparable cuando se financiará la compra.",
+      "Vinculación parcial sin duplicar el ingreso; deshacer conserva el movimiento.",
+      "Cobros esperados separados del efectivo y totales por moneda.",
+      "Privacidad oculta superficies y conserva borradores al reanudar.",
+      "Foco, Escape y ciclo de teclado en el diálogo de ahorro.",
+      "Sin desbordamiento observado a 320 y 390 px; movimiento reducido comprobado.",
+      "Informe legible y navegable; sin avisos o errores de consola capturados."
+    ],
+    "captures": [
+      "artifacts/ui-review/sifran-excellence-card-costs-desktop.jpg",
+      "artifacts/ui-review/sifran-excellence-card-costs-mobile.jpg",
+      "artifacts/ui-review/sifran-excellence-loan-costs-desktop.jpg",
+      "artifacts/ui-review/sifran-excellence-loan-rates-mobile.jpg",
+      "artifacts/ui-review/sifran-excellence-loan-fees-mobile.jpg",
+      "artifacts/ui-review/sifran-excellence-savings-membership-mobile.jpg",
+      "artifacts/ui-review/sifran-excellence-savings-matrix-costs-desktop.jpg",
+      "artifacts/ui-review/sifran-excellence-savings-matrix-promo-desktop.jpg",
+      "artifacts/ui-review/sifran-excellence-savings-matrix-gat-desktop.jpg",
+      "artifacts/ui-review/sifran-excellence-savings-matrix-mobile.jpg",
+      "artifacts/ui-review/sifran-excellence-purchase-editor-footer-mobile.jpg",
+      "artifacts/ui-review/sifran-excellence-receivable-context-320.jpg",
+      "artifacts/ui-review/sifran-excellence-research-mobile.jpg"
+    ]
+  },
+  "limitations": [
+    "Cobertura económica parcial del directorio; documentar una ficha no confirma contratación, elegibilidad ni una cotización individual.",
+    "Los productos son snapshots editoriales. No existe un monitor automático de todas las ofertas.",
+    "No se ejecutaron estudios con usuarios, un experimento de retención ni una auditoría WCAG integral.",
+    "La persistencia visual se comprobó mediante remount del fixture; no acredita una sesión privada real ni guardado end-to-end en producción.",
+    "La compilación conserva una advertencia de tamaño del módulo CreditLibrary; no se midió rendimiento en dispositivos.",
+    "La imagen de cargos mensuales de yotepresto fue vista por el investigador, pero no pudo reproducirse independientemente en la revisión de código y no se conservó un artefacto de esa imagen.",
+    "La coordinación del hogar con permisos compartidos y la conciliación de recompensas recibidas siguen siendo propuestas futuras."
+  ]
+}

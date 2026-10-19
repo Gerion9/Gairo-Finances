@@ -216,6 +216,14 @@ describe('Local calendar periods and recorded activity', () => {
 });
 
 describe('Payment dates and promotion notices', () => {
+  it('includes the manual tax provision once and requires exact payment confirmation', () => {
+    const data = { honorarios: { modo: 'MANUAL', provisionFiscalMensual: 500, diaPagoImpuestos: 20 }, gastosNecesarios: [{ id: 'provision-fiscal', monto: 500, diaPago: 20 }], pagosRealizadosMes: { '2026-10': { 'provision-fiscal': 'false' } } };
+    const result = pendingPayments(data, new Date(2026, 9, 18), 20, 'MXN');
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({ id: 'provision-fiscal', kind: 'Provisión fiscal', dateKey: '2026-10-20', amount: 500 });
+    data.pagosRealizadosMes['2026-10']['provision-fiscal'] = true;
+    expect(pendingPayments(data, new Date(2026, 9, 18), 20, 'MXN')).toEqual([]);
+  });
   it('limits a pending minimum payment to the remaining balance', () => {
     const data = { deudas: [{ id: 'small', saldo: 10, pagoMinimo: 100, moneda: 'MXN', diaPagoLimite: 7 }] };
     const result = pendingPayments(data, new Date(2026, 8, 7), 20, 'MXN');

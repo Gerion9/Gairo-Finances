@@ -1,4 +1,5 @@
-.payment-workbench { display: grid; gap: 20px; min-width: 0; --wb-muted: #a8b8cd; }
+.payment-workbench { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; min-width: 0; --wb-muted: #a8b8cd; }
+.payment-workbench > * { min-width: 0; }
 .payment-workbench p { font-size: 16px; line-height: 1.65; }
 .payment-workbench h2 { font-size: clamp(21px, 2vw, 28px); margin: 7px 0; }
 .payment-workbench h3 { font-size: 17px; margin: 0; }
@@ -177,3 +178,127 @@
 @media (max-width: 1100px) { .wb-scenario-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 850px) { .wb-scenario-shortcuts { grid-template-columns: repeat(2, minmax(0, 1fr)); } .wb-scenario-result { top: 8px; } }
 @media (max-width: 560px) { .wb-filter { gap: 10px; } .wb-filter .wb-label, .wb-filter .wb-segment { width: 100%; } .wb-filter .wb-segment button { flex: 1; } .wb-asset-grid { grid-template-columns: 1fr; } .wb-asset { padding: 14px; } .wb-asset b { font-size: 21px; } .wb-scenario-grid { grid-template-columns: 1fr; } .wb-scenarios h3 { font-size: 17px; } }
+
+/* A visible three-step workflow keeps editing separate from its projected result. */
+.payment-workbench { gap: 22px; }
+.wb-toolbar { align-items: flex-start; }
+.wb-toolbar h2 { font-size: clamp(23px,2.3vw,31px); letter-spacing: -.035em; }
+.wb-toolbar p { font-size: 14px; max-width: 68ch; }
+.wb-toolbar-actions { align-self: center; }
+.wb-toolbar-actions > .button-ghost { display: inline-flex; align-items: center; gap: 7px; color: #9fb3c6; }
+.wb-steps { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; }
+.wb-steps > button { position: relative; isolation: isolate; min-width: 0; display: flex; align-items: center; gap: 12px; border: 1px solid #2b4050; border-radius: 13px; padding: 15px; text-align: left; color: #b7cbd7; background: #111e2a; }
+.wb-step-active { position: absolute; inset: -1px; z-index: -1; border: 1px solid #658c79; border-radius: inherit; background: #1b332c; }
+.wb-step-number { flex-shrink: 0; display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid #4c626c; border-radius: 50%; color: #c9dfd9; font-size: 13px; font-weight: 650; }
+.wb-steps [aria-current="step"] .wb-step-number { background: #b3eacb; color: #18372b; border-color: transparent; }
+.wb-steps strong { font-size: 13px; font-weight: 600; }
+.wb-steps small { display: block; margin-top: 4px; color: #9eafbe; font-size: 12px; line-height: 1.4; }
+.wb-steps > button > svg { flex-shrink: 0; margin-left: auto; color: #8eac9e; }
+.wb-controls-row { display: flex; align-items: stretch; gap: 16px; padding: 18px 20px; border: 1px solid #293c4b; border-radius: 14px; background: #0f1c28; }
+.wb-controls-row .wb-period { flex: 1; padding: 0; border: 0; background: transparent; gap: 16px; justify-content: flex-start; }
+.wb-controls-row .wb-period .wb-field { width: 170px; }
+.wb-controls-row .wb-period-end { flex-basis: 100%; font-size: 12px; color: #a4b9c8; }
+.wb-controls-row .wb-period-end small { display: inline; margin-left: 12px; font-size: 12px; }
+.wb-controls-row .wb-filter { flex: 0 0 210px; align-content: start; align-items: flex-start; gap: 8px; padding-left: 20px; border-left: 1px solid #293c4b; }
+.wb-controls-row .wb-filter .wb-label { flex-basis: 100%; font-weight: 400; margin-bottom: 0; }
+.wb-controls-row .wb-filter small { line-height: 1.5; }
+.wb-disclosure { border: 1px solid #2b4051; background: #101c29; border-radius: 14px; padding: 18px 22px; scroll-margin-top: 28px; }
+.wb-disclosure > summary::-webkit-details-marker { display: none; }
+.wb-disclosure > summary { gap: 12px; }
+.wb-disclosure > summary > svg { flex-shrink: 0; color: #a4cfbd; }
+.wb-disclosure > summary strong { font-size: 15px; font-weight: 600; }
+.wb-disclosure > summary small { display: block; margin-top: 5px; font-size: 12px; line-height: 1.5; color: #9eb2c4; }
+.wb-disclosure[open] > summary { margin-bottom: 15px; }
+.wb-asset { background: #132230; padding: 20px; border-color: #304555; }
+.wb-asset .button-ghost { min-height: 40px; }
+.wb-summary { border-radius: 15px; background: #132332; }
+.wb-summary > div { padding: 22px; }
+.wb-summary > div > span:first-child { font-size: 13px; }
+.wb-summary > div:last-child { background: #192f29; }
+.wb-summary > div:last-child.wb-summary-alert { background: #34291d; }
+.wb-summary > div:last-child:not(.wb-summary-alert) strong { color: #b3ebcf; }
+.wb-next-heading { margin-bottom: -8px; }
+.wb-next { gap: 14px; }
+.wb-deadline { border-radius: 13px; padding: 18px; }
+.wb-deadline.selected { box-shadow: 0 0 0 1px #7de4bf; background: #1a302d; }
+.wb-conditions { border-color: #7d633d80; background: #211f1a; }
+.wb-conditions summary { color: #e8d4ae; }
+.wb-conditions ul { color: #d2bf9f; font-size: 13px; }
+.wb-conditions p { font-size: 13px; }
+.wb-workspace { grid-template-columns: minmax(300px,.9fr) minmax(0,1.6fr); gap: 22px; }
+.wb-editor { padding: 24px; border: 1px solid #55796a; background: #14241f; border-radius: 16px; scroll-margin-top: 28px; }
+.wb-editor-heading { padding-bottom: 18px; margin-bottom: 6px; border-bottom: 1px solid #355044; }
+.wb-editor-heading .wb-kicker { font-size: 10px; letter-spacing: .08em; }
+.wb-editor-heading h2 { font-size: 23px; margin: 10px 0 6px; }
+.wb-editor-heading p { font-size: 13px; margin: 0; }
+.wb-editor .wb-field { font-size: 13px; }
+.wb-editor .wb-account-context { background: #102019; border: 1px solid #294337; }
+.wb-editor .wb-show-effect { margin-top: 22px; }
+.wb-chart-panel { top: 24px; padding: 26px; border-color: #304555; background: #111e2b; border-radius: 16px; scroll-margin-top: 28px; }
+.wb-chart-heading .wb-kicker { font-size: 10px; }
+.wb-chart-heading h2 { font-size: 24px; }
+.wb-chart { height: 320px; }
+.wb-field .field-input { border-radius: 9px; }
+.wb-scenario-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+.wb-scenario-grid .wb-funding-option { padding: 16px 20px; }
+.wb-scenario-grid .wb-funding-option:has(.wb-toggle > input:checked) { box-shadow: inset 0 2px #6e9b83; }
+.wb-presets button { min-height: 42px; }
+.wb-allocation-result { line-height: 1.55; }
+.wb-fields-two { gap: 22px; }
+.wb-day-detail { margin-top: 18px; border-radius: 9px; scroll-margin-top: 28px; }
+.wb-day-detail:focus { outline: 2px solid #84c7ad; outline-offset: 8px; }
+.payment-workbench .wb-day-detail-title { margin-bottom: 12px; color: #afc6d3; font-size: 13px; font-weight: 550; line-height: 1.55; }
+.wb-chart-options { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between; }
+.wb-chart-options .wb-legend { margin: 3px 0 10px; flex: 1; }
+.wb-fit-scale { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; min-height: 40px; font-size: 12px!important; color: #a9c4d0; }
+.wb-legend i.zero { border-top: 2px solid #fb8d9c; }
+.wb-legend i.base-reserve { border-top: 2px dotted #8996aa; }
+.wb-legend i.minimum { width: 9px; height: 9px; border: 1px solid #efbc73; border-radius: 50%; background: #efbc73; }
+.payment-workbench .wb-chart-reading { font-size: 12px; margin: 0 0 14px; color: #9fb4c2; }
+.wb-event-comparison { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin-top: 16px; }
+.wb-event-comparison > section { min-width: 0; }
+.wb-event-comparison > section + section { border-left: 1px solid #2b4050; padding-left: 16px; }
+.wb-event-comparison h4 { font-size: 12px; font-weight: 600; color: #b0c6d2; margin: 0; }
+.wb-event-comparison .wb-day-events { padding-top: 12px; }
+.wb-event-comparison .wb-day-events > div { flex-wrap: wrap; gap: 6px; font-size: 12px; }
+.wb-event-comparison .wb-day-events > div > b { margin-left: 22px; }
+.wb-event-comparison .wb-day-events p { font-size: 12px; margin: 0; }
+.payment-workbench .wb-opening-note { font-size: 12px; padding: 10px 12px; color: #e0cbab; background: #2c281f; border-radius: 8px; }
+.wb-daily-table caption { caption-side: top; text-align: left; padding: 15px; color: #b9cdd8; background: #14242f; font-size: 13px; line-height: 1.6; }
+@media(max-width:560px) { .wb-chart-options { flex-direction: column; gap: 0; } .wb-event-comparison { grid-template-columns: 1fr; } .wb-event-comparison > section + section { border-left: 0; border-top: 1px solid #2b4050; padding: 14px 0 0; } }
+@media(max-width: 1100px) {
+  .wb-controls-row { flex-direction: column; }
+  .wb-controls-row .wb-filter { flex: auto; border-left: 0; border-top: 1px solid #293c4b; padding: 16px 0 0; align-items: center; }
+  .wb-controls-row .wb-filter .wb-label { flex-basis: auto; }
+  .wb-workspace { grid-template-columns: minmax(290px,1fr) minmax(0,1.3fr); }
+  .wb-steps { gap: 8px; }
+  .wb-steps > button { padding: 12px; gap: 8px; }
+  .wb-steps > button > svg { display: none; }
+}
+@media(max-width: 850px) {
+  .wb-workspace { grid-template-columns: 1fr; }
+  .wb-chart-panel { position: static; }
+  .wb-steps small { display: none; }
+  .wb-steps > button { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .wb-steps strong { line-height: 1.4; }
+  .wb-disclosure { padding: 16px 18px; }
+}
+@media(max-width: 560px) {
+  .wb-controls-row { padding: 16px; }
+  .wb-controls-row .wb-period { min-width: 0; }
+  .wb-controls-row .wb-period .wb-segment { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; }
+  .wb-controls-row .wb-period .wb-segment button { min-width: 0; padding-inline: 2px; font-size: 12px; }
+  .wb-controls-row .wb-period .wb-field { width: 100%; }
+  .wb-controls-row .wb-period-end small { display: block; margin: 6px 0 0; }
+  .wb-controls-row .wb-filter { gap: 10px; }
+  .wb-controls-row .wb-filter .wb-label { width: 100%; }
+  .wb-steps > button { padding: 12px 10px; }
+  .wb-steps strong { font-size: 12px; }
+  .wb-step-number { height: 26px; width: 26px; }
+  .wb-toolbar-actions { justify-content: flex-start; }
+  .wb-toolbar-actions .button-secondary { width: auto; }
+  .wb-chart-panel,.wb-editor { padding: 18px; }
+  .wb-chart { height: 270px; }
+  .wb-scenario-grid,.wb-fields-two { grid-template-columns: 1fr; }
+  .wb-summary > div { padding: 18px; }
+}

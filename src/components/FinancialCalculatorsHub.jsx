@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
+import { motion, useAnimationControls, useReducedMotion } from 'motion/react';
 import { 
   Calculator, 
   Sparkles, 
@@ -12,7 +13,9 @@ import {
   Home, 
   Briefcase, 
   TrendingUp, 
-  FileText 
+  FileText,
+  Search,
+  X
 } from 'lucide-react';
 import { 
   calculateCATReal, 
@@ -31,13 +34,61 @@ import {
 } from '../services/calculators.js';
 import { formatMoney } from '../services/exchangeRate.js';
 import { calculateCashFlow } from '../services/financeEngine.js';
+import './FinancialCalculatorsHub.css';
 
-export default function FinancialCalculatorsHub({ financialData = {}, exchangeRate, initialCalculator = 'cat' }) {
+const CALCULATORS = [
+  { id: 'cat', title: 'CAT y costo total', description: 'Estima el costo anual total de un crédito a partir del saldo, tasa y plazo.', hint: 'El costo de tu crédito', group: 'Créditos y compras', icon: Percent },
+  { id: 'msi', title: 'Meses sin intereses', description: 'Compara pagar con descuento o a meses sin intereses e invertir el dinero.', hint: 'MSI o descuento de contado', group: 'Créditos y compras', icon: Sparkles },
+  { id: 'refinance', title: 'Refinanciamiento', description: 'Compara tasas y pagos antes de consolidar un crédito.', hint: 'Compara tasas y pagos', group: 'Créditos y compras', icon: RefreshCw },
+  { id: 'horas', title: 'Compras en horas de trabajo', description: 'Convierte el precio de una compra en las horas de trabajo necesarias para pagarla.', hint: 'El tiempo que cuesta comprar', group: 'Créditos y compras', icon: Briefcase },
+  { id: 'rentVsBuy', title: 'Rentar o comprar', description: 'Compara rentar e invertir la diferencia con comprar una vivienda, a un horizonte de 20 años.', hint: 'Compara opciones de vivienda', group: 'Créditos y compras', icon: Home },
+  { id: 'windfall', title: 'Aguinaldo y bonos', description: 'Explora cómo repartir un ingreso extraordinario entre tus deudas.', hint: 'Dale un destino al dinero extra', group: 'Presupuesto y ahorro', icon: Layers },
+  { id: 'hormiga', title: 'Gastos hormiga', description: 'Proyecta el costo de tus gastos pequeños y lo que podrían generar si los ahorras.', hint: 'El impacto de los gastos diarios', group: 'Presupuesto y ahorro', icon: Coffee },
+  { id: 'rule503020', title: 'Regla 50 / 30 / 20', description: 'Compara tu presupuesto con una distribución de 50% necesidades, 30% deseos y 20% ahorro o deuda.', hint: 'Revisa cómo distribuyes tu ingreso', group: 'Presupuesto y ahorro', icon: PieChart },
+  { id: 'fire', title: 'Retiro y libertad financiera', description: 'Estima tu meta de patrimonio y el tiempo para alcanzarla con tus aportaciones.', hint: 'Proyecta tu objetivo FIRE', group: 'Inversión y retiro', icon: TrendingUp },
+  { id: 'realYield', title: 'Rendimiento real', description: 'Revisa el rendimiento de una inversión después de inflación e impuestos.', hint: 'Lo que gana tu dinero', group: 'Inversión y retiro', icon: Percent },
+  { id: 'deductions', title: 'Deducciones personales', description: 'Estima el efecto de tus deducciones personales sobre tu declaración anual.', hint: 'Revisa tu escenario ante el SAT', group: 'Impuestos', icon: FileText },
+  { id: 'resico', title: 'RESICO o actividad profesional', description: 'Compara el ISR de ambos regímenes con tu facturación y gastos deducibles.', hint: 'Compara regímenes fiscales', group: 'Impuestos', icon: ShieldCheck },
+];
+const CALCULATOR_GROUPS = [...new Set(CALCULATORS.map(calculator => calculator.group))];
+const normalizeSearch = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es-MX').trim();
+
+export default function FinancialCalculatorsHub({ financialData = {}, exchangeRate, initialCalculator = 'cat', onNavigateTab }) {
   const cashFlow = calculateCashFlow(financialData, exchangeRate);
   const annualIncome = cashFlow.fiscal.importeFacturado * 12;
   const validCalculators = ['cat', 'msi', 'windfall', 'hormiga', 'rule503020', 'refinance', 'fire', 'horas', 'rentVsBuy', 'realYield', 'deductions', 'resico'];
   const [activeCalc, setActiveCalc] = useState(validCalculators.includes(initialCalculator) ? initialCalculator : 'cat');
   useEffect(() => { setActiveCalc(validCalculators.includes(initialCalculator) ? initialCalculator : 'cat'); }, [initialCalculator]);
+  const [search, setSearch] = useState('');
+  const fieldPrefix = useId();
+  const searchRef = useRef(null);
+  const listRef = useRef(null);
+  const activeOptionRef = useRef(null);
+  const animation = useAnimationControls();
+  const reducedMotion = useReducedMotion();
+  const selectedCalculator = CALCULATORS.find(calculator => calculator.id === activeCalc);
+  const SelectedIcon = selectedCalculator.icon;
+  const searchTerms = normalizeSearch(search).split(/\s+/).filter(Boolean);
+  const visibleCalculators = CALCULATORS.filter(calculator => searchTerms.every(term =>
+    normalizeSearch(`${calculator.title} ${calculator.description} ${calculator.hint} ${calculator.group}`).includes(term)));
+  const selectCalculator = id => {
+    if (!validCalculators.includes(id)) return;
+    setActiveCalc(id);
+    onNavigateTab?.('calculators', { calculator: id, preserveScroll: true });
+  };
+  useEffect(() => {
+    animation.start({ opacity: [0.7, 1], transition: { duration: reducedMotion ? 0 : 0.18, ease: 'easeOut' } });
+    return () => animation.stop();
+  }, [activeCalc, animation, reducedMotion]);
+  useEffect(() => {
+    const list = listRef.current;
+    const option = activeOptionRef.current;
+    if (!list || !option || !list.clientHeight) return;
+    const offset = option.getBoundingClientRect().top - list.getBoundingClientRect().top;
+    if (offset < 0 || offset + option.offsetHeight > list.clientHeight) {
+      list.scrollTop += offset - (list.clientHeight - option.offsetHeight) / 2;
+    }
+  }, [activeCalc, search]);
 
   // Estados para cada calculadora
   const [catInput, setCatInput] = useState({ saldo: 0, tasa: 0, plazo: 12, anualidad: 0, comision: 0 });
@@ -74,79 +125,65 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
 
   const contextIncomplete = (financialData.deudasPendientes?.length > 0 && ['windfall', 'rule503020', 'fire'].includes(activeCalc))
     || (financialData.honorarios?.modo === 'MANUAL' && ['deductions', 'resico'].includes(activeCalc));
-  const calcList = [
-    { id: 'cat', title: 'CAT Real & Costo Total', icon: Percent },
-    { id: 'msi', title: 'MSI vs Descuento Contado', icon: Sparkles },
-    { id: 'windfall', title: 'Inyección Aguinaldo/Bono', icon: Layers },
-    { id: 'hormiga', title: 'Gastos Hormiga & Fuga', icon: Coffee },
-    { id: 'rule503020', title: 'Regla 50 / 30 / 20', icon: PieChart },
-    { id: 'refinance', title: 'Refinanciamiento / Consolidación', icon: RefreshCw },
-    { id: 'fire', title: 'Libertad Financiera (FIRE)', icon: TrendingUp },
-    { id: 'horas', title: 'Costo en Horas de Vida', icon: Briefcase },
-    { id: 'rentVsBuy', title: 'Renta vs Compra Inmueble', icon: Home },
-    { id: 'realYield', title: 'Rendimiento Real vs Inflación', icon: Percent },
-    { id: 'deductions', title: 'Deducciones SAT & Devolución', icon: FileText },
-    { id: 'resico', title: 'RESICO vs PFAE (Impuestos)', icon: ShieldCheck }
-  ];
-
   return (
-    <div className="space-y-6">
-      
-      {/* Header */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
-          <div>
-            <div className="flex items-center gap-2">
-              <Calculator className="w-5 h-5 text-emerald-400" />
-              <h2 className="text-xl font-extrabold text-white tracking-tight">
-                Suite de Calculadoras Financieras & Toma de Decisiones
-              </h2>
-            </div>
-            <p className="text-xs text-slate-400 mt-1">
-              Herramientas matemáticas especializadas para optimizar cada peso, evaluar compras y acelerar tu libertad.
-            </p>
+    <div className="sf-calculators">
+      <header className="sf-calculators-heading">
+        <span className="sf-calculators-eyebrow"><Calculator size={17} aria-hidden="true" /> Explora escenarios</span>
+        <h1>Calculadoras</h1>
+        <p>Compara créditos, compras, ahorro e impuestos con tus propios datos.</p>
+      </header>
+
+      <div className="sf-calculators-layout">
+        <aside className="sf-calculators-catalog" aria-label="Elegir calculadora">
+          <div className="sf-calculators-catalog-heading"><strong>¿Qué quieres calcular?</strong><span>{CALCULATORS.length} herramientas</span></div>
+          <div className="sf-calculators-search">
+            <Search size={18} aria-hidden="true" />
+            <label htmlFor={`${fieldPrefix}-search`} className="sr-only">Buscar calculadora por tema u objetivo</label>
+            <input id={`${fieldPrefix}-search`} ref={searchRef} type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Busca por tema u objetivo" />
+            {search && <button type="button" onClick={() => { setSearch(''); searchRef.current?.focus(); }} aria-label="Limpiar búsqueda de calculadoras"><X size={16} aria-hidden="true" /></button>}
           </div>
-        </div>
+          {search && <p className="sf-calculators-result-count" role="status">{visibleCalculators.length} {visibleCalculators.length === 1 ? 'calculadora disponible' : 'calculadoras disponibles'}</p>}
 
-        {/* Tab selector */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 mt-4">
-          {calcList.map(c => {
-            const Icon = c.icon;
-            const isActive = activeCalc === c.id;
-            return (
-              <button
-                key={c.id}
-                onClick={() => setActiveCalc(c.id)}
-                className={`p-2.5 rounded-xl border text-left text-xs font-semibold flex items-center gap-2 transition-all ${
-                  isActive
-                    ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 shadow-md'
-                    : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800/60'
-                }`}
-              >
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-emerald-400' : 'text-slate-500'}`} />
-                <span className="truncate">{c.title}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+          <div className="sf-calculators-mobile-selector">
+            <label htmlFor={`${fieldPrefix}-select`}>Calculadora</label>
+            <select id={`${fieldPrefix}-select`} value={activeCalc} onChange={event => selectCalculator(event.target.value)} aria-describedby={`${fieldPrefix}-description`}>
+              {!visibleCalculators.some(calculator => calculator.id === activeCalc) && <optgroup label="Calculadora actual"><option value={activeCalc}>{selectedCalculator.title}</option></optgroup>}
+              {CALCULATOR_GROUPS.map(group => {
+                const groupItems = visibleCalculators.filter(calculator => calculator.group === group);
+                return groupItems.length > 0 && <optgroup key={group} label={group}>{groupItems.map(calculator => <option key={calculator.id} value={calculator.id}>{calculator.title}</option>)}</optgroup>;
+              })}
+            </select>
+          </div>
 
-      {/* Active Calculator Card */}
-      {contextIncomplete ? <div className="surface-card p-6 text-slate-300"><h3 className="text-xl text-white font-semibold">Faltan datos para este cálculo</h3><p className="text-sm mt-3">Completa tus pagos y tasas contractuales para las proyecciones de deuda. Los cálculos fiscales requieren facturación y retenciones; tu ingreso recibido no sustituye esos datos.</p></div> : <>
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+          <nav className="sf-calculators-options" ref={listRef} aria-label="Calculadoras por objetivo">
+            {CALCULATOR_GROUPS.map((group, index) => {
+              const groupItems = visibleCalculators.filter(calculator => calculator.group === group);
+              return groupItems.length > 0 && <section key={group} aria-labelledby={`${fieldPrefix}-group-${index}`}>
+                <h2 id={`${fieldPrefix}-group-${index}`}>{group}</h2>
+                {groupItems.map(calculator => {
+                  const Icon = calculator.icon;
+                  const isActive = activeCalc === calculator.id;
+                  return <motion.button type="button" key={calculator.id} ref={isActive ? activeOptionRef : undefined} className={isActive ? 'is-active' : ''} onClick={() => selectCalculator(calculator.id)} aria-current={isActive ? 'page' : undefined} whileTap={{ scale: 0.99 }}>
+                    <Icon size={19} strokeWidth={1.7} aria-hidden="true" /><span><strong>{calculator.title}</strong><small>{calculator.hint}</small></span>
+                  </motion.button>;
+                })}
+              </section>;
+            })}
+          </nav>
+          {visibleCalculators.length === 0 && <div className="sf-calculators-empty"><p>No encontramos coincidencias. Prueba con “crédito”, “ahorro” o “impuestos”.</p><button type="button" onClick={() => { setSearch(''); searchRef.current?.focus(); }}>Ver las 12 calculadoras</button></div>}
+        </aside>
+
+        <motion.section className="sf-calculators-workspace" aria-labelledby={`${fieldPrefix}-title`} initial={false} animate={animation}>
+          <header className="sf-calculators-tool-heading"><span className="sf-calculators-tool-icon"><SelectedIcon size={24} strokeWidth={1.6} aria-hidden="true" /></span><div><span className="sf-calculators-tool-group">{selectedCalculator.group}</span><h2 id={`${fieldPrefix}-title`}>{selectedCalculator.title}</h2><p id={`${fieldPrefix}-description`}>{selectedCalculator.description}</p></div></header>
+          {contextIncomplete ? <div className="sf-calculators-incomplete"><h3>Faltan datos para este cálculo</h3><p>Completa tus pagos y tasas contractuales para las proyecciones de deuda. Los cálculos fiscales requieren facturación y retenciones; tu ingreso recibido no sustituye esos datos.</p></div> : <div className="sf-calculators-input-panel">
         
         {/* 1. CAT Real */}
         {activeCalc === 'cat' && (
           <div className="space-y-4">
-            <h3 className="text-lg font-black text-white">Calculadora de CAT Real (Costo Anual Total)</h3>
-            <p className="text-xs text-slate-400">
-              Calcula el costo verdadero de un crédito incluyendo tasa de interés, anualidad de tarjeta y comisiones.
-            </p>
-
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Monto / Saldo ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-catInput-saldo`} className="block text-xs text-slate-300 font-semibold mb-1">Monto / Saldo ($)</label>
+                <input id={`${fieldPrefix}-catInput-saldo`}
                   type="number"
                   value={catInput.saldo}
                   onChange={(e) => setCatInput({ ...catInput, saldo: e.target.value })}
@@ -154,8 +191,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Tasa Anual Nominal (%)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-catInput-tasa`} className="block text-xs text-slate-300 font-semibold mb-1">Tasa Anual Nominal (%)</label>
+                <input id={`${fieldPrefix}-catInput-tasa`}
                   type="number"
                   value={catInput.tasa}
                   onChange={(e) => setCatInput({ ...catInput, tasa: e.target.value })}
@@ -163,8 +200,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Plazo (Meses)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-catInput-plazo`} className="block text-xs text-slate-300 font-semibold mb-1">Plazo (Meses)</label>
+                <input id={`${fieldPrefix}-catInput-plazo`}
                   type="number"
                   value={catInput.plazo}
                   onChange={(e) => setCatInput({ ...catInput, plazo: e.target.value })}
@@ -193,15 +230,10 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
         {/* 2. MSI vs Descuento */}
         {activeCalc === 'msi' && (
           <div className="space-y-4">
-            <h3 className="text-lg font-black text-white">¿Meses Sin Intereses (MSI) o Descuento de Contado?</h3>
-            <p className="text-xs text-slate-400">
-              Descubre matemáticamente si te conviene pagar de contado o diferir a meses e invertir el dinero en CETES.
-            </p>
-
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 pt-2">
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Precio de Lista ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-msiInput-precio`} className="block text-xs text-slate-300 font-semibold mb-1">Precio de Lista ($)</label>
+                <input id={`${fieldPrefix}-msiInput-precio`}
                   type="number"
                   value={msiInput.precio}
                   onChange={(e) => setMsiInput({ ...msiInput, precio: e.target.value })}
@@ -209,8 +241,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Descuento de Contado (%)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-msiInput-desc`} className="block text-xs text-slate-300 font-semibold mb-1">Descuento de Contado (%)</label>
+                <input id={`${fieldPrefix}-msiInput-desc`}
                   type="number"
                   value={msiInput.desc}
                   onChange={(e) => setMsiInput({ ...msiInput, desc: e.target.value })}
@@ -218,8 +250,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Plazo MSI (Meses)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-msiInput-meses`} className="block text-xs text-slate-300 font-semibold mb-1">Plazo MSI (Meses)</label>
+                <input id={`${fieldPrefix}-msiInput-meses`}
                   type="number"
                   value={msiInput.meses}
                   onChange={(e) => setMsiInput({ ...msiInput, meses: e.target.value })}
@@ -227,8 +259,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Tasa CETES Anual (%)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-msiInput-tasaInv`} className="block text-xs text-slate-300 font-semibold mb-1">Tasa CETES Anual (%)</label>
+                <input id={`${fieldPrefix}-msiInput-tasaInv`}
                   type="number"
                   value={msiInput.tasaInv}
                   onChange={(e) => setMsiInput({ ...msiInput, tasaInv: e.target.value })}
@@ -247,14 +279,9 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
         {/* 3. Inyección Extraordinaria */}
         {activeCalc === 'windfall' && (
           <div className="space-y-4">
-            <h3 className="text-lg font-black text-white">Inyección Extraordinaria (Aguinaldo / Bono / Venta)</h3>
-            <p className="text-xs text-slate-400">
-              Ingresa un monto extra inesperado y el algoritmo distribuirá cada peso para maximizar tu ahorro en intereses.
-            </p>
-
             <div className="max-w-xs">
-              <label className="block text-xs text-slate-300 font-semibold mb-1">Monto Extra a Inyectar ($ MXN)</label>
-              <input
+              <label htmlFor={`${fieldPrefix}-windfallInput`} className="block text-xs text-slate-300 font-semibold mb-1">Monto Extra a Inyectar ($ MXN)</label>
+              <input id={`${fieldPrefix}-windfallInput`}
                 type="number"
                 step="1000"
                 value={windfallInput}
@@ -283,15 +310,10 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
         {/* 4. Gastos Hormiga */}
         {activeCalc === 'hormiga' && (
           <div className="space-y-4">
-            <h3 className="text-lg font-black text-white">Detector de Fuga de Capital / Gastos Hormiga</h3>
-            <p className="text-xs text-slate-400">
-              ¿Cuánto te cuesta realmente ese café, botana o estacionamiento diario si en lugar de gastarlo lo invirtieras?
-            </p>
-
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Gasto Diario ($ MXN)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-hormigaInput-diario`} className="block text-xs text-slate-300 font-semibold mb-1">Gasto Diario ($ MXN)</label>
+                <input id={`${fieldPrefix}-hormigaInput-diario`}
                   type="number"
                   value={hormigaInput.diario}
                   onChange={(e) => setHormigaInput({ ...hormigaInput, diario: e.target.value })}
@@ -299,8 +321,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Días al Mes</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-hormigaInput-dias`} className="block text-xs text-slate-300 font-semibold mb-1">Días al Mes</label>
+                <input id={`${fieldPrefix}-hormigaInput-dias`}
                   type="number"
                   value={hormigaInput.dias}
                   onChange={(e) => setHormigaInput({ ...hormigaInput, dias: e.target.value })}
@@ -308,8 +330,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Rendimiento CETES (%)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-hormigaInput-tasa`} className="block text-xs text-slate-300 font-semibold mb-1">Rendimiento CETES (%)</label>
+                <input id={`${fieldPrefix}-hormigaInput-tasa`}
                   type="number"
                   value={hormigaInput.tasa}
                   onChange={(e) => setHormigaInput({ ...hormigaInput, tasa: e.target.value })}
@@ -338,15 +360,10 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
         {/* 5. Regla 50/30/20 */}
         {activeCalc === 'rule503020' && (
           <div className="space-y-4">
-            <h3 className="text-lg font-black text-white">Auditoría de Presupuesto 50 / 30 / 20</h3>
-            <p className="text-xs text-slate-400">
-              Compara la distribución de tu dinero con la regla de oro financiera: 50% Necesidades, 30% Deseos, 20% Ahorro/Deuda.
-            </p>
-
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2">
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Ingreso Neto ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-rule503020Input-neto`} className="block text-xs text-slate-300 font-semibold mb-1">Ingreso Neto ($)</label>
+                <input id={`${fieldPrefix}-rule503020Input-neto`}
                   type="number"
                   value={rule503020Input.neto}
                   onChange={(e) => setRule503020Input({ ...rule503020Input, neto: parseFloat(e.target.value) || 0 })}
@@ -354,8 +371,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Necesidades / Fijos ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-rule503020Input-necesidades`} className="block text-xs text-slate-300 font-semibold mb-1">Necesidades / Fijos ($)</label>
+                <input id={`${fieldPrefix}-rule503020Input-necesidades`}
                   type="number"
                   value={rule503020Input.necesidades}
                   onChange={(e) => setRule503020Input({ ...rule503020Input, necesidades: parseFloat(e.target.value) || 0 })}
@@ -363,8 +380,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Deseos / Opcionales ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-rule503020Input-deseos`} className="block text-xs text-slate-300 font-semibold mb-1">Deseos / Opcionales ($)</label>
+                <input id={`${fieldPrefix}-rule503020Input-deseos`}
                   type="number"
                   value={rule503020Input.deseos}
                   onChange={(e) => setRule503020Input({ ...rule503020Input, deseos: parseFloat(e.target.value) || 0 })}
@@ -372,8 +389,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Aporte Ahorro/Deuda ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-rule503020Input-ahorroDeuda`} className="block text-xs text-slate-300 font-semibold mb-1">Aporte Ahorro/Deuda ($)</label>
+                <input id={`${fieldPrefix}-rule503020Input-ahorroDeuda`}
                   type="number"
                   value={rule503020Input.ahorroDeuda}
                   onChange={(e) => setRule503020Input({ ...rule503020Input, ahorroDeuda: parseFloat(e.target.value) || 0 })}
@@ -405,15 +422,10 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
         {/* 6. Refinanciamiento */}
         {activeCalc === 'refinance' && (
           <div className="space-y-4">
-            <h3 className="text-lg font-black text-white">Calculadora de Refinanciamiento / Consolidación</h3>
-            <p className="text-xs text-slate-400">
-              Evalúa si te conviene transferir la deuda de una tarjeta cara (ej. 49%) a un crédito personal al 18%.
-            </p>
-
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 pt-2">
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Saldo a Consolidar ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-refinanceInput-saldo`} className="block text-xs text-slate-300 font-semibold mb-1">Saldo a Consolidar ($)</label>
+                <input id={`${fieldPrefix}-refinanceInput-saldo`}
                   type="number"
                   value={refinanceInput.saldo}
                   onChange={(e) => setRefinanceInput({ ...refinanceInput, saldo: e.target.value })}
@@ -421,8 +433,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Tasa Actual (%)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-refinanceInput-tasaVieja`} className="block text-xs text-slate-300 font-semibold mb-1">Tasa Actual (%)</label>
+                <input id={`${fieldPrefix}-refinanceInput-tasaVieja`}
                   type="number"
                   value={refinanceInput.tasaVieja}
                   onChange={(e) => setRefinanceInput({ ...refinanceInput, tasaVieja: e.target.value })}
@@ -430,8 +442,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Nueva Tasa Consolidada (%)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-refinanceInput-tasaNueva`} className="block text-xs text-slate-300 font-semibold mb-1">Nueva Tasa Consolidada (%)</label>
+                <input id={`${fieldPrefix}-refinanceInput-tasaNueva`}
                   type="number"
                   value={refinanceInput.tasaNueva}
                   onChange={(e) => setRefinanceInput({ ...refinanceInput, tasaNueva: e.target.value })}
@@ -439,8 +451,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Plazo (Meses)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-refinanceInput-plazo`} className="block text-xs text-slate-300 font-semibold mb-1">Plazo (Meses)</label>
+                <input id={`${fieldPrefix}-refinanceInput-plazo`}
                   type="number"
                   value={refinanceInput.plazo}
                   onChange={(e) => setRefinanceInput({ ...refinanceInput, plazo: e.target.value })}
@@ -465,15 +477,10 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
         {/* 7. Retiro FIRE */}
         {activeCalc === 'fire' && (
           <div className="space-y-4">
-            <h3 className="text-lg font-black text-white">Calculadora de Libertad Financiera & Retiro (FIRE)</h3>
-            <p className="text-xs text-slate-400">
-              Descubre tu número objetivo de libertad financiera y a qué edad puedes dejar de trabajar por necesidad.
-            </p>
-
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 pt-2">
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Gastos Anuales ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-fireInput-gastosAnuales`} className="block text-xs text-slate-300 font-semibold mb-1">Gastos Anuales ($)</label>
+                <input id={`${fieldPrefix}-fireInput-gastosAnuales`}
                   type="number"
                   value={fireInput.gastosAnuales}
                   onChange={(e) => setFireInput({ ...fireInput, gastosAnuales: e.target.value })}
@@ -481,8 +488,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Patrimonio Actual ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-fireInput-patrimonio`} className="block text-xs text-slate-300 font-semibold mb-1">Patrimonio Actual ($)</label>
+                <input id={`${fieldPrefix}-fireInput-patrimonio`}
                   type="number"
                   value={fireInput.patrimonio}
                   onChange={(e) => setFireInput({ ...fireInput, patrimonio: e.target.value })}
@@ -490,8 +497,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Ahorro Mensual ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-fireInput-ahorro`} className="block text-xs text-slate-300 font-semibold mb-1">Ahorro Mensual ($)</label>
+                <input id={`${fieldPrefix}-fireInput-ahorro`}
                   type="number"
                   value={fireInput.ahorro}
                   onChange={(e) => setFireInput({ ...fireInput, ahorro: e.target.value })}
@@ -499,8 +506,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Rendimiento Anual (%)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-fireInput-tasa`} className="block text-xs text-slate-300 font-semibold mb-1">Rendimiento Anual (%)</label>
+                <input id={`${fieldPrefix}-fireInput-tasa`}
                   type="number"
                   value={fireInput.tasa}
                   onChange={(e) => setFireInput({ ...fireInput, tasa: e.target.value })}
@@ -533,15 +540,10 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
         {/* 8. Horas de Trabajo */}
         {activeCalc === 'horas' && (
           <div className="space-y-4">
-            <h3 className="text-lg font-black text-white">Calculadora: Costo Real en Horas de Vida Laboral</h3>
-            <p className="text-xs text-slate-400">
-              ¿Cuántas horas o días de trabajo te cuesta comprar un artículo o pagar el interés de una tarjeta?
-            </p>
-
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Ingreso Neto Mensual ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-horasInput-neto`} className="block text-xs text-slate-300 font-semibold mb-1">Ingreso Neto Mensual ($)</label>
+                <input id={`${fieldPrefix}-horasInput-neto`}
                   type="number"
                   value={horasInput.neto}
                   onChange={(e) => setHorasInput({ ...horasInput, neto: e.target.value })}
@@ -549,8 +551,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Horas Trabajadas al Mes</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-horasInput-horas`} className="block text-xs text-slate-300 font-semibold mb-1">Horas Trabajadas al Mes</label>
+                <input id={`${fieldPrefix}-horasInput-horas`}
                   type="number"
                   value={horasInput.horas}
                   onChange={(e) => setHorasInput({ ...horasInput, horas: e.target.value })}
@@ -558,8 +560,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Precio del Gasto ($ MXN)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-horasInput-precio`} className="block text-xs text-slate-300 font-semibold mb-1">Precio del Gasto ($ MXN)</label>
+                <input id={`${fieldPrefix}-horasInput-precio`}
                   type="number"
                   value={horasInput.precio}
                   onChange={(e) => setHorasInput({ ...horasInput, precio: e.target.value })}
@@ -582,15 +584,10 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
         {/* 9. Renta vs Compra */}
         {activeCalc === 'rentVsBuy' && (
           <div className="space-y-4">
-            <h3 className="text-lg font-black text-white">Renta vs Compra de Vivienda (Análisis a 20 Años)</h3>
-            <p className="text-xs text-slate-400">
-              Compara el costo de rentar e invertir la diferencia frente a pagar una hipoteca bancaria.
-            </p>
-
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 pt-2">
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Renta Mensual Actual ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-rentVsBuyInput-renta`} className="block text-xs text-slate-300 font-semibold mb-1">Renta Mensual Actual ($)</label>
+                <input id={`${fieldPrefix}-rentVsBuyInput-renta`}
                   type="number"
                   value={rentVsBuyInput.renta}
                   onChange={(e) => setRentVsBuyInput({ ...rentVsBuyInput, renta: e.target.value })}
@@ -598,8 +595,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Precio de la Casa ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-rentVsBuyInput-precio`} className="block text-xs text-slate-300 font-semibold mb-1">Precio de la Casa ($)</label>
+                <input id={`${fieldPrefix}-rentVsBuyInput-precio`}
                   type="number"
                   value={rentVsBuyInput.precio}
                   onChange={(e) => setRentVsBuyInput({ ...rentVsBuyInput, precio: e.target.value })}
@@ -607,8 +604,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Enganche Requerido (%)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-rentVsBuyInput-enganchePct`} className="block text-xs text-slate-300 font-semibold mb-1">Enganche Requerido (%)</label>
+                <input id={`${fieldPrefix}-rentVsBuyInput-enganchePct`}
                   type="number"
                   value={rentVsBuyInput.enganchePct}
                   onChange={(e) => setRentVsBuyInput({ ...rentVsBuyInput, enganchePct: e.target.value })}
@@ -616,8 +613,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Tasa Hipotecaria (%)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-rentVsBuyInput-tasaHip`} className="block text-xs text-slate-300 font-semibold mb-1">Tasa Hipotecaria (%)</label>
+                <input id={`${fieldPrefix}-rentVsBuyInput-tasaHip`}
                   type="number"
                   value={rentVsBuyInput.tasaHip}
                   onChange={(e) => setRentVsBuyInput({ ...rentVsBuyInput, tasaHip: e.target.value })}
@@ -638,15 +635,10 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
         {/* 10. Rendimiento Real */}
         {activeCalc === 'realYield' && (
           <div className="space-y-4">
-            <h3 className="text-lg font-black text-white">Rendimiento Real Neto (CETES / Sofipos vs Inflación)</h3>
-            <p className="text-xs text-slate-400">
-              ¿Tu dinero realmente está creciendo o la inflación y la retención del SAT se lo comen?
-            </p>
-
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Tasa Nominal Anual (%)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-realYieldInput-nominal`} className="block text-xs text-slate-300 font-semibold mb-1">Tasa Nominal Anual (%)</label>
+                <input id={`${fieldPrefix}-realYieldInput-nominal`}
                   type="number"
                   value={realYieldInput.nominal}
                   onChange={(e) => setRealYieldInput({ ...realYieldInput, nominal: e.target.value })}
@@ -654,8 +646,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Inflación Estimada (%)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-realYieldInput-inflacion`} className="block text-xs text-slate-300 font-semibold mb-1">Inflación Estimada (%)</label>
+                <input id={`${fieldPrefix}-realYieldInput-inflacion`}
                   type="number"
                   value={realYieldInput.inflacion}
                   onChange={(e) => setRealYieldInput({ ...realYieldInput, inflacion: e.target.value })}
@@ -663,8 +655,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Retención ISR SAT (%)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-realYieldInput-isr`} className="block text-xs text-slate-300 font-semibold mb-1">Retención ISR SAT (%)</label>
+                <input id={`${fieldPrefix}-realYieldInput-isr`}
                   type="number"
                   value={realYieldInput.isr}
                   onChange={(e) => setRealYieldInput({ ...realYieldInput, isr: e.target.value })}
@@ -690,15 +682,10 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
         {/* 11. Deducciones SAT */}
         {activeCalc === 'deductions' && (
           <div className="space-y-4">
-            <h3 className="text-lg font-black text-white">Estimador de Deducciones Personales & Devolución Anual SAT</h3>
-            <p className="text-xs text-slate-400">
-              Calcula cuánto saldo a favor puedes reclamarle al SAT en tu declaración anual de abril.
-            </p>
-
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Gastos Médicos / Dentales ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-deductionsInput-medicos`} className="block text-xs text-slate-300 font-semibold mb-1">Gastos Médicos / Dentales ($)</label>
+                <input id={`${fieldPrefix}-deductionsInput-medicos`}
                   type="number"
                   value={deductionsInput.medicos}
                   onChange={(e) => setDeductionsInput({ ...deductionsInput, medicos: e.target.value })}
@@ -706,8 +693,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Aportaciones a PPR / Retiro ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-deductionsInput-ppr`} className="block text-xs text-slate-300 font-semibold mb-1">Aportaciones a PPR / Retiro ($)</label>
+                <input id={`${fieldPrefix}-deductionsInput-ppr`}
                   type="number"
                   value={deductionsInput.ppr}
                   onChange={(e) => setDeductionsInput({ ...deductionsInput, ppr: e.target.value })}
@@ -715,8 +702,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Colegiaturas Deducibles ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-deductionsInput-colegiaturas`} className="block text-xs text-slate-300 font-semibold mb-1">Colegiaturas Deducibles ($)</label>
+                <input id={`${fieldPrefix}-deductionsInput-colegiaturas`}
                   type="number"
                   value={deductionsInput.colegiaturas}
                   onChange={(e) => setDeductionsInput({ ...deductionsInput, colegiaturas: e.target.value })}
@@ -737,15 +724,10 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
         {/* 12. RESICO vs PFAE */}
         {activeCalc === 'resico' && (
           <div className="space-y-4">
-            <h3 className="text-lg font-black text-white">Comparativa Fiscal: RESICO vs Personas Físicas (PFAE)</h3>
-            <p className="text-xs text-slate-400">
-              Compara si tu actividad profesional pagaría menos impuestos cambiándote a RESICO (1% - 2.5%).
-            </p>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Facturación Anual sin IVA ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-resicoInput-facturacion`} className="block text-xs text-slate-300 font-semibold mb-1">Facturación Anual sin IVA ($)</label>
+                <input id={`${fieldPrefix}-resicoInput-facturacion`}
                   type="number"
                   value={resicoInput.facturacion}
                   onChange={(e) => setResicoInput({ ...resicoInput, facturacion: e.target.value })}
@@ -753,8 +735,8 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 font-semibold mb-1">Gastos Deducibles con Factura ($)</label>
-                <input
+                <label htmlFor={`${fieldPrefix}-resicoInput-gastos`} className="block text-xs text-slate-300 font-semibold mb-1">Gastos Deducibles con Factura ($)</label>
+                <input id={`${fieldPrefix}-resicoInput-gastos`}
                   type="number"
                   value={resicoInput.gastos}
                   onChange={(e) => setResicoInput({ ...resicoInput, gastos: e.target.value })}
@@ -780,9 +762,9 @@ export default function FinancialCalculatorsHub({ financialData = {}, exchangeRa
           </div>
         )}
 
+          </div>}
+        </motion.section>
       </div>
-
-      </>}
     </div>
   );
 }

@@ -1,129 +1,162 @@
 import React, { useId, useMemo, useState } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 import {
   ArrowDownLeft, ArrowRight, ArrowUpRight, CalendarDays, ChevronRight,
-  CircleHelp, CreditCard, Layers3, Plus, ReceiptText, Sparkles, Upload, Wallet,
+  CircleHelp, CircleDashed, CreditCard, Layers3, Plus, ReceiptText, Sparkles, Upload, Wallet,
 } from 'lucide-react';
 import { convertCurrency, formatMoney } from '../services/exchangeRate';
 import {
   consolidatedCurrency, displayAmount, localDateKey, monthlyFlow, nearestPromo,
   pendingPayments, summarizeBalances, summarizeLedger,
 } from '../services/dashboardAnalytics';
+import { ReviewLauncher } from './FinancialReview';
+import { actionUnavailableReason } from '../services/actionAvailability.js';
+import { hasWorkspacePlan, workspaceReceivables } from '../services/workspaceOverview.js';
+import './DashboardOverview.css';
 
 const compactNumber = new Intl.NumberFormat('es-MX', { notation: 'compact', maximumFractionDigits: 1 });
 const shortDate = (date) => date.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
 const amountLabel = (value, currency) => `${formatMoney(value, currency)} ${currency}`;
-const signedAmount = (value, currency) => `${value < 0 ? '−' : '+'}${formatMoney(Math.abs(value), currency)}`;
-const linkClass = 'inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg text-xs font-semibold text-[#A4B1C3] transition-colors hover:text-[#7DE4BF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#7DE4BF]';
+const signedAmount = (value, currency) => `${value < 0 ? '−' : value > 0 ? '+' : ''}${formatMoney(Math.abs(value), currency)}`;
+const linkClass = 'dashboard-link';
 
 function FlowWaterfall({ flow, currency }) {
   const chartId = useId();
-  const [activeStep, setActiveStep] = useState(null);
-  const width = 640;
-  const height = 232;
-  const chartTop = 18;
-  const chartBottom = 177;
-  const allValues = flow.steps.flatMap((step) => [step.start, step.end]);
-  const maximum = Math.max(0, ...allValues);
-  const minimum = Math.min(0, ...allValues);
+  const unreconciled = Math.abs(flow.reconciliationDifference) > 0.01;
+  const componentSteps = flow.steps.filter((step) => step.id !== 'free');
+  const componentResult = componentSteps.at(-1)?.end ?? 0;
+  const endpoints = flow.steps.flatMap((step) => [step.start, step.end]);
+  const minimum = Math.min(0, ...endpoints);
+  const maximum = Math.max(0, ...endpoints);
   const span = maximum - minimum || 1;
-  const y = (value) => chartBottom - ((value - minimum) / span) * (chartBottom - chartTop);
-  const slot = (width - 64) / flow.steps.length;
-  const barWidth = Math.min(47, slot * 0.62);
-  const x = (index) => 57 + index * slot + (slot - barWidth) / 2;
-  const selected = flow.steps.find((step) => step.id === activeStep);
-  const mobileMaximum = Math.max(0, ...flow.steps.map((step) => Math.abs(step.amount)));
+  const position = (value) => (value - minimum) / span * 100;
+  const zeroPosition = position(0);
+  const ticks = [...new Set([minimum, 0, maximum])]
+    .filter((value) => value === 0 || Math.abs(position(value) - zeroPosition) >= 12);
+  const stepColor = (step) => step.id === 'free'
+    ? step.amount < 0 ? '#E8A4AA' : '#7DE4BF'
+    : ['deposit', 'other'].includes(step.id) ? '#7DE4BF' : '#94ABC6';
+  const stepLabel = (step) => step.id === 'free' && unreconciled ? 'Resultado reportado' : step.label;
 
   return (
-    <figure className="min-w-0" data-sensitive>
-      <div className="mb-2 flex min-h-11 flex-wrap items-center justify-between gap-2 text-xs">
-        <figcaption id={`${chartId}-caption`} className="font-medium text-[#A4B1C3]">Cómo se compone tu mes <span className="text-[#8B9BB1]">· {currency}</span></figcaption>
-        <span className="min-h-5 tabular-nums text-[#F4F7FB]" aria-live="polite">
-          {selected ? `${selected.label}: ${signedAmount(selected.amount, currency)} · Acumulado: ${formatMoney(selected.end, currency)}` : 'Ingresos → compromisos → flujo libre'}
-        </span>
+    <figure className="dashboard-waterfall" data-sensitive aria-describedby={`${chartId}-description`}>
+      <figcaption id={`${chartId}-caption`} className="dashboard-waterfall-caption">
+        <span>Cómo se compone tu mes</span><span>{currency} · estimación mensual</span>
+      </figcaption>
+      <p id={`${chartId}-description`} className="dashboard-waterfall-description">
+        Cada cambio parte del acumulado anterior. La línea de cero y la escala son comunes a todos los componentes.
+      </p>
+      <ul className="dashboard-waterfall-legend" aria-label="Identificación de los componentes">
+        <li><span className="is-income" aria-hidden="true" />Entradas</li>
+        <li><span className="is-expense" aria-hidden="true" />Compromisos</li>
+        <li><span className={flow.free < 0 ? 'is-deficit' : 'is-result'} aria-hidden="true" />{unreconciled ? 'Resultado reportado' : 'Resultado'}</li>
+      </ul>
+
+      {unreconciled && (
+        <div className="dashboard-waterfall-discrepancy" role="note">
+          <p>El resultado reportado no coincide con los componentes.</p>
+          <dl>
+            <div><dt>Acumulado de los componentes</dt><dd>{signedAmount(componentResult, currency)} {currency}</dd></div>
+            <div><dt>Resultado reportado</dt><dd>{signedAmount(flow.free, currency)} {currency}</dd></div>
+            <div><dt>Diferencia por revisar</dt><dd>{signedAmount(flow.reconciliationDifference, currency)} {currency}</dd></div>
+          </dl>
+        </div>
+      )}
+
+      <div className="dashboard-waterfall-chart" style={{ '--flow-zero': `${zeroPosition}%`, '--flow-step-count': flow.steps.length }}>
+        <div className="dashboard-waterfall-axis is-horizontal" aria-hidden="true">
+          {ticks.map((value) => <span key={value} className={value === minimum ? 'is-start' : value === maximum ? 'is-end' : ''} style={{ left: `${position(value)}%` }}>{value === 0 ? '0' : compactNumber.format(value)}</span>)}
+        </div>
+        <div className="dashboard-waterfall-axis is-vertical" aria-hidden="true">
+          {ticks.map((value) => <span key={value} style={{ top: `${100 - position(value)}%` }}>{value === 0 ? '0' : compactNumber.format(value)}</span>)}
+        </div>
+        <ol className="dashboard-waterfall-steps" aria-labelledby={`${chartId}-caption`}>
+          {flow.steps.map((step, index) => {
+            const startPosition = position(step.start);
+            const endPosition = position(step.end);
+            const isResult = step.id === 'free';
+            const color = stepColor(step);
+            const connectNext = index < flow.steps.length - 1 && !(unreconciled && flow.steps[index + 1].id === 'free');
+            return (
+              <li key={step.id} className={`dashboard-waterfall-step${isResult ? ' is-result' : ''}${isResult && unreconciled ? ' is-unreconciled' : ''}`}
+                style={{ '--flow-bar-start': `${Math.min(startPosition, endPosition)}%`, '--flow-bar-size': `${Math.abs(endPosition - startPosition)}%`, '--flow-end': `${endPosition}%`, '--flow-color': color }}>
+                <div className="dashboard-waterfall-step-heading">
+                  <span className="dashboard-waterfall-step-label">{stepLabel(step)}</span>
+                  <span className="dashboard-waterfall-step-amount">{signedAmount(step.amount, currency)}</span>
+                </div>
+                <div className="dashboard-waterfall-plot" aria-hidden="true">
+                  <span className="dashboard-waterfall-zero" />
+                  {connectNext && <span className="dashboard-waterfall-connector" />}
+                  <span className="dashboard-waterfall-bar" />
+                  <span className="dashboard-waterfall-endpoint" />
+                </div>
+                <p className="dashboard-waterfall-balance"><span>{isResult ? unreconciled ? 'Desde cero · sin conciliar' : 'Resultado desde cero' : 'Acumulado'}</span>{!isResult && <strong>{signedAmount(step.end, currency)}</strong>}</p>
+              </li>
+            );
+          })}
+        </ol>
       </div>
-      <svg viewBox={`0 0 ${width} ${height}`} className="hidden w-full overflow-visible sm:block" role="group" aria-labelledby={`${chartId}-caption`} onPointerLeave={() => setActiveStep(null)}>
-        <desc>Cascada del presupuesto mensual estimado. Cada barra parte del saldo acumulado anterior. La última muestra el flujo libre, antes de aportaciones extra.</desc>
-        {(maximum === minimum ? [0] : [maximum, minimum + span / 2, minimum]).filter((value, index, values) => values.indexOf(value) === index).map((value) => (
-          <g key={value} aria-hidden="true">
-            <line x1="57" x2={width} y1={y(value)} y2={y(value)} stroke="#223248" strokeDasharray="3 5" />
-            <text x="45" y={y(value) + 4} textAnchor="end" fill="#8B9BB1" fontSize="10">{compactNumber.format(value)}</text>
-          </g>
-        ))}
-        <line x1="57" x2={width} y1={y(0)} y2={y(0)} stroke="#526178" strokeWidth="1" aria-hidden="true" />
-        {flow.steps.map((step, index) => {
-          const top = Math.min(y(step.start), y(step.end));
-          const barHeight = Math.abs(y(step.start) - y(step.end));
-          const isActive = step.id === activeStep;
-          return (
-            <g key={step.id} tabIndex={0} role="img"
-              aria-label={`${step.label}: ${signedAmount(step.amount, currency)} ${currency}. Acumulado: ${amountLabel(step.end, currency)}`}
-              onFocus={() => setActiveStep(step.id)} onBlur={() => setActiveStep(null)}
-              onPointerEnter={() => setActiveStep(step.id)} className="outline-none">
-              <title>{step.label}: {signedAmount(step.amount, currency)} {currency}. Acumulado: {amountLabel(step.end, currency)}</title>
-              <rect x={x(index) - 7} y="7" width={barWidth + 14} height="214" rx="10" fill={isActive ? '#FFFFFF08' : 'transparent'} stroke={isActive ? '#879BB5' : 'transparent'} />
-              {index < flow.steps.length - 2 && (
-                <line x1={x(index) + barWidth} x2={x(index + 1)} y1={y(step.end)} y2={y(step.end)} stroke="#6E7F96" strokeDasharray="3 3" aria-hidden="true" />
-              )}
-              {barHeight > 0 ? (
-                <rect x={x(index)} y={top} width={barWidth} height={barHeight} rx={Math.min(5, barHeight / 2)} fill={step.color} opacity={activeStep && !isActive ? 0.52 : 0.95} className="transition-opacity duration-150 motion-reduce:transition-none" />
-              ) : (
-                <line x1={x(index)} x2={x(index) + barWidth} y1={y(step.start)} y2={y(step.start)} stroke={step.color} strokeWidth="2" />
-              )}
-              <text x={x(index) + barWidth / 2} y={top - 5} textAnchor="middle" fill={step.color} fontSize="10" aria-hidden="true">{step.amount < 0 ? '−' : ''}{compactNumber.format(Math.abs(step.amount))}</text>
-              <text x={x(index) + barWidth / 2} y="205" textAnchor="middle" fill={step.id === 'free' ? step.color : '#A4B1C3'} fontSize="11" fontWeight={step.id === 'free' ? '600' : '400'}>{step.shortLabel}</text>
-              <text x={x(index) + barWidth / 2} y="222" textAnchor="middle" fill="#8B9BB1" fontSize="10">{step.id === 'free' ? '=' : step.amount < 0 ? '−' : '+'}</text>
-            </g>
-          );
-        })}
-      </svg>
-      <dl className="mt-4 space-y-3.5 sm:hidden">
-        {flow.steps.map((step) => (
-          <div key={step.id} className={step.id === 'free' ? 'border-t border-[#223248] pt-3.5' : ''}>
-            <div className="mb-1.5 flex items-start justify-between gap-3"><dt className="text-xs leading-relaxed text-[#A4B1C3]">{step.id === 'free' ? 'Flujo libre' : step.label}</dt><dd className="shrink-0 text-xs font-medium tabular-nums" style={{ color: step.color }}>{signedAmount(step.amount, currency)}</dd></div>
-            <div className="h-1.5 overflow-hidden rounded-full bg-[#223248]" aria-hidden="true"><div className="h-full rounded-full" style={{ width: `${mobileMaximum > 0 ? Math.abs(step.amount) / mobileMaximum * 100 : 0}%`, backgroundColor: step.color }} /></div>
-          </div>
-        ))}
-      </dl>
-      <details className="group mt-1 rounded-xl text-xs">
-        <summary className="flex min-h-11 cursor-pointer list-none items-center gap-1.5 rounded-lg text-[#A4B1C3] transition-colors hover:text-[#F4F7FB] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#7DE4BF]">
-          <CircleHelp className="h-3.5 w-3.5" aria-hidden="true" /> Ver cifras del cálculo
-          <ChevronRight className="h-3.5 w-3.5 transition-transform group-open:rotate-90 motion-reduce:transition-none" aria-hidden="true" />
-        </summary>
-        <table className="mt-1 w-full border-collapse text-left">
-          <caption className="sr-only">Componentes del presupuesto mensual en {currency}</caption>
-          <thead><tr className="border-b border-[#223248] text-[#8B9BB1]"><th className="py-2 font-medium" scope="col">Concepto</th><th className="py-2 text-right font-medium" scope="col">Importe ({currency})</th><th className="py-2 pl-3 text-right font-medium" scope="col">Acumulado</th></tr></thead>
-          <tbody>{flow.steps.map((step) => (
-            <tr key={step.id} className={step.id === 'free' ? 'border-t border-[#223248] font-semibold text-[#F4F7FB]' : 'text-[#A4B1C3]'}>
-              <th className="py-2 pr-3 font-normal" scope="row">{step.label}</th><td className="py-2 text-right tabular-nums">{signedAmount(step.amount, currency)}</td><td className="py-2 pl-3 text-right tabular-nums">{formatMoney(step.end, currency)}</td>
-            </tr>
-          ))}</tbody>
-        </table>
+      <p className="dashboard-waterfall-note">Las marcas finas señalan el acumulado, incluso cuando el cambio es cero. El resultado parte de cero y conserva su signo.</p>
+
+      <details className="dashboard-waterfall-table-details">
+        <summary><CircleHelp size={15} aria-hidden="true" /><span>Ver cifras del cálculo</span><ChevronRight size={15} aria-hidden="true" /></summary>
+        <div className="dashboard-waterfall-table-scroll" tabIndex={0} role="region" aria-label={`Cifras del presupuesto mensual en ${currency}`}>
+          <table>
+            <caption>Presupuesto mensual estimado · {currency}</caption>
+            <thead><tr><th scope="col">Concepto</th><th scope="col">Cambio</th><th scope="col">Acumulado</th></tr></thead>
+            <tbody>{componentSteps.map((step) => (
+              <tr key={step.id}><th scope="row">{step.label}</th><td>{signedAmount(step.amount, currency)}</td><td>{signedAmount(step.end, currency)}</td></tr>
+            ))}</tbody>
+            <tfoot><tr><th scope="row">{unreconciled ? 'Resultado reportado · sin conciliar' : 'Resultado · flujo libre antes de aportaciones extra'}</th><td><span aria-label="No aplica: es el resultado, no otro cambio">—</span></td><td>{signedAmount(flow.free, currency)}</td></tr></tfoot>
+          </table>
+        </div>
       </details>
     </figure>
   );
 }
-
-function BalanceMetric({ icon: Icon, label, amount, description, currency, onClick, negativeTone = false }) {
+function BalanceMetric({ icon: Icon, label, amount, description, currency, onClick, negativeTone = false, pendingLabel = 'Dato pendiente' }) {
   return (
-    <button type="button" onClick={onClick} className="surface-card group w-full min-w-0 rounded-2xl border border-[#223248] bg-[#111B29] p-5 text-left transition-colors hover:border-[#48647B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7DE4BF] sm:p-6">
-      <div className="flex items-center justify-between gap-2">
-        <span className="flex items-center gap-2 text-xs font-medium text-[#A4B1C3]"><Icon className="h-4 w-4 text-[#8B9BB1]" aria-hidden="true" />{label}</span>
-        <ArrowUpRight className="h-4 w-4 text-[#718399] transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 motion-reduce:transform-none" aria-hidden="true" />
+    <motion.button type="button" onClick={onClick} className="dashboard-metric">
+      <div className="dashboard-metric-heading">
+        <span><Icon size={16} aria-hidden="true" />{label}</span>
+        <ArrowUpRight size={16} aria-hidden="true" />
       </div>
-      <p data-sensitive className={`sensitive-value mt-4 break-words text-[clamp(1.5rem,2.5vw,2rem)] font-semibold tracking-[-0.045em] tabular-nums ${negativeTone && amount < 0 ? 'text-[#E8A4AA]' : 'text-[#F4F7FB]'}`}>
-        {amount === null ? <span className="text-lg tracking-normal text-[#E7BE83]">Dato pendiente</span> : <>{formatMoney(amount, currency)} <span className="text-xs font-normal tracking-normal text-[#8B9BB1]">{currency}</span></>}
+      <p data-sensitive className={`dashboard-metric-value sensitive-value ${negativeTone && amount < 0 ? 'is-negative' : ''}`}>
+        {amount === null ? <span className="dashboard-pending-value">{pendingLabel}</span> : <>{formatMoney(amount, currency)} <span>{currency}</span></>}
       </p>
-      <p className="mt-2 text-xs leading-relaxed text-[#8B9BB1]">{description}</p>
-    </button>
+      <p className="dashboard-caption">{description}</p>
+    </motion.button>
   );
+}
+
+function ReceivablesOverview({ summary, onOpen }) {
+  const titleId = useId();
+  const item = summary.representative;
+  return <section className="dashboard-receivables-card" aria-labelledby={titleId}>
+    <div className="dashboard-card-heading"><h2 id={titleId}>Cobros esperados</h2><ArrowDownLeft size={20} aria-hidden="true" /></div>
+    {summary.status === 'error' ? <p className="dashboard-receivables-state">No pudimos leer el seguimiento de cobros</p>
+      : summary.pendingCount === 0 ? <p className="dashboard-receivables-state" data-sensitive>Sin cobros pendientes en tus registros.</p>
+      : <><p className="dashboard-receivables-count" data-sensitive>{summary.pendingCount} {summary.pendingCount === 1 ? 'cobro pendiente' : 'cobros pendientes'}</p>
+        <div className="dashboard-receivable-record" data-sensitive><p>{item.name}</p><strong>{amountLabel(item.pendingMinor / 100, item.currency)}</strong>
+          <span>{item.expectedDate ? <time dateTime={item.expectedDate}>{new Date(`${item.expectedDate}T12:00:00`).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}</time> : 'Sin fecha acordada'}</span>
+        </div></>}
+    <p className="dashboard-caption">Pendiente de recibir; no forma parte de tu saldo disponible.</p>
+    <button type="button" className="dashboard-link" onClick={onOpen}>Ver mis cobros <ArrowRight size={16} aria-hidden="true" /></button>
+  </section>;
 }
 
 export default function DashboardOverview({
   financialData = {}, cashFlow = {}, promoDeadlines = [], exchangeRate,
-  displayCurrency = 'MXN', onNavigateTab, onOpenDebtModal,
-  onQuickAdd, onOpenAssistant, onImportStatement,
+  displayCurrency = 'MXN', accountName, onNavigateTab, onOpenDebtModal,
+  onQuickAdd, onOpenAssistant, onImportStatement, review, onOpenReview, readOnly = false,
 }) {
   const [period, setPeriod] = useState('current');
+  const reasonId = useId();
+  const reducedMotion = useReducedMotion();
+  const enter = { initial: reducedMotion ? false : { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: reducedMotion ? 0 : 0.16 } };
+  const editReason = actionUnavailableReason('newTransaction', { readOnly });
+  const importReason = actionUnavailableReason('importStatement', { readOnly });
+  const debtReason = actionUnavailableReason('newDebt', { readOnly });
   const today = new Date();
   const todayKey = localDateKey(today);
   const currency = consolidatedCurrency(displayCurrency);
@@ -132,149 +165,142 @@ export default function DashboardOverview({
   const ledger = useMemo(() => summarizeLedger(financialData.transacciones, period, new Date(`${todayKey}T12:00:00`), exchangeRate, displayCurrency), [financialData.transacciones, period, todayKey, exchangeRate, displayCurrency]);
   const payments = pendingPayments(financialData, today, exchangeRate, displayCurrency);
   const promo = nearestPromo(promoDeadlines, today);
+  const receivables = useMemo(() => workspaceReceivables(financialData, { today: todayKey }), [financialData, todayKey]);
   const debtMaximum = Math.max(0, ...balances.debts.map((debt) => Math.abs(debt.amount)));
   const monthLabel = today.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' });
-  const navigate = (tab) => onNavigateTab?.(tab);
+  const dateLabel = today.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' });
+  const navigate = (tab, options) => onNavigateTab?.(tab, options);
   const openAssistant = (prompt) => onOpenAssistant ? onOpenAssistant(prompt) : navigate('assistant');
-  const registerMovement = () => onQuickAdd ? onQuickAdd() : navigate('transactions');
-  const hasBudget = flow.steps.some((step) => step.amount !== 0);
+  const registerMovement = () => { if (!editReason) return onQuickAdd ? onQuickAdd() : navigate('transactions'); };
+  const hasBudget = flow.steps.some((step) => !['minimum', 'free'].includes(step.id) && step.amount !== 0);
+  const hasMovements = Array.isArray(financialData.transacciones) && financialData.transacciones.length > 0;
+  const hasDebtRecords = balances.debts.length > 0 || Boolean(financialData.deudasPendientes?.length);
+  const hasBalanceRecords = balances.assetCount > 0 || hasDebtRecords;
+  const hasPlan = useMemo(() => hasWorkspacePlan(financialData), [financialData.planFinanciero]);
+  const pendingDebtCount = Array.isArray(financialData.deudasPendientes) ? financialData.deudasPendientes.length : 0;
+  const hasPendingDebts = pendingDebtCount > 0;
+  const firstName = typeof accountName === 'string' ? accountName.trim().split(/\s+/)[0] : '';
+
+  const movementsPanel = (
+        <section aria-labelledby="recent-ledger-heading" className="dashboard-activity-card">
+          <div className="dashboard-card-heading dashboard-activity-heading"><div><p className="dashboard-eyebrow">Actividad</p><h2 id="recent-ledger-heading">Movimientos recientes</h2></div><label><span className="sr-only">Periodo de los movimientos</span><select value={period} onChange={(event) => setPeriod(event.target.value)} className="dashboard-period"><option value="current">Este mes</option><option value="previous">Mes anterior</option></select></label></div>
+          <p className="dashboard-caption dashboard-ledger-coverage">{shortDate(ledger.start)}–{shortDate(ledger.lastDate)} · <span data-sensitive>{ledger.rows.length} {ledger.rows.length === 1 ? 'registro' : 'registros'}.</span> Solo movimientos capturados.</p>
+          {ledger.rows.length > 0 && <dl className="dashboard-ledger-totals" data-sensitive><div><dt><ArrowDownLeft size={14} aria-hidden="true" />Ingresos registrados</dt><dd className="sensitive-value">{formatMoney(ledger.income, currency)} <span>{currency}</span></dd></div><div><dt><ArrowUpRight size={14} aria-hidden="true" />Gastos registrados</dt><dd className="sensitive-value">{formatMoney(ledger.expenses, currency)} <span>{currency}</span></dd></div></dl>}
+          {ledger.rows.length > 0 ? <ul className="dashboard-ledger-list" data-sensitive>{ledger.rows.slice(0, 5).map((transaction) => (
+            <li key={transaction.key}><span className={`dashboard-ledger-icon ${transaction.tipo === 'INGRESO' ? 'is-income' : ''}`}>{transaction.tipo === 'INGRESO' ? <ArrowDownLeft size={17} aria-hidden="true" /> : <ReceiptText size={17} aria-hidden="true" />}</span><div className="dashboard-ledger-detail"><p title={transaction.descripcion}>{transaction.descripcion || 'Movimiento sin descripción'}</p><span>{transaction.categoria || 'Sin categoría'} · <time dateTime={transaction.fecha}>{shortDate(transaction.date)}</time></span></div><div className="dashboard-ledger-amount"><p className={`sensitive-value ${transaction.tipo === 'INGRESO' ? 'is-income' : ''}`}>{transaction.tipo === 'INGRESO' ? '+' : '−'}{formatMoney(transaction.amount, currency)}</p>{displayCurrency === 'ORIGINAL' && transaction.moneda !== currency && <span>{amountLabel(transaction.monto, transaction.moneda)} original</span>}</div></li>
+          ))}</ul> : <div className="dashboard-empty"><ReceiptText size={26} aria-hidden="true" /><p>Aún no hay movimientos en este periodo</p><span>Registra un ingreso o gasto para empezar a ver tu actividad.</span><button type="button" onClick={registerMovement} disabled={Boolean(editReason)} title={editReason || undefined} aria-describedby={editReason ? reasonId : undefined} className={linkClass}><Plus size={15} aria-hidden="true" />Registrar movimiento</button></div>}
+          {ledger.invalidCount > 0 && <p className="dashboard-validation">{ledger.invalidCount} registros con fecha, monto, tipo o moneda no válidos se excluyeron del resumen.</p>}
+          <div className="dashboard-activity-footer"><button type="button" onClick={() => navigate('transactions')} className="dashboard-card-link">Ver todos los movimientos <ArrowRight size={16} aria-hidden="true" /></button>
+            {onImportStatement && <button type="button" className="dashboard-link" disabled={Boolean(importReason)} title={importReason || undefined} aria-describedby={importReason ? reasonId : undefined} onClick={onImportStatement}><Upload size={16} aria-hidden="true" />Importar estado</button>}
+          </div>
+        </section>
+  );
+  const debtPanel = (
+        <section aria-labelledby="debt-ranking-heading" className="dashboard-debts-card">
+          <div className="dashboard-card-heading"><div><p className="dashboard-eyebrow">Deudas</p><h2 id="debt-ranking-heading">Tus saldos, en orden</h2></div>{onOpenDebtModal && <button type="button" onClick={onOpenDebtModal} disabled={Boolean(debtReason)} title={debtReason || undefined} aria-describedby={debtReason ? reasonId : undefined} aria-label="Agregar deuda" className="dashboard-icon-button"><Plus size={17} aria-hidden="true" /></button>}</div>
+          <p className="dashboard-caption">{hasPendingDebts ? 'Solo deudas completas. ' : ''}De mayor a menor saldo, en {currency}.</p>
+          {balances.debts.length > 0 && balances.debts.every((debt) => debt.isValid && debt.amount === 0) && <p className="dashboard-zero-balances">Los saldos de las deudas completas están en cero.</p>}
+          {balances.debts.length > 0 ? <ol className="dashboard-debt-list" data-sensitive>{balances.debts.slice(0, 5).map((debt, index) => (
+            <li key={debt.key}><button type="button" onClick={() => navigate('debts')} aria-label={`Ver ${debt.nombre || 'deuda'} en Deudas`}><div className="dashboard-debt-row"><div><p><span className="dashboard-debt-rank">{String(index + 1).padStart(2, '0')}</span>{debt.nombre || 'Deuda sin nombre'}</p>{debt.isValid && debt.moneda && debt.moneda !== currency && <span className="dashboard-debt-original">{amountLabel(debt.saldo, debt.moneda)} original</span>}</div><span className={`dashboard-debt-amount sensitive-value ${!debt.isValid ? 'is-pending' : ''}`}>{debt.isValid ? formatMoney(debt.amount, currency) : 'Revisar saldo'}</span></div>{debt.isValid && <div className="dashboard-debt-track" aria-hidden="true"><div style={{ width: `${debtMaximum > 0 ? debt.amount / debtMaximum * 100 : 0}%`, opacity: index === 0 ? 1 : 0.65 }} /></div>}</button></li>
+          ))}</ol> : <div className="dashboard-empty"><CreditCard size={26} aria-hidden="true" /><p>{hasPendingDebts ? 'Completa tus deudas para ver sus saldos' : 'Sin deudas registradas'}</p><span>{hasPendingDebts ? 'Los registros pendientes todavía no forman parte de este resumen.' : 'Agrega una deuda si tienes saldos por registrar.'}</span></div>}
+          <button type="button" onClick={() => navigate('debts')} className="dashboard-card-link">{balances.debts.length > 5 ? `Ver todas las deudas (${balances.debts.length})` : 'Ver todas las deudas'} <ArrowRight size={16} aria-hidden="true" /></button>
+        </section>
+  );
+  const receivablesPanel = receivables.hasItems ? <ReceivablesOverview summary={receivables} onOpen={() => navigate('transactions', { view: 'expected' })} /> : null;
 
   return (
-    <div className="space-y-6 pb-4 sm:space-y-7">
-      <header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+    <div className="dashboard-overview">
+      <motion.header {...enter} className="dashboard-header">
         <div>
-          <p className="eyebrow mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#7DE4BF]">Tu panorama financiero</p>
-          <h1 className="text-[clamp(1.85rem,3vw,2.6rem)] font-semibold leading-tight tracking-[-0.045em] text-[#F4F7FB]">Tu dinero, en perspectiva.</h1>
-          <p className="mt-2 text-sm text-[#A4B1C3]">Todo lo esencial para decidir tu siguiente paso.</p>
+          <p className="dashboard-eyebrow">Tu resumen</p>
+          <h1 tabIndex={-1}>{firstName ? <>Hola, <span data-sensitive>{firstName}</span>.</> : 'Tu mes, con claridad.'}</h1>
+          <p className="dashboard-header-description">{hasBudget ? 'Tus saldos registrados y tu margen estimado.' : 'Retoma tus registros y lo que tienes pendiente.'}</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {onImportStatement && <button type="button" onClick={onImportStatement} className="button-secondary inline-flex min-h-11 items-center gap-2 rounded-xl border border-[#223248] px-4 text-xs font-semibold text-[#C8D3E2]"><Upload className="h-4 w-4" aria-hidden="true" />Importar estado</button>}
-          <button type="button" onClick={registerMovement} className="button-primary inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#7DE4BF] px-4 text-xs font-semibold text-[#0A1916]"><Plus className="h-4 w-4" aria-hidden="true" />Registrar movimiento</button>
-        </div>
-      </header>
+        <div className="dashboard-header-tools">
+          <time dateTime={todayKey} className="dashboard-today"><CalendarDays size={14} aria-hidden="true" />{dateLabel}</time>
 
-      {promo && (
-        <div className="flex flex-col justify-between gap-3 rounded-2xl border border-[#E7BE83]/25 bg-[#E7BE83]/[0.06] px-5 py-3.5 sm:flex-row sm:items-center" data-sensitive>
-          <div className="flex items-start gap-3">
-            <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-[#E7BE83]" aria-hidden="true" />
-            <div><p className="text-sm font-medium text-[#E7BE83]">{promo.daysRemaining < 0 ? 'Revisa una promoción con fecha vencida' : promo.daysRemaining === 0 ? 'Una promoción vence hoy' : `Una promoción vence en ${promo.daysRemaining} días`}</p>
-              <p className="mt-1 text-xs leading-relaxed text-[#A4B1C3]">{promo.nombre} · {shortDate(promo.date)} · Saldo registrado: {amountLabel(displayAmount(convertCurrency(promo.saldo, promo.moneda || 'MXN', 'MXN', exchangeRate), displayCurrency, exchangeRate), currency)}. Consulta sus condiciones.</p>
-            </div>
-          </div>
-          <button type="button" onClick={() => navigate('debts')} className={linkClass}>Revisar deuda <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" /></button>
+        </div>
+      </motion.header>
+
+      {editReason && <p id={reasonId} className="sr-only">{editReason}</p>}
+      {!hasBudget && !hasMovements && !receivables.hasItems && hasPlan && <div className="dashboard-plan-return"><p>Tienes un plan de pagos en este espacio</p><button type="button" className={linkClass} onClick={() => navigate('plan')}>Abrir mi plan de pagos <ArrowRight size={16} aria-hidden="true" /></button></div>}
+      {!hasBudget && (receivablesPanel || hasMovements) && <div className={`dashboard-return-grid ${receivablesPanel && hasMovements ? '' : 'is-single'}`}>{receivablesPanel}{hasMovements && movementsPanel}</div>}
+      {(hasBudget || review?.total > 0) && (review || receivablesPanel) && <div className={`dashboard-review-grid ${hasBudget && review && receivablesPanel ? '' : 'is-single'}`}>
+        {review && <ReviewLauncher review={review} onOpen={onOpenReview} />}
+        {hasBudget && receivablesPanel}
+      </div>}
+
+      {hasPendingDebts && !review && (
+        <div className="dashboard-notice">
+          <CircleDashed size={20} aria-hidden="true" />
+          <div><p><span data-sensitive>{pendingDebtCount} {pendingDebtCount === 1 ? 'deuda por completar' : 'deudas por completar'}</span></p><span>Faltan datos para incluirlas en el balance y los pagos mínimos. Tu panorama es parcial.</span></div>
+          <button type="button" onClick={() => navigate('debts')} className={linkClass}>Completar datos <ArrowRight size={15} aria-hidden="true" /></button>
         </div>
       )}
 
-      <section aria-labelledby="monthly-flow-heading" className="surface-card relative overflow-hidden rounded-[24px] border border-[#2C413F] bg-[#111B29]">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(125,228,191,0.08),transparent_65%)]" />
-        <div className="relative grid gap-6 p-5 sm:p-7 xl:grid-cols-[0.78fr_1.22fr] xl:gap-10">
-          <div className="flex min-w-0 flex-col justify-between">
-            <div>
-              <div className="flex flex-wrap items-center gap-2.5">
-                <h2 id="monthly-flow-heading" className="text-sm font-medium text-[#C8D3E2]">Flujo mensual estimado</h2>
-                <span className="rounded-full border border-[#7DE4BF]/20 bg-[#7DE4BF]/[0.07] px-2 py-0.5 text-[10px] text-[#7DE4BF]">Presupuesto</span>
-              </div>
-              <p className="mt-2 flex items-center gap-1.5 text-xs capitalize text-[#8B9BB1]"><CalendarDays className="h-3.5 w-3.5" aria-hidden="true" />{monthLabel}</p>
-              <div className="mt-7" data-sensitive>
-                <p className={`sensitive-value break-words text-[clamp(2.2rem,4vw,3.5rem)] font-medium leading-none tracking-[-0.06em] tabular-nums ${flow.free < 0 ? 'text-[#E8A4AA]' : 'text-[#7DE4BF]'}`}>{formatMoney(flow.free, currency)}</p>
-                <p className="mt-3 text-xs leading-relaxed text-[#A4B1C3]">{currency} / mes · {flow.free < 0 ? 'Déficit estimado' : flow.free === 0 ? 'Sin margen estimado' : 'Margen estimado'}<br /><span className="text-[#8B9BB1]">Antes de aportaciones extra a deuda.</span></p>
-              </div>
-              <div className="mt-6 flex flex-wrap gap-x-7 gap-y-3 border-t border-[#223248] pt-4" data-sensitive>
-                <div><p className="mb-1 text-[11px] text-[#8B9BB1]">Entradas estimadas</p><p className="sensitive-value text-sm font-medium tabular-nums text-[#F4F7FB]">{formatMoney(flow.income, currency)}</p></div>
-                <div><p className="mb-1 text-[11px] text-[#8B9BB1]">Compromisos del mes</p><p className="sensitive-value text-sm font-medium tabular-nums text-[#F4F7FB]">{formatMoney(flow.expenses, currency)}</p></div>
-              </div>
-            </div>
-            <button type="button" onClick={() => navigate('budget')} className={`${linkClass} mt-4 self-start text-[#7DE4BF]`}>Ajustar presupuesto <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" /></button>
-          </div>
-          <div className="min-w-0 self-center border-t border-[#223248] pt-3 xl:border-l xl:border-t-0 xl:pl-7 xl:pt-0">
-            <FlowWaterfall flow={flow} currency={currency} />
-            <p className="mt-1 text-[11px] leading-relaxed text-[#8B9BB1]">{hasBudget ? 'Calculado con tus ingresos, provisión fiscal, gastos y pagos mínimos configurados. No representa el saldo bancario.' : 'Configura tus ingresos y compromisos para construir tu presupuesto mensual.'}</p>
-            {Math.abs(flow.reconciliationDifference) > 0.01 && <p className="mt-2 text-xs text-[#E7BE83]">El flujo reportado no coincide con sus componentes. Revisa el presupuesto antes de usar esta estimación.</p>}
-          </div>
+      {promo && (
+        <div className="dashboard-notice dashboard-notice-promo" data-sensitive>
+          <CalendarDays size={19} aria-hidden="true" />
+          <div><p>{promo.daysRemaining < 0 ? 'Una promoción tiene fecha vencida' : promo.daysRemaining === 0 ? 'Una promoción vence hoy' : `Una promoción vence en ${promo.daysRemaining} días`}</p><span>{promo.nombre} · {shortDate(promo.date)} · Saldo registrado: {amountLabel(displayAmount(convertCurrency(promo.saldo, promo.moneda || 'MXN', 'MXN', exchangeRate), displayCurrency, exchangeRate), currency)}. Revisa sus condiciones.</span></div>
+          <button type="button" onClick={() => navigate('debts')} className={linkClass}>Revisar deuda <ArrowRight size={15} aria-hidden="true" /></button>
         </div>
-      </section>
+      )}
 
-      <section aria-label="Balance consolidado" className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2 px-1 text-[11px] text-[#8B9BB1]">
-          <span>Saldos registrados · corte actual</span><span>{displayCurrency === 'ORIGINAL' ? 'Consolidado en MXN · moneda original en el detalle' : `Todos los importes en ${currency}`}</span>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
-          <BalanceMetric icon={Wallet} label="Activos registrados" amount={balances.assets} description={`${balances.assetCount} activos en tu balance`} currency={currency} onClick={() => navigate('balance')} />
-          <BalanceMetric icon={CreditCard} label="Deuda registrada" amount={balances.debt} description={`${balances.debts.length} deudas en tu portafolio`} currency={currency} onClick={() => navigate('debts')} />
-          <BalanceMetric icon={Layers3} label="Patrimonio neto" amount={balances.netWorth} description="Activos menos deudas registradas" currency={currency} onClick={() => navigate('balance')} negativeTone />
-        </div>
-        {(balances.invalidDebtCount > 0 || balances.invalidAssetCount > 0) && <p className="px-1 text-xs leading-relaxed text-[#E7BE83]">Revisa {balances.invalidDebtCount + balances.invalidAssetCount} saldos con importe o moneda no válidos. Los totales afectados quedan pendientes.</p>}
-      </section>
-
-      <div className="grid items-start gap-5 xl:grid-cols-[1.45fr_1fr]">
-        <section aria-labelledby="recent-ledger-heading" className="surface-card min-w-0 rounded-[22px] border border-[#223248] bg-[#111B29] p-5 sm:p-6">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div><p className="eyebrow mb-1 text-[10px] uppercase tracking-[0.16em] text-[#8B9BB1]">Actividad</p><h2 id="recent-ledger-heading" className="text-lg font-semibold tracking-tight text-[#F4F7FB]">Movimientos recientes</h2></div>
-            <label className="flex flex-col gap-1"><span className="sr-only">Periodo de los movimientos</span><select value={period} onChange={(event) => setPeriod(event.target.value)} className="field-input min-h-11 rounded-xl border border-[#223248] bg-[#0C1420] px-3 text-xs text-[#C8D3E2] focus:border-[#7DE4BF] focus:outline-none"><option value="current">Este mes, hasta hoy</option><option value="previous">Mes anterior</option></select></label>
+      {hasBudget && <div className="dashboard-hero-grid">
+        <motion.section {...enter} aria-labelledby="monthly-flow-heading" className="dashboard-margin-card">
+          <div className="dashboard-card-heading">
+            <div><p className="dashboard-eyebrow">Tu presupuesto · {monthLabel}</p><h2 id="monthly-flow-heading">Margen mensual estimado</h2></div>
+            <span className={`dashboard-status ${hasPendingDebts ? 'is-partial' : ''}`}>{hasPendingDebts ? 'Estimación parcial' : 'Estimación'}</span>
           </div>
-          <p className="mt-2 text-[11px] leading-relaxed text-[#8B9BB1]">{shortDate(ledger.start)}–{shortDate(ledger.lastDate)} · {ledger.rows.length} registros. Cobertura limitada a los movimientos capturados.</p>
-          <dl className="my-5 grid grid-cols-2 gap-3 border-y border-[#223248] py-4" data-sensitive>
-            <div><dt className="mb-1 flex items-center gap-1 text-[11px] text-[#8B9BB1]"><ArrowDownLeft className="h-3.5 w-3.5 text-[#7DE4BF]" aria-hidden="true" />Ingresos registrados</dt><dd className="sensitive-value text-base font-medium tracking-tight tabular-nums text-[#7DE4BF]">{formatMoney(ledger.income, currency)} <span className="text-[10px] font-normal text-[#8B9BB1]">{currency}</span></dd></div>
-            <div><dt className="mb-1 flex items-center gap-1 text-[11px] text-[#8B9BB1]"><ArrowUpRight className="h-3.5 w-3.5 text-[#DCA6A2]" aria-hidden="true" />Gastos registrados</dt><dd className="sensitive-value text-base font-medium tracking-tight tabular-nums text-[#F4F7FB]">{formatMoney(ledger.expenses, currency)} <span className="text-[10px] font-normal text-[#8B9BB1]">{currency}</span></dd></div>
+          <div className="dashboard-margin-amount" data-sensitive>
+            <p className={`sensitive-value ${flow.free < 0 ? 'is-negative' : ''}`}>{formatMoney(flow.free, currency)}<span>{currency} / mes</span></p>
+          </div>
+          <p className="dashboard-margin-description">{hasPendingDebts ? 'Faltan pagos mínimos por integrar. Este importe todavía no representa tu margen completo.' : flow.free < 0 ? 'Los compromisos configurados superan las entradas estimadas del mes.' : 'Lo que queda de tus ingresos después de los compromisos configurados, antes de aportaciones extra a deuda.'}</p>
+          <dl className="dashboard-flow-summary" data-sensitive>
+            <div><dt><span className="dashboard-dot income" />Entradas estimadas</dt><dd className="sensitive-value">{formatMoney(flow.income, currency)}</dd></div>
+            <div><dt><span className="dashboard-dot expenses" />Compromisos del mes</dt><dd className="sensitive-value">{formatMoney(flow.expenses, currency)}</dd></div>
           </dl>
-          {ledger.rows.length > 0 ? (
-            <ul className="divide-y divide-[#223248]/65" data-sensitive>{ledger.rows.slice(0, 5).map((transaction) => (
-              <li key={transaction.key} className="flex items-center gap-3 py-3.5 first:pt-0">
-                <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${transaction.tipo === 'INGRESO' ? 'bg-[#7DE4BF]/10 text-[#7DE4BF]' : 'bg-[#89ACD6]/10 text-[#89ACD6]'}`}>{transaction.tipo === 'INGRESO' ? <ArrowDownLeft className="h-4 w-4" aria-hidden="true" /> : <ReceiptText className="h-4 w-4" aria-hidden="true" />}</span>
-                <div className="min-w-0 flex-1"><p className="truncate text-sm font-medium text-[#E2E9F3]" title={transaction.descripcion}>{transaction.descripcion || 'Movimiento sin descripción'}</p><p className="mt-1 truncate text-[11px] text-[#8B9BB1]">{transaction.categoria || 'Sin categoría'} · <time dateTime={transaction.fecha}>{shortDate(transaction.date)}</time></p></div>
-                <div className="max-w-[48%] text-right"><p className={`sensitive-value break-words text-sm font-medium tabular-nums ${transaction.tipo === 'INGRESO' ? 'text-[#7DE4BF]' : 'text-[#C8D3E2]'}`}>{transaction.tipo === 'INGRESO' ? '+' : '−'}{formatMoney(transaction.amount, currency)}</p>{displayCurrency === 'ORIGINAL' && transaction.moneda !== currency && <p className="mt-1 text-[10px] tabular-nums text-[#8B9BB1]">{amountLabel(transaction.monto, transaction.moneda)} original</p>}</div>
-              </li>
-            ))}</ul>
-          ) : (
-            <div className="flex flex-col items-center rounded-2xl border border-dashed border-[#2B3C50] px-5 py-8 text-center"><ReceiptText className="mb-3 h-7 w-7 text-[#718399]" aria-hidden="true" /><p className="text-sm font-medium text-[#C8D3E2]">Este periodo aún no tiene movimientos.</p><p className="mt-2 max-w-xs text-xs leading-relaxed text-[#8B9BB1]">Registra un ingreso o gasto, o importa un estado de cuenta para empezar a revisarlos.</p><button type="button" onClick={registerMovement} className={`${linkClass} mt-3 text-[#7DE4BF]`}><Plus className="h-3.5 w-3.5" aria-hidden="true" />Registrar movimiento</button></div>
-          )}
-          {ledger.invalidCount > 0 && <p className="mt-3 text-xs leading-relaxed text-[#E7BE83]">{ledger.invalidCount} registros con fecha, monto, tipo o moneda no válidos se excluyeron del resumen.</p>}
-          <button type="button" onClick={() => navigate('transactions')} className={`${linkClass} mt-4 w-full justify-between border-t border-[#223248] pt-3`}>Ver todos los movimientos <ArrowRight className="h-4 w-4" aria-hidden="true" /></button>
-        </section>
+          <div className="dashboard-margin-footer"><p className="dashboard-caption">Fuente: tu presupuesto configurado.<br />Es una estimación, no tu saldo bancario.</p><button type="button" onClick={() => navigate('budget')} className={linkClass}>Ver presupuesto <ArrowRight size={15} aria-hidden="true" /></button></div>
+          <details className="dashboard-calculation">
+            <summary><CircleHelp size={15} aria-hidden="true" /><span>Cómo se calcula</span><ChevronRight size={15} aria-hidden="true" /></summary>
+            <div className="dashboard-calculation-content"><FlowWaterfall flow={flow} currency={currency} /><p className="dashboard-caption">Ingresos, provisión fiscal, gastos y pagos mínimos configurados.{hasPendingDebts ? ' Las deudas por completar no se incluyen.' : ''}</p></div>
+          </details>
+          {Math.abs(flow.reconciliationDifference) > 0.01 && <p className="dashboard-validation">El flujo reportado no coincide con sus componentes. Revisa el presupuesto antes de usar esta estimación.</p>}
+        </motion.section>
 
-        <aside aria-labelledby="dashboard-assistant-heading" className="relative overflow-hidden rounded-[22px] border border-[#B8AFF8]/25 bg-[#151B2C] p-5 sm:p-6">
-          <div aria-hidden="true" className="pointer-events-none absolute right-0 top-0 h-44 w-44 rounded-full bg-[#B8AFF8]/[0.06] blur-3xl" />
-          <div className="relative">
-            <div className="mb-6 flex items-center justify-between"><span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#B8AFF8]/20 bg-[#B8AFF8]/10 text-[#C8C1FF]"><Sparkles className="h-5 w-5" aria-hidden="true" /></span><span className="rounded-full border border-[#B8AFF8]/20 px-2.5 py-1 text-[10px] font-medium text-[#C8C1FF]">Asistente con Claude</span></div>
-            <h2 id="dashboard-assistant-heading" className="max-w-xs text-2xl font-medium leading-tight tracking-[-0.035em] text-[#F4F7FB]">De tus números<br />a mejores preguntas.</h2>
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#A4B1C3]">Explora tu presupuesto, entiende tus deudas y revisa tus movimientos con contexto.</p>
-            <div className="mt-5 space-y-2">
-              {[
-                ['¿Qué explica mi flujo libre?', 'Explica mi flujo libre mensual usando los componentes de mi presupuesto y distingue las estimaciones de mis movimientos registrados.'],
-                ['¿Cómo se distribuyen mis deudas?', 'Ayúdame a entender cómo se distribuyen mis deudas por saldo, moneda y tasa registrada. Señala qué datos faltan antes de comparar alternativas.'],
-              ].map(([label, prompt]) => <button key={label} type="button" onClick={() => openAssistant(prompt)} className="group flex min-h-12 w-full items-center justify-between gap-3 rounded-xl border border-[#B8AFF8]/15 bg-[#0C1420]/40 px-3.5 py-3 text-left text-xs font-medium text-[#D9D4FF] transition-colors hover:border-[#B8AFF8]/50 hover:bg-[#B8AFF8]/[0.07] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#B8AFF8]">{label}<ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-[#A49CD9] transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 motion-reduce:transform-none" aria-hidden="true" /></button>)}
-            </div>
-            <button type="button" onClick={() => openAssistant('')} className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#B8AFF8] px-4 py-3 text-xs font-semibold text-[#16152A] transition-colors hover:bg-[#CBC4FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B8AFF8]">Abrir asistente <ArrowRight className="h-4 w-4" aria-hidden="true" /></button>
-            <p className="mt-3 text-[11px] leading-relaxed text-[#8B9BB1]">Elige qué información compartir antes de enviar tu consulta.</p>
-          </div>
-        </aside>
-      </div>
-
-      <div className="grid items-start gap-5 xl:grid-cols-[1.15fr_1fr]">
-        <section aria-labelledby="debt-ranking-heading" className="surface-card min-w-0 rounded-[22px] border border-[#223248] bg-[#111B29] p-5 sm:p-6">
-          <div className="flex items-start justify-between gap-3"><div><p className="eyebrow mb-1 text-[10px] uppercase tracking-[0.16em] text-[#8B9BB1]">Portafolio de deuda</p><h2 id="debt-ranking-heading" className="text-lg font-semibold tracking-tight text-[#F4F7FB]">Dónde se concentra tu saldo</h2></div>{onOpenDebtModal && <button type="button" onClick={onOpenDebtModal} aria-label="Agregar deuda" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#223248] text-[#A4B1C3] transition-colors hover:border-[#7DE4BF]/40 hover:text-[#7DE4BF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#7DE4BF]"><Plus className="h-4 w-4" aria-hidden="true" /></button>}</div>
-          <p className="mt-2 text-[11px] leading-relaxed text-[#8B9BB1]">Saldos actuales en {currency}, ordenados de mayor a menor.</p>
-          {balances.debts.length > 0 && balances.debts.every((debt) => debt.isValid && debt.amount === 0) && <p className="mt-4 rounded-xl bg-[#7DE4BF]/[0.07] px-3 py-3 text-xs text-[#7DE4BF]">Todos los saldos registrados están en cero.</p>}
-          {balances.debts.length > 0 ? <ol className="mt-6 space-y-5" data-sensitive>{balances.debts.map((debt, index) => (
-            <li key={debt.key}>
-              <button type="button" onClick={() => navigate('debts')} aria-label={`Ver ${debt.nombre || 'deuda'} en Deudas`} className="block min-h-11 w-full rounded-lg text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#7DE4BF]">
-                <div className="mb-2 flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-xs font-medium leading-relaxed text-[#C8D3E2]"><span className="mr-2 text-[10px] tabular-nums text-[#718399]">{String(index + 1).padStart(2, '0')}</span>{debt.nombre || 'Deuda sin nombre'}</p>{debt.isValid && debt.moneda && debt.moneda !== currency && <p className="ml-6 mt-1 text-[10px] text-[#8B9BB1]">{amountLabel(debt.saldo, debt.moneda)} original</p>}</div><span className={`sensitive-value shrink-0 text-xs font-medium tabular-nums ${debt.isValid ? 'text-[#E2E9F3]' : 'text-[#E7BE83]'}`}>{debt.isValid ? formatMoney(debt.amount, currency) : 'Revisar saldo'}</span></div>
-                {debt.isValid && <div className="h-2 overflow-hidden rounded-full bg-[#223248]/60" aria-hidden="true" title={`${debt.nombre}: ${amountLabel(debt.amount, currency)}`}><div className="h-full rounded-full bg-[#89ACD6] transition-[width] duration-500 motion-reduce:transition-none" style={{ width: `${debtMaximum > 0 ? debt.amount / debtMaximum * 100 : 0}%`, opacity: index === 0 ? 1 : 0.65 }} /></div>}
-              </button>
+        <motion.section {...enter} aria-labelledby="pending-payments-heading" className="dashboard-payments-card">
+          <div className="dashboard-card-heading"><div><p className="dashboard-eyebrow">Para tener presente</p><h2 id="pending-payments-heading">Pagos de este mes</h2></div><CalendarDays size={20} aria-hidden="true" /></div>
+          <p className="dashboard-caption dashboard-payment-coverage"><span data-sensitive>{payments.length} {payments.length === 1 ? 'pago sin confirmar' : 'pagos sin confirmar'}.</span> Solo fechas de registros completos.</p>
+          {payments.length > 0 ? <ul className="dashboard-payment-list" data-sensitive>{payments.slice(0, 3).map((payment) => (
+            <li key={`${payment.kind}-${payment.id}`}>
+              <div className={`dashboard-payment-date ${payment.daysRemaining <= 0 ? 'is-due' : ''}`}><span>{payment.date.toLocaleDateString('es-MX', { month: 'short' })}</span><strong>{payment.date.getDate()}</strong></div>
+              <div className="dashboard-payment-detail"><p title={payment.nombre}>{payment.nombre}</p><span className={payment.daysRemaining <= 0 ? 'is-due' : ''}>{payment.daysRemaining < 0 ? 'Fecha pasada · sin confirmar' : payment.daysRemaining === 0 ? 'Hoy · sin confirmar' : `En ${payment.daysRemaining} días`}</span><span>{payment.kind}</span></div>
+              <p className="dashboard-payment-amount sensitive-value">{formatMoney(payment.amount, currency)}<span>{currency}</span></p>
             </li>
-          ))}</ol> : <div className="mt-5 rounded-xl border border-dashed border-[#2B3C50] px-5 py-7 text-center"><CreditCard className="mx-auto mb-2 h-6 w-6 text-[#718399]" aria-hidden="true" /><p className="text-sm text-[#C8D3E2]">Aún no hay deudas registradas.</p><p className="mt-2 text-xs text-[#8B9BB1]">Agrega tus saldos para ver su distribución.</p></div>}
-          <button type="button" onClick={() => navigate('debts')} className={`${linkClass} mt-5 w-full justify-between border-t border-[#223248] pt-3`}>Gestionar deudas <ArrowRight className="h-4 w-4" aria-hidden="true" /></button>
-        </section>
+          ))}</ul> : <div className="dashboard-payment-empty"><CalendarDays size={27} aria-hidden="true" /><p>Sin fechas pendientes registradas</p><span>Revisa las fechas de tus gastos y deudas en el calendario.</span></div>}
+          <div className="dashboard-payment-footer"><button type="button" onClick={() => navigate('calendar')} className={linkClass}>{payments.length > 3 ? `Ver los ${payments.length} pagos` : 'Abrir calendario'} <ArrowRight size={15} aria-hidden="true" /></button>{financialData.planFinanciero && <button type="button" onClick={() => navigate('plan', { panel: 'calendar' })} className="dashboard-plan-link">Ver vencimientos del plan <ArrowUpRight size={14} aria-hidden="true" /></button>}</div>
+        </motion.section>
+      </div>}
 
-        <section aria-labelledby="pending-payments-heading" className="surface-card min-w-0 rounded-[22px] border border-[#223248] bg-[#111B29] p-5 sm:p-6">
-          <div className="flex items-start justify-between gap-3"><div><p className="eyebrow mb-1 text-[10px] uppercase tracking-[0.16em] text-[#8B9BB1]">En tu calendario</p><h2 id="pending-payments-heading" className="text-lg font-semibold tracking-tight text-[#F4F7FB]">Pagos por revisar</h2></div><CalendarDays className="mt-1 h-5 w-5 text-[#8B9BB1]" aria-hidden="true" /></div>
-          <p className="mt-2 text-[11px] leading-relaxed text-[#8B9BB1]">{payments.length} pendientes en el checklist de {monthLabel}. Confirma los pagos ya realizados.</p>
-          {payments.length > 0 ? <ul className="mt-5 divide-y divide-[#223248]/65" data-sensitive>{payments.slice(0, 4).map((payment) => (
-            <li key={`${payment.kind}-${payment.id}`} className="flex items-center gap-3 py-3.5 first:pt-0"><div className={`flex h-12 w-11 shrink-0 flex-col items-center justify-center rounded-xl border ${payment.daysRemaining < 0 ? 'border-[#E7BE83]/20 bg-[#E7BE83]/[0.07]' : 'border-[#223248] bg-[#0C1420]'}`}><span className="text-[9px] uppercase text-[#8B9BB1]">{payment.date.toLocaleDateString('es-MX', { month: 'short' })}</span><span className={`text-lg font-medium leading-tight tabular-nums ${payment.daysRemaining < 0 ? 'text-[#E7BE83]' : 'text-[#C8D3E2]'}`}>{payment.date.getDate()}</span></div><div className="min-w-0 flex-1"><p className="truncate text-xs font-medium text-[#C8D3E2]" title={payment.nombre}>{payment.nombre}</p><p className={`mt-1 text-[10px] ${payment.daysRemaining <= 0 ? 'text-[#E7BE83]' : 'text-[#8B9BB1]'}`}>{payment.daysRemaining < 0 ? 'Fecha pasada · sin confirmar' : payment.daysRemaining === 0 ? 'Hoy · sin confirmar' : `En ${payment.daysRemaining} días`} · {payment.kind}</p></div><span className="sensitive-value max-w-[40%] break-words text-right text-xs font-medium tabular-nums text-[#E2E9F3]">{formatMoney(payment.amount, currency)}</span></li>
-          ))}</ul> : <div className="mt-5 rounded-xl border border-dashed border-[#2B3C50] px-5 py-7 text-center"><CalendarDays className="mx-auto mb-2 h-6 w-6 text-[#718399]" aria-hidden="true" /><p className="text-sm text-[#C8D3E2]">Sin pagos pendientes con fecha registrada.</p><p className="mt-2 text-xs leading-relaxed text-[#8B9BB1]">El calendario usa las fechas de tus gastos y deudas, y tu checklist mensual.</p></div>}
-          <button type="button" onClick={() => navigate('calendar')} className={`${linkClass} mt-5 w-full justify-between border-t border-[#223248] pt-3`}>Abrir calendario <ArrowRight className="h-4 w-4" aria-hidden="true" /></button>
-        </section>
-      </div>
+      {(hasBudget || hasBalanceRecords) && <section aria-label="Balance consolidado" className="dashboard-balance-section">
+        <div className="dashboard-section-caption"><span>Saldos registrados{hasPendingDebts ? ' · cobertura parcial' : ' · corte actual'}</span><span>{displayCurrency === 'ORIGINAL' ? 'Consolidado en MXN · moneda original en el detalle' : `Importes en ${currency}`}</span></div>
+        <div className="dashboard-metrics-grid">
+          {(hasBudget || balances.assetCount > 0) && <BalanceMetric icon={Wallet} label="Activos registrados" amount={balances.assets} description={`${balances.assetCount} ${balances.assetCount === 1 ? 'activo en tu balance' : 'activos en tu balance'}`} currency={currency} onClick={() => navigate('balance')} />}
+          {(hasBudget || hasDebtRecords) && <BalanceMetric icon={CreditCard} label="Deuda registrada" amount={hasPendingDebts ? null : balances.debt} pendingLabel={hasPendingDebts ? 'Por completar' : 'Dato pendiente'} description={hasPendingDebts ? `${pendingDebtCount} ${pendingDebtCount === 1 ? 'deuda pendiente de integrar al total' : 'deudas pendientes de integrar al total'}` : `${balances.debts.length} ${balances.debts.length === 1 ? 'deuda en tus registros' : 'deudas en tus registros'}`} currency={currency} onClick={() => navigate('debts')} />}
+          <BalanceMetric icon={Layers3} label="Patrimonio neto" amount={hasPendingDebts ? null : balances.netWorth} pendingLabel={hasPendingDebts ? 'Por completar' : 'Dato pendiente'} description={hasPendingDebts ? 'Completa tus deudas para calcularlo' : 'Activos menos deudas registradas'} currency={currency} onClick={() => navigate('balance')} negativeTone />
+        </div>
+        {(balances.invalidDebtCount > 0 || balances.invalidAssetCount > 0) && <p className="dashboard-validation">Revisa {balances.invalidDebtCount + balances.invalidAssetCount} saldos con importe o moneda no válidos. Los totales afectados quedan pendientes.</p>}
+      </section>}
+
+      {(hasBudget || hasDebtRecords) && <div className={`dashboard-detail-grid ${!hasBudget ? 'is-single' : ''}`}>
+        {hasBudget && movementsPanel}
+        {debtPanel}
+      </div>}
+      {!hasBudget && <div className="dashboard-budget-invitation"><p>Configura un presupuesto si quieres estimar tu margen mensual.</p><button type="button" onClick={() => navigate('budget')} className={linkClass}>Configurar mi presupuesto <ArrowRight size={16} aria-hidden="true" /></button></div>}
+
+      <aside aria-labelledby="dashboard-assistant-heading" className="dashboard-assistant-strip">
+        <span className="dashboard-assistant-icon"><Sparkles size={19} aria-hidden="true" /></span><div><h2 id="dashboard-assistant-heading">Dale contexto a tus números</h2><p>Pregunta por tu margen o tus deudas. Tú eliges qué información compartir.</p></div><motion.button type="button" onClick={() => openAssistant('Explica mi margen mensual usando los componentes de mi presupuesto. Distingue las estimaciones de los movimientos registrados y señala los datos pendientes.')} className="dashboard-assistant-action">Preguntar al asistente <ArrowUpRight size={16} aria-hidden="true" /></motion.button>
+      </aside>
     </div>
   );
 }

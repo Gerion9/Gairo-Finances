@@ -1,5 +1,7 @@
 import { emptyFinancialData, ACCOUNT_NAMES } from './accountData.js';
 import { normalizePaymentPlan } from './paymentPlan.js';
+import { normalizeMarketSelections } from './marketPreferences.js';
+import { normalizeReceivables } from './receivables.js';
 
 const record = value => value && typeof value === 'object' && !Array.isArray(value);
 function number(value, label, fallback) {
@@ -82,6 +84,7 @@ export function normalizeBackup(imported, accountId = 'gairo') {
     if (monto <= 0) throw new Error('El importe de un movimiento debe ser mayor que cero.');
     return { ...row, monto, moneda: currency(row.moneda) };
   });
+  if (Object.hasOwn(imported, 'receivables')) normalized.receivables = normalizeReceivables(imported.receivables, normalized.transacciones);
   const debtIds = new Set(normalized.deudas.map(row => row.id));
   if (normalized.deudasPendientes.some(row => debtIds.has(row.id))) throw new Error('Una deuda no puede estar completa y pendiente a la vez.');
   for (const key of ['gastosNecesarios', 'gastosOpcionales', 'activos']) normalized[key] = rows(imported[key], key, INITIAL_DATA[key], row => ({ ...row, monto: number(row.monto, `monto en ${key}`), ...(key === 'activos' ? { moneda: currency(row.moneda) } : {}) }));
@@ -105,6 +108,8 @@ export function normalizeBackup(imported, accountId = 'gairo') {
   const prefs = imported.preferences || INITIAL_DATA.preferences;
   if (!record(prefs)) throw new Error('Las preferencias no son válidas.');
   normalized.preferences = { manualRate: prefs.manualRate == null ? null : number(prefs.manualRate, 'tipo de cambio'), manualRateUpdatedAt: typeof prefs.manualRateUpdatedAt === 'string' ? prefs.manualRateUpdatedAt.slice(0, 40) : null };
+  // Preserve legacy serialization: adding an empty preference would change saved mutation hashes.
+  if (Object.hasOwn(prefs, 'marketSelections')) normalized.preferences.marketSelections = normalizeMarketSelections(prefs.marketSelections);
   if (normalized.preferences.manualRate === 0) throw new Error('El tipo de cambio debe ser mayor que cero.');
   normalized.planFinanciero = normalizePaymentPlan(imported.planFinanciero);
   return normalized;

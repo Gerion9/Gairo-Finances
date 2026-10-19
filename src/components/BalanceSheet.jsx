@@ -24,6 +24,7 @@ export default function BalanceSheet({ financialData, onUpdateActivos, exchangeR
   // Patrimonio Neto = Activos - Pasivos
   const patrimonioNetoMXN = totalActivosMXN - totalPasivosMXN;
   const ratioApalancamiento = totalActivosMXN > 0 ? (totalPasivosMXN / totalActivosMXN) : 0;
+  const incomplete = financialData.balanceCoverageIncomplete;
 
   const handleAddAsset = (e) => {
     e.preventDefault();
@@ -57,9 +58,9 @@ export default function BalanceSheet({ financialData, onUpdateActivos, exchangeR
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-extrabold text-white tracking-tight">
+              <h1 className="text-xl font-extrabold text-white tracking-tight">
                 Estructura de Capital: Balance General & Patrimonio Neto
-              </h2>
+              </h1>
               <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-500/10 text-teal-400 border border-teal-500/30">
                 Hoja Ideas Excel
               </span>
@@ -95,7 +96,7 @@ export default function BalanceSheet({ financialData, onUpdateActivos, exchangeR
               2. Total Pasivos (Deudas)
             </span>
             <span className="text-2xl font-black text-rose-400 font-mono mt-1 block">
-              -{formatMoney(totalPasivosMXN, 'MXN')}
+              {incomplete ? 'Por completar' : `−${formatMoney(totalPasivosMXN, 'MXN')}`}
             </span>
             <span className="text-[11px] text-slate-500">Deudas activas convertidas</span>
           </div>
@@ -105,10 +106,10 @@ export default function BalanceSheet({ financialData, onUpdateActivos, exchangeR
               3. Patrimonio Neto (Activos − Pasivos)
             </span>
             <span className={`text-2xl font-black font-mono mt-1 block ${patrimonioNetoMXN >= 0 ? 'text-emerald-300' : 'text-rose-400'}`}>
-              {formatMoney(patrimonioNetoMXN, 'MXN')}
+              {incomplete ? 'Por completar' : formatMoney(patrimonioNetoMXN, 'MXN')}
             </span>
             <span className="text-[11px] text-slate-400">
-              Apalancamiento: {(ratioApalancamiento * 100).toFixed(1)}%
+              {incomplete ? 'Hay deudas con saldo pendiente de confirmar.' : `Apalancamiento: ${(ratioApalancamiento * 100).toFixed(1)}%`}
             </span>
           </div>
         </div>
@@ -161,7 +162,7 @@ export default function BalanceSheet({ financialData, onUpdateActivos, exchangeR
               Tus Pasivos (Deudas)
             </h3>
             <span className="text-xs font-mono font-bold text-rose-400">
-              {formatMoney(totalPasivosMXN, 'MXN')}
+              {incomplete ? 'Cobertura parcial' : formatMoney(totalPasivosMXN, 'MXN')}
             </span>
           </div>
 
@@ -175,7 +176,7 @@ export default function BalanceSheet({ financialData, onUpdateActivos, exchangeR
                     <span className="text-[11px] text-slate-400">{debt.institucion} · {debt.tasaAnual}% APR</span>
                   </div>
                   <span className="font-mono text-xs font-bold text-rose-400">
-                    {formatMoney(debt.saldo, debt.moneda)}
+                    {debt.balanceUnknown ? 'Saldo por confirmar' : formatMoney(debt.saldo, debt.moneda)}
                   </span>
                 </div>
               );

@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Investigación y decisiones de producto para Sifran: necesidades, experiencia, crédito en México, referencias oficiales y una hoja de ruta verificable.">
+  <title>Sifran · Investigación de valor cotidiano</title>
+  <style>
+    :root { --paper:#faf9f5; --ink:#172c2c; --muted:#4e6361; --line:#ccd6d0; --accent:#166253; --wash:#e9f1eb; --warm:#f5ebd6; --warn:#775417; --white:#fff; }
+    * { box-sizing:border-box; }
+    html { scroll-padding-top:24px; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; font-size:17px; line-height:1.65; }
+    a { color:var(--accent); text-decoration-thickness:1px; text-underline-offset:3px; overflow-wrap:anywhere; }
+    a:hover { text-decoration-thickness:2px; }
+    :focus-visible { outline:3px solid #945600; outline-offset:5px; border-radius:2px; }
+    .skip { position:fixed; z-index:3; top:10px; left:12px; padding:10px 16px; background:var(--white); transform:translateY(-180%); }
+    .skip:focus { transform:none; }
+    .masthead { max-width:1200px; margin:auto; padding:28px 24px 22px; display:flex; justify-content:space-between; gap:24px; border-bottom:1px solid var(--line); font-size:13px; letter-spacing:.04em; }
+    .brand { font-size:20px; font-weight:750; letter-spacing:-.05em; }
+    .masthead p { margin:0; }
+    .shell { display:grid; grid-template-columns:180px minmax(0,880px); gap:48px; max-width:1200px; margin:auto; padding:44px 24px 80px; }
+    .contents { position:sticky; top:24px; align-self:start; font-size:13px; line-height:1.45; }
+    .contents p { color:var(--muted); text-transform:uppercase; letter-spacing:.12em; font-size:11px; margin:0 0 14px; }
+    .contents ol { list-style:none; margin:0; padding:0; }
+    .contents li { border-bottom:1px solid var(--line); }
+    .contents a { min-height:44px; display:flex; align-items:center; gap:9px; padding:10px 0; color:var(--ink); text-decoration:none; }
+    .contents a:hover { color:var(--accent); text-decoration:underline; }
+    .contents .number { color:var(--accent); font-size:11px; min-width:17px; }
+    .contents .download { font-size:12px; margin-top:18px; text-decoration:underline; }
+    .mobile-contents { display:none; }
+    main { min-width:0; }
+    h1,h2,h3,h4 { line-height:1.2; letter-spacing:-.025em; text-wrap:balance; }
+    h1 { font-size:32px; margin:12px 0 18px; max-width:700px; }
+    h2 { font-size:24px; margin:0 0 20px; }
+    h3 { font-size:19px; margin:28px 0 10px; }
+    h4 { font-size:17px; margin:18px 0 8px; }
+    p { margin:0 0 18px; }
+    ul,ol { margin:12px 0 22px; padding-left:22px; }
+    li { margin:8px 0; }
+    strong { font-weight:700; }
+    .eyebrow,.section-number { font-size:11px; font-weight:750; text-transform:uppercase; letter-spacing:.13em; color:var(--accent); }
+    .section-number { display:block; margin-bottom:10px; }
+    .lead { font-size:20px; line-height:1.5; letter-spacing:-.012em; }
+    .intro { display:grid; grid-template-columns:minmax(0,2fr) minmax(210px,1fr); gap:28px; margin:28px 0 24px; }
+    .coverage { border-left:2px solid var(--accent); padding-left:22px; font-size:14px; }
+    .coverage h2 { font-size:14px; letter-spacing:0; margin:0 0 12px; }
+    .coverage dl { margin:0; }
+    .coverage dt { font-size:22px; font-weight:750; line-height:1.2; margin:14px 0 3px; }
+    .coverage dd { margin:0; color:var(--muted); }
+    .note { padding:16px 20px; border-left:3px solid var(--accent); background:var(--wash); font-size:15px; }
+    .note p:last-child { margin-bottom:0; }
+    .note.warning { background:var(--warm); border-color:var(--warn); }
+    .status { display:inline-block; border:1px solid currentColor; border-radius:4px; padding:3px 8px; font-size:11px; line-height:1.4; font-weight:700; letter-spacing:.015em; }
+    .status.pending { color:var(--warn); }
+    .status.designed { color:var(--accent); }
+    .status.hypothesis { color:#555876; }
+    section { padding:38px 0 40px; border-bottom:1px solid var(--line); }
+    section:first-of-type { padding-top:16px; }
+    .source { display:block; font-size:13px; color:var(--muted); margin-top:8px; line-height:1.55; }
+    .source a { color:inherit; }
+    .muted { color:var(--muted); }
+    .small { font-size:14px; }
+    .editorial-list { list-style:none; padding:0; }
+    .editorial-list > li { padding:20px 0; margin:0; border-top:1px solid var(--line); }
+    .editorial-list h3 { margin:0 0 8px; }
+    .editorial-list p:last-child { margin-bottom:0; }
+    .contexts { width:100%; border-collapse:collapse; margin:22px 0; font-size:15px; }
+    .contexts th,.contexts td { text-align:left; vertical-align:top; padding:16px 14px 16px 0; border-bottom:1px solid var(--line); }
+    .contexts th { color:var(--muted); font-size:12px; font-weight:650; }
+    .contexts td:first-child { width:25%; font-weight:700; }
+    .contexts td:last-child { padding-right:0; }
+    .journey { list-style:none; counter-reset:journey; padding:0; margin:28px 0; }
+    .journey li { counter-increment:journey; position:relative; margin:0; padding:0 0 28px 56px; border-left:1px solid var(--line); margin-left:17px; }
+    .journey li:last-child { border-left-color:transparent; padding-bottom:0; }
+    .journey li::before { content:counter(journey); position:absolute; top:0; left:-18px; width:35px; height:35px; display:grid; place-items:center; background:var(--accent); color:white; font-size:14px; font-weight:700; border-radius:50%; }
+    .journey h3 { margin:0 0 8px; padding-top:3px; }
+    .journey p { margin-bottom:8px; }
+    .benchmark { border-top:1px solid var(--line); }
+    details { border-bottom:1px solid var(--line); }
+    summary { cursor:pointer; min-height:48px; padding:14px 0; font-size:16px; font-weight:650; }
+    summary::marker { color:var(--accent); }
+    details > div { padding:0 0 20px 18px; font-size:15px; }
+    details > div p:last-child { margin-bottom:0; }
+    .roadmap { counter-reset:roadmap; list-style:none; padding:0; }
+    .roadmap > li { counter-increment:roadmap; padding:24px 0; border-top:1px solid var(--line); margin:0; }
+    .roadmap h3 { margin:0 0 12px; }
+    .roadmap h3::before { content:counter(roadmap,decimal-leading-zero) " / "; color:var(--accent); font-size:13px; letter-spacing:.02em; }
+    .roadmap p { margin:10px 0; }
+    .roadmap ul { font-size:15px; margin-bottom:0; }
+    .metric { display:grid; grid-template-columns:200px minmax(0,1fr); gap:18px; padding:16px 0; border-top:1px solid var(--line); font-size:15px; }
+    .metric p { margin:0; }
+    .metric strong { font-size:15px; }
+    .source-list { list-style:none; padding:0; margin:0; }
+    .source-list li { padding:10px 0; margin:0; border-top:1px solid var(--line); font-size:13px; line-height:1.5; }
+    .source-list small { color:var(--muted); display:block; margin-top:3px; }
+    .footer { padding-top:26px; color:var(--muted); font-size:13px; }
+    .footer p { margin-bottom:8px; }
+    @media(max-width:1000px) { .shell { grid-template-columns:160px minmax(0,1fr); gap:30px; } .intro { grid-template-columns:1fr; } .coverage { display:block; } .coverage dl { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; } .coverage dt { margin-top:0; } }
+    @media(max-width:760px) { body { font-size:16px; } .masthead { padding:20px; gap:18px; align-items:center; } .masthead .meta { max-width:180px; text-align:right; font-size:11px; } .shell { display:block; padding:24px 20px 52px; } .contents { display:none; } .mobile-contents { display:block; margin-bottom:28px; } .mobile-contents summary { padding:12px 0; } .mobile-contents ol { list-style:none; padding:0; margin:0 0 12px; } .mobile-contents a { display:block; min-height:44px; padding:8px 0; } h1 { font-size:32px; } .lead { font-size:19px; } section { padding:30px 0; } .intro { gap:20px; } .coverage { padding-left:16px; } .coverage dl { grid-template-columns:1fr; gap:12px; } .coverage dl > div { display:grid; grid-template-columns:84px 1fr; gap:12px; } .coverage dd { line-height:1.4; } .coverage dt { font-size:20px; } .note { padding:14px 16px; } .contexts thead { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip-path:inset(50%); } .contexts,.contexts tbody,.contexts tr,.contexts td { display:block; } .contexts tr { padding:12px 0; border-top:1px solid var(--line); } .contexts td,.contexts td:first-child { width:auto; border:0; padding:6px 0; } .contexts td[data-label]::before { content:attr(data-label) ": "; font-weight:650; } .contexts td:first-child { font-size:17px; } .journey li { padding-left:36px; } .metric { grid-template-columns:1fr; gap:5px; } }
+    @media(prefers-reduced-motion:reduce) { * { scroll-behavior:auto !important; } }
+    @media print { :root { --paper:white; --ink:black; --muted:#333; --line:#bbb; } body { font-size:10pt; } .masthead { max-width:none; padding:0 0 12pt; } .shell { display:block; max-width:none; padding:16pt 0; } .contents,.mobile-contents,.skip { display:none; } h1 { font-size:24pt; } h2 { font-size:18pt; } h3 { font-size:13pt; } .lead { font-size:13pt; } .intro { grid-template-columns:2fr 1fr; gap:20pt; } .coverage dl { display:block; } .coverage dt { margin-top:10pt; } section { padding:22pt 0; } h1,h2,h3,h4,summary { break-after:avoid; } p,li { orphans:3; widows:3; } .note,.metric,.contexts tr { break-inside:avoid; } a { color:inherit; } details > div { display:block !important; } summary { list-style:none; } details::details-content { display:block; content-visibility:visible; } .status { font-size:8pt; } .footer { font-size:9pt; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#informe">Saltar al informe</a>
+  <header class="masthead">
+    <p class="brand">sifran<span aria-hidden="true">.</span></p>
+    <p class="meta">Investigación de producto · Consulta: <time datetime="2026-10-18">18 de octubre de 2026</time></p>
+  </header>
+  <div class="shell">
+    <nav class="contents" aria-label="Índice del informe">
+      <p>Contenido</p>
+      <ol>
+        <li><a href="#conclusion"><span class="number">01</span> Qué cambia</a></li>
+        <li><a href="#necesidades"><span class="number">02</span> Necesidades conectadas</a></li>
+        <li><a href="#recorrido"><span class="number">03</span> Un recorrido útil</a></li>
+        <li><a href="#evidencia"><span class="number">04</span> Qué aporta la evidencia</a></li>
+        <li><a href="#experiencia"><span class="number">05</span> Contratos de experiencia</a></li>
+        <li><a href="#hoja-de-ruta"><span class="number">06</span> Qué construir después</a></li>
+        <li><a href="#metodo"><span class="number">07</span> Método y fuentes</a></li>
+      </ol>
+      <a class="download" href="daily-value-research.json" download>Descargar evidencia en JSON</a>
+    </nav>
+    <main id="informe" tabindex="-1">
+      <details class="mobile-contents">
+        <summary>Explorar las 7 secciones</summary>
+        <nav aria-label="Índice móvil del informe">
+          <ol>
+            <li><a href="#conclusion">01 · Qué cambia</a></li>
+<li><a href="#necesidades">02 · Necesidades conectadas</a></li>
+<li><a href="#recorrido">03 · Un recorrido útil</a></li>
+<li><a href="#evidencia">04 · Qué aporta la evidencia</a></li>
+<li><a href="#experiencia">05 · Contratos de experiencia</a></li>
+<li><a href="#hoja-de-ruta">06 · Qué construir después</a></li>
+<li><a href="#metodo">07 · Método y fuentes</a></li>
+          </ol>
+        </nav>
+      </details>
+
+      <header>
+        <p class="eyebrow">Dirección de producto y experiencia</p>
+        <h1>Sifran debe facilitar el registro y aclarar la próxima decisión</h1>
+        <div class="intro">
+          <div>
+            <p class="lead">Sifran puede volverse parte de la vida cotidiana si ayuda a registrar lo que pasó, anticipar el próximo compromiso y decidir con dinero confirmado.</p>
+            <p>La oportunidad combina tres contextos: ordenar las finanzas personales, manejar ingresos variables y coordinar un hogar. Una misma persona puede vivir los tres. El diseño debe hacer visible la siguiente tarea útil y revelar el detalle cuando haga falta.</p>
+          </div>
+          <aside class="coverage" aria-label="Cobertura de la investigación">
+            <h2>Qué se revisó</h2>
+            <dl>
+              <div><dt>17 hilos</dt><dd>4 comunidades; 16 usados y 1 excluido.</dd></div>
+              <div><dt>9 productos</dt><dd>Referencias funcionales y una referencia adicional de posicionamiento.</dd></div>
+              <div><dt>192 tarjetas</dt><dd>109 productos, modalidades o programas de financiamiento.</dd></div>
+              <div><dt>25 programas</dt><dd>5 reglas calculables en 4 tarjetas; el resto conserva su alcance descriptivo.</dd></div>
+              <div><dt>65 modalidades de ahorro</dt><dd>58 fichas detalladas y 7 registros con evidencia limitada.</dd></div>
+            </dl>
+          </aside>
+        </div>
+        <div class="note warning" role="note">
+          <p><strong>Verificado en local.</strong> Pasaron 751 pruebas y el build; UI/UX aprobó las superficies revisadas. Movimiento reducido quedó pendiente al perderse la sesión de navegador. No acredita pruebas con usuarios ni despliegue. <a href="../artifacts/ui-review/market-browser-validation.json">Ver alcance de la verificación</a>.</p>
+        </div>
+      </header>
+
+      <section id="conclusion" aria-labelledby="conclusion-title">
+        <span class="section-number">01 · Conclusión</span>
+        <h2 id="conclusion-title">La próxima decisión debe ser más fácil de encontrar</h2>
+        <p>El producto necesita una jerarquía que acompañe tareas reales: registrar un gasto, comprobar si alcanza para un pago, revisar una tarjeta o acordar una aportación. Cada integración debe reducir trabajo o incertidumbre y conservar una explicación verificable de sus datos.</p>
+        <ul class="editorial-list">
+          <li><h3>Registrar en el lugar donde surge la necesidad</h3><p>Una captura breve sobre la vista actual conserva el contexto. Reutilizar un movimiento reciente puede reducir tecleo si la persona confirma sus datos y la nueva fecha. El guardado debe ofrecer una salida clara: seguir trabajando, ver el registro o deshacerlo.</p></li>
+          <li><h3>Explorar el mercado sin confundir identificación con vigencia</h3><p>La biblioteca vive en Herramientas. Reúne un directorio amplio con búsqueda y filtros, ocho fichas detalladas de costos y programas de beneficios con fuentes y fechas. Cada dato conserva su alcance: conocer un producto no confirma su contratación ni completa sus condiciones.</p></li>
+          <li><h3>Comparar una compra entre las tarjetas que ya tengo</h3><p>La persona declara la compra y confirma condiciones y topes. El sistema distingue estimaciones, máximos y datos pendientes; sólo compara resultados con evidencia suficiente. Un beneficio desconocido permanece desconocido.</p></li>
+          <li><h3>Acercar la referencia al supuesto que ayuda a revisar</h3><p>CETES a 28 días aporta contexto junto a la simulación de ahorro. La persona decide si utiliza esa tasa como supuesto. Consultar una nueva referencia no cambia por sí solo una proyección ya elaborada.</p></li>
+        </ul>
+        <p class="small muted">Estas decisiones responden a la evidencia y al criterio de UX/UI. Su efecto sobre comprensión, mantenimiento y continuidad todavía debe medirse con usuarios de Sifran.</p>
+      </section>
+
+      <section id="necesidades" aria-labelledby="necesidades-title">
+        <span class="section-number">02 · Necesidades conectadas</span>
+        <h2 id="necesidades-title">Una persona puede manejar deudas, ingresos variables y gastos del hogar</h2>
+        <table class="contexts">
+          <caption class="small muted">Tres contextos combinables; una experiencia que mantiene claras las responsabilidades.</caption>
+          <thead><tr><th scope="col">Contexto</th><th scope="col">Pregunta que importa</th><th scope="col">Error que debemos evitar</th></tr></thead>
+          <tbody>
+            <tr><td>Finanzas personales</td><td data-label="Necesidad">¿Qué vence, qué cambió y cuánto puedo usar?</td><td data-label="Riesgo">Un total positivo puede ocultar un faltante en la cuenta que hará el pago.</td></tr>
+            <tr><td>Ingresos variables</td><td data-label="Necesidad">¿Qué cubro con lo recibido si el siguiente cobro se retrasa?</td><td data-label="Riesgo">Contar lo esperado como efectivo o duplicarlo cuando se recibe.</td></tr>
+            <tr><td>Parejas y hogares</td><td data-label="Necesidad">¿Quién aporta, quién revisa y qué se comparte?</td><td data-label="Riesgo">Exponer actividad privada o registrar dos veces un gasto y su reembolso.</td></tr>
+          </tbody>
+        </table>
+        <p>Los relatos de parejas con trabajo independiente conectan justamente estas necesidades: combinan herramientas, distintas reglas de aportación y límites sobre compras privadas. Son casos útiles para diseñar escenarios; no permiten concluir que exista un reparto preferido por todos.</p>
+        <p class="source">Testimonios: <a href="https://www.reddit.com/r/MexicoFinanciero/comments/1hcx9im/banda_casada_de_freelancer_c%C3%B3mo_hacen_para/">pareja e ingresos independientes</a> · <a href="https://www.reddit.com/r/MonarchMoney/comments/1ko31tl/couples_who_track_expenses_together_how_do_you/">trabajo de administración compartida</a>.</p>
+        <h3>El contexto mexicano exige conservar la captura manual</h3>
+        <p>ENIF 2024 reporta que <strong>85.2% de las personas estudiadas usa efectivo frecuentemente para compras de hasta $500</strong>; no es la proporción de transacciones pagadas en efectivo. También registra que 51.8% separa dinero para pagos o deudas del gasto diario. Una conexión bancaria no cubre por sí sola estos comportamientos.</p>
+        <p class="source"><a href="https://inegi.org.mx/contenidos/programas/enif/2024/doc/enif_2024_resultados.pdf">INEGI · ENIF 2024</a>, páginas 31 y 42.</p>
+        <p>ENSAFI 2023 muestra necesidades de corto plazo: 30.5% de adultos no pudo cubrir sus gastos del mes anterior sin endeudarse y 36.9% presentó estrés financiero alto. Entre quienes tenían ahorros, 57.3% contaba con hasta una quincena de ingresos. Son datos de 2023, con denominadores distintos.</p>
+        <p class="source"><a href="https://www.inegi.org.mx/contenidos/programas/ensafi/2023/doc/ensafi_2023_nota_tecnica.pdf">INEGI · ENSAFI 2023</a>, páginas 2, 4 y 25. No representan una medición de los usuarios actuales de Sifran.</p>
+      </section>
+
+      <section id="recorrido" aria-labelledby="recorrido-title">
+        <span class="section-number">03 · Recorrido</span>
+        <h2 id="recorrido-title">Registrar, anticipar, resolver y revisar</h2>
+        <p>Este recorrido organiza la experiencia alrededor de decisiones. La revisión puede ser diaria, quincenal, por cobro o con otra cadencia elegida; la utilidad se evalúa cuando la persona necesita actuar.</p>
+        <ol class="journey">
+          <li><h3>Registrar · ¿Qué pasó?</h3><p>Monto, tipo y fecha visibles; detalles cuando se necesitan. Corregir y deshacer debe ser tan comprensible como guardar.</p><p class="small muted">Resultado observable: un movimiento guardado una sola vez, con el contexto previo conservado.</p></li>
+          <li><h3>Anticipar · ¿Qué viene antes del siguiente cobro?</h3><p>Compromisos por fecha y cuenta. El ingreso esperado conserva su incertidumbre y permanece separado del efectivo recibido.</p><p class="small muted">Resultado observable: un cobro pendiente no oculta un faltante real.</p></li>
+          <li><h3>Resolver · ¿Qué cambia si hago esto?</h3><p>Simulaciones con supuestos explícitos, acceso a la evidencia y acciones que la persona confirma.</p><p class="small muted">Resultado observable: entender la consecuencia antes de comprometer una decisión.</p></li>
+          <li><h3>Revisar · ¿Qué necesita atención ahora?</h3><p>Lo esencial para decidir hoy y el historial pendiente tienen prioridades distintas. Retomar debe conservar la honestidad sobre lo que falta.</p><p class="small muted">Resultado observable: cerrar una decisión útil sin fingir que todo el historial está completo.</p></li>
+        </ol>
+        <div class="note"><p><strong>La visualización debe responder una pregunta.</strong> Usar posición, longitud y escalas comparables para explicar diferencias; acompañar cada gráfico con unidades, periodo, cobertura y acceso al detalle. Las cifras críticas también necesitan texto legible y estados que no dependan sólo del color.</p></div>
+        <p class="source">Fundamentos de diseño: <a href="https://www.nngroup.com/articles/dashboards-preattentive/">NN/g · Lectura visual de paneles</a> y <a href="https://www.nngroup.com/articles/minimize-cognitive-load/">carga cognitiva</a>. La aplicación concreta a Sifran es una decisión de diseño pendiente de validación.</p>
+      </section>
+
+      <section id="evidencia" aria-labelledby="evidencia-title">
+        <span class="section-number">04 · Evidencia</span>
+        <h2 id="evidencia-title">Las referencias aportan patrones y también límites</h2>
+        <p>La revisión funcional cubrió nueve productos. Fintonic se añadió como referencia de posicionamiento. Se leyeron documentos de ayuda, producto y términos; no se operaron cuentas ni se verificó la conexión de esas aplicaciones con bancos mexicanos.</p>
+        <div class="benchmark">
+          <details open><summary>YNAB y Monarch · Flexibilidad y responsabilidad compartida</summary><div><p>YNAB documenta objetivos con varias cadencias y la opción de posponer un mes. Sus términos de Together permiten al administrador ver y editar planes de miembros. Monarch aporta presupuesto flexible y revisión asignable: distribuir el trabajo no acredita privacidad entre integrantes.</p><p><strong>Decisión para Sifran:</strong> separar cadencia, responsabilidad y visibilidad; explicar sus límites antes de invitar a otra persona.</p><p class="source"><a href="https://www.ynab.com/features/goal-tracking">YNAB · Objetivos</a> · <a href="https://www.ynab.com/terms/ynab-together">Together</a> · <a href="https://help.monarch.com/hc/en-us/articles/32125337244052-Using-Flex-Budgeting">Monarch · Flex</a> · <a href="https://www.monarch.com/blog/assign-transactions-to-a-household-member-for-review">revisión asignada</a>.</p></div></details>
+          <details><summary>Copilot y Simplifi · El disponible depende de su definición</summary><div><p>Copilot organiza revisión y recurrencias en el panel. Simplifi distingue su plan de gasto de la proyección de caja, que documenta exclusiones. Una cantidad que parece disponible puede responder a reglas distintas de un saldo bancario.</p><p><strong>Decisión para Sifran:</strong> explicar qué se incluye y qué se excluye, especialmente en reservas, compromisos y proyecciones.</p><p class="source"><a href="https://help.copilot.money/en/articles/6045480-dashboard-tab-overview">Copilot · Panel</a> · <a href="https://help.copilot.money/en/articles/10244751-recurrings-faq">recurrencias</a> · <a href="https://support.simplifi.quicken.com/en/articles/4212702-understanding-your-spending-plan">Simplifi · Plan de gasto</a> · <a href="https://support.simplifi.quicken.com/en/articles/3357429-using-projected-cash-flow">proyección</a>.</p></div></details>
+          <details><summary>Actual y Lunch Money · Automatizar requiere conservar control e historial</summary><div><p>Actual documenta conciliación de importaciones y programación. Lunch Money permite recurrencias revisables y periodos configurables; su documentación advierte efectos sobre el historial al cambiar ciertos periodos.</p><p><strong>Decisión para Sifran:</strong> cada automatización necesita identidad estable, revisión y prevención de duplicados. Los cambios de estructura requieren explicar su consecuencia antes de aplicarse.</p><p class="source"><a href="https://actualbudget.org/docs/transactions/importing/">Actual · Importación</a> · <a href="https://actualbudget.org/docs/schedules/">programación</a> · <a href="https://support.lunchmoney.app/finances/recurring-items/creating-recurring-items">Lunch Money · Recurrencias</a> · <a href="https://support.lunchmoney.app/guides/budgeting/step-2-setting-up-your-budget">periodos</a>.</p></div></details>
+          <details><summary>Rocket Money · Organizar por cobro ya tiene precedentes</summary><div><p>Payday View contempla el cobro, pero exige una cuenta vinculada y depósitos consistentes. La necesidad por explorar en Sifran combina fuentes múltiples, fechas inciertas y registro manual.</p><p><strong>Decisión para Sifran:</strong> probar ese escenario específico; no presentar la organización por cobro como una invención inédita.</p><p class="source"><a href="https://help.rocketmoney.com/en/articles/6235627-enabling-payday-view">Rocket Money · Requisitos de Payday View</a>.</p></div></details>
+          <details><summary>BBVA y Honeydue · Separar dinero y compartir información son operaciones distintas</summary><div><p>Los Apartados de BBVA actúan dentro de una cuenta bancaria. Honeydue documenta opciones de compartir saldo y movimientos, sólo saldo o nada; la página consultada es antigua y su comportamiento actual no se probó.</p><p><strong>Decisión para Sifran:</strong> distinguir reserva de planificación, movimiento bancario, propiedad y permiso de lectura.</p><p class="source"><a href="https://www.bbva.mx/educacion-financiera/ahorro/ahorro/que-es-un-apartado-de-dinero.html">BBVA · Apartados</a> · <a href="https://support.honeydue.com/en/articles/3179542-will-my-partner-see-my-bank-account-balances-and-transactions">Honeydue · Visibilidad</a>.</p></div></details>
+          <details><summary>Fintonic · Una referencia de posicionamiento</summary><div><p>El sitio reúne mensajes sobre préstamos y conocimiento financiero. No se utilizó como prueba de servicio operativo en México ni de disponibilidad de una función concreta.</p><p class="source"><a href="https://www.fintonic.com/es-ES/inicio/">Fintonic · Sitio de producto</a>.</p></div></details>
+        </div>
+        <h3>Los foros muestran tensiones que debemos probar</h3>
+        <ul>
+          <li><strong>Control frente a esfuerzo.</strong> Hay personas que valoran registrar manualmente y otras que abandonan por el mantenimiento. La captura breve y la automatización revisable deben poder coexistir. <a href="https://www.reddit.com/r/ynab/comments/1dqj5kq/do_you_find_ynab_overwhelming/">Testimonio y discusión en r/ynab</a>.</li>
+          <li><strong>Privacidad dentro del hogar.</strong> El interés puede abarcar presupuestos, además de movimientos. Una vista compartida necesita un contrato comprensible de acceso. <a href="https://www.reddit.com/r/MonarchMoney/comments/1v4m9rv/private_budgets_and_transactions/">Discusión sobre privacidad</a>.</li>
+          <li><strong>Detalle con regreso.</strong> Las quejas sobre navegar desde un reporte ayudan a formular una tarea de prueba: abrir el movimiento y volver con filtros intactos. Hubo respuestas diferentes; no se reprodujo el incidente. <a href="https://www.reddit.com/r/MonarchMoney/comments/1vohjqo/cash_flow_reports_monarch_is_officially_losing/">Discusión sobre reportes</a>.</li>
+          <li><strong>Retomar sin culpa.</strong> Relatos de estrés sugieren probar una revisión que priorice lo importante hoy. No demuestran que una interfaz concreta reduzca ansiedad. <a href="https://www.reddit.com/r/ynab/comments/1oc8hsf/budgeting_apps_stress_me_out_rather_than_helping/">Relato sobre carga del presupuesto</a>.</li>
+        </ul>
+        <p class="small muted">Los 16 hilos usados son una muestra intencional de cuatro comunidades. Sus testimonios sirven para descubrir escenarios y contradicciones; no permiten asignar porcentajes a las necesidades del mercado.</p>
+      </section>
+
+      <section id="experiencia" aria-labelledby="experiencia-title">
+        <span class="section-number">05 · Contratos de experiencia</span>
+        <h2 id="experiencia-title">Cada función debe hacer explícitos sus datos y consecuencias</h2>
+        <p>UX/UI dirige la experiencia integrada. Producto, investigación y datos aportan restricciones y evidencia; la composición final se revisa sobre la interfaz renderizada, en escritorio y móvil.</p>
+        <h3>Captura contextual <span class="status designed">Verificado en local</span></h3>
+        <p>Mostrar monto, tipo y fecha antes de detalles secundarios. Un registro nuevo usa hoy, aunque la vista de fondo muestre otro mes. Repetir copia campos editables y pide confirmación si reemplaza un borrador. Guardar mantiene el lugar de trabajo y ofrece deshacer sin sobrescribir una edición posterior.</p>
+        <h3>Recibido, esperado y meta <span class="status designed">Requiere modelo de datos</span></h3>
+        <p>El dinero recibido afecta efectivo confirmado. Un cobro esperado conserva fecha e incertidumbre. Una meta expresa intención. Los cobros parciales y atrasados necesitan conciliación: completar un esperado debe reconocer el movimiento, sin sumar ambos como ingresos diferentes.</p>
+        <h3>Hogar privado y compartido <span class="status designed">Requiere servidor</span></h3>
+        <p>Invitaciones, membresías, roles y visibilidad necesitan autorización real. Exportaciones, respaldos y asistencia con IA deben respetar el mismo alcance. Esta iteración no incorpora colaboración del hogar: los perfiles o filtros existentes no sustituyen esos permisos.</p>
+        <h3>Retomar por prioridades <span class="status hypothesis">Hipótesis por validar</span></h3>
+        <p>Separar lo necesario para una decisión cercana del historial que puede revisarse después. Un saldo antiguo sigue marcado como antiguo. Posponer una revisión no equivale a completarla y un mensaje “desde tu última visita” requiere un punto de comparación persistente.</p>
+        <h3>Un directorio amplio con cobertura explícita <span class="status designed">Verificado en local</span></h3>
+        <p>El directorio identifica <strong>192 tarjetas y 109 productos, modalidades o programas de financiamiento</strong>, con 247 URLs referenciadas. Incluye banca, cooperativas, productos digitales, tarjetas de servicios y de tienda, crédito empresarial y programas institucionales. La documentación distingue una tarjeta de crédito, una tarjeta de servicios y una línea departamental.</p>
+        <p><strong>Identificar y comparar requieren evidencia distinta.</strong> Ocho tarjetas tienen una ficha detallada de costos y tres ofertas BBVA conservan fichas de préstamos. Esas cifras no se extienden a todos los productos del directorio. La comparación de costos admite hasta tres fichas; en móvil se leen los atributos por producto.</p>
+        <p>La búsqueda reconoce alias y migraciones verificadas. Una misma tarjeta no se multiplica por su versión física, digital, campaña o nivel de recompensas. Las entradas por invitación, históricas, en lista de espera o sin contratación confirmada mantienen ese estado visible. Un programa Nafin o FIRA tampoco se presenta como un préstamo directo al público.</p>
+        <p class="source">Inventario y metodología: <a href="mexico-credit-market.json">auditoría del mercado de crédito</a>. Evidencia primaria de alcance: <a href="https://www.americanexpress.com/es-mx/tarjetas-de-credito/nuestras-tarjetas/">American Express · tipos de tarjeta</a> · <a href="https://www.nafin.com/portalnf/content/financiamiento/tu-primer-credito.html">Nafin · acceso mediante banca participante</a> · <a href="https://www.fira.gob.mx/Nd/FondeoFira.jsp">FIRA · fondeo</a>.</p>
+        <p>La cobertura sigue siendo parcial. Hay productos identificados sin costos consolidados, candidatos con fuentes inaccesibles y verificación registral individual pendiente. Consolidar deuda es una estrategia o modalidad; no se utiliza como una clase jurídica uniforme. Factoraje y arrendamiento conservan su evidencia en pendientes para una presentación que distinga su naturaleza.</p>
+        <div class="note warning"><p><strong>Un conflicto es un dato que falta resolver.</strong> En Nu, la página consultada contiene un CAT vencido y el folleto posterior muestra fechas incompatibles. El catálogo lo marca por verificar; no corrige el año ni elige una vigencia por intuición. Una fecha de consulta reciente tampoco prueba que el producto se ofrezca hoy.</p></div>
+        <p class="source"><a href="https://nubank.com.mx/credito/">Nu · Página oficial</a> · <a href="https://cdn.nubank.com.mx/mex/credito/folleto-informativo.pdf">folleto informativo</a>. El inventario de productos y enlaces primarios aparece en <a href="#catalogo-fuentes">fuentes del catálogo</a>.</p>
+        <p>Kardmatch es útil para descubrir emisores, categorías y vocabulario. Sus términos restringen la copia y republicación fuera del uso personal no comercial sin autorización escrita. La integración usa hechos verificados en fuentes primarias; no reproduce su base ni sus reseñas.</p>
+        <p class="source"><a href="https://www.kardmatch.com.mx/acerca-de-kardmatch/terminos-y-condiciones-de-uso-kardmatch.asp">Kardmatch · Términos y condiciones</a>.</p>
+        <p>Los comparativos de Banco de México tampoco son un inventario completo: segmentan productos y excluyen participaciones pequeñas según su metodología. Producto, segmento, fecha y metodología deben conservarse juntos para evitar comparaciones engañosas.</p>
+        <p class="source"><a href="https://www.banxico.org.mx/tarjetascat/TarjetasEntrada.jsp">Banco de México · Comparativos de tarjetas</a> · <a href="https://www.banxico.org.mx/tarjetascat/TarjetasEntradaHistoricos.jsp">histórico</a>.</p>
+        <h3>Una compra concreta, con las condiciones que sí conocemos <span class="status designed">Verificado en local</span></h3>
+        <p>Los <strong>25 programas de beneficios</strong> tienen coberturas distintas: cinco reglas permiten calcular o estimar resultados en cuatro tarjetas —LikeU, Plata, HSBC 2Now y Simi x Stori Green—. Plata con Plus y sin Plus son programas separados de una misma tarjeta. Los otros programas conservan su explicación y las condiciones todavía pendientes.</p>
+        <p>La comparación pide importe, fecha, categoría, canal, modalidad de pago y tarjetas que la persona ya tiene. La selección se conserva durante la sesión; no crea deudas ni verifica crédito disponible. También necesita confirmar condiciones y el disponible del tope dentro de su periodo. El pago total debe estar confirmado para recomendar entre beneficios de efectivo comparables; el cálculo no estima intereses desde el CAT ni representa el costo total de financiar la compra.</p>
+        <p><strong>Una estimación no siempre puede entrar en la recomendación.</strong> Simi x Stori Green permite estimar acumulación bruta, pero sus costos de redención no están confirmados: queda fuera de la clasificación de efectivo comparable. Saldo HSBC 2Now conserva su etiqueta de equivalente estimado en MXN y sus condiciones de canje; no significa dinero disponible inmediatamente.</p>
+        <p>Sin regla, con una contradicción o con revisión vencida, la interfaz explica lo que falta. Un tope desconocido puede mostrar un máximo publicado, sin convertirlo en resultado garantizado. Los beneficios de bienvenida, programas incompatibles, puntos y monederos no se suman como si fueran efectivo universal.</p>
+        <p class="source"><a href="https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:7d6d6b86-b947-4401-996e-830a04318331/original/as/tyc-cashback.pdf">Santander · Cashback Baby</a> · <a href="https://prime.bancoplata.mx/file-service/static/cashback_conditions_public.pdf">Plata · condiciones</a> · <a href="https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/terminos_condiciones_2now.pdf">HSBC · Saldo 2Now</a> · <a href="https://www.storicard.com/files/terminos-y-condiciones-stori-alianzas.pdf?v=20251114">Stori · alianzas</a>. Reglas implementadas: <a href="../src/data/cardBenefits.js">programas</a> y <a href="../src/services/cardBenefits.js">evaluación contextual</a>.</p>
+        <h3 id="ahorro-mercado">Opciones de ahorro con riesgos distintos</h3>
+        <p>La categoría Ahorro reúne <strong>65 modalidades: 58 fichas detalladas y 7 registros con evidencia limitada</strong>, sustentadas en 59 fuentes. Son modalidades de producto, no 65 proveedores. La <a href="mexico-savings-market.json">auditoría de ahorro e inversión</a> conserva las 248 observaciones publicadas: 231 cifras y 17 valores desconocidos. Una observación puede ser tasa, GAT u objetivo promocional; no representa por sí sola un rendimiento comparable.</p>
+        <p>El recorrido permite seleccionar hasta tres opciones y contrastar disponibilidad, mecanismo, liquidez, rendimiento publicado, costos, requisitos, entidad, protección y fechas. Mantiene distintas las cuentas bancarias, depósitos a plazo, depósitos en SOFIPO o cooperativa, fondos, reportos y valores gubernamentales. También identifica estructuras en el extranjero y mecanismos pendientes. No calcula ganancias ni ordena tasas heterogéneas.</p>
+        <p>La separación cambia decisiones concretas: <a href="https://gbm.com/faqs/que-diferencia-existe-entre-smart-cash-y-smart-cash-dolares/">GBM distingue Smart Cash en pesos mediante reporto y Smart Cash Dólares mediante fondo</a>; <a href="https://www.mercadopago.com.mx/ayuda/Terminos-rendimientos_15581">Mercado Pago documenta la inversión en MPAGORF</a>; <a href="https://actinvertrade.actinver.com/preguntas-frecuentes.html">ACTIREN es un fondo dentro de Actinver Trade</a>. La protección de una cuenta bancaria no se traslada a esos instrumentos. <a href="https://www.cpm.coop/rendicuenta">Rendicuenta de Caja Popular Mexicana</a> conserva su mecanismo de cooperativa.</p>
+        <p>Una cifra promocional se lee junto con su plazo, monto y requisitos. Las tablas de <a href="https://nubank.com.mx/gat/">Nu</a> y los <a href="https://www.openbank.mx/assets/OK_MX/es-MX/precontract/v1/MX.OB.CUENTA.NOREM.T%26C.pdf">términos de Apartados Open</a> ilustran por qué consulta, cálculo y vigencia requieren campos distintos. La GAT real no se transforma en una tasa neta de impuestos; un dato desconocido no se vuelve cero.</p>
+        <p><strong>Cobertura pendiente:</strong> 24 registros carecen de razón social completa consolidada y 115 observaciones numéricas tienen alguna fecha pendiente. Covalto, Banco Azteca, Sabadell y Kubo conservan evidencia limitada por acceso insuficiente; Libertad queda como pendiente documental sin ficha. Una ficha detallada no acredita todas sus tarifas, elegibilidad ni contratación. El inventario parcial tampoco cubre todos los fondos, AFORE o seguros con ahorro. <a href="mexico-savings-market.json">Ver límites y conflictos por producto</a>.</p>
+        <p class="source-note">Exploración y comparación verificadas en local, con cobertura documental parcial. <a href="../src/data/mexicoSavingsCatalog.js">Dataset operativo de ahorro</a>.</p>
+        <h3>Referencias oficiales junto a una decisión <span class="status designed">Verificado en local</span></h3>
+        <p>CETES a 28 días aparece junto al supuesto de la simulación, con fecha de colocación, consulta y fuente. “Usar como supuesto” es una acción explícita; actualizar la referencia conserva el escenario. Un dato antiguo o una consulta fallida mantiene su señal visible y nunca produce un número ficticio.</p>
+        <p>La capa de referencias contempla FIX, UDI e inflación anual de INEGI para contextos posteriores. FIX no es el precio de compra o venta de un banco; la inflación observada no es un pronóstico. No se añade un tablero de indicadores a la portada.</p>
+        <p class="source"><a href="https://www.banxico.org.mx/statistics/rss-indicators-banco-mexico.html">Banco de México · RSS oficiales</a> · <a href="https://www.banxico.org.mx/SieInternet/consultarDirectorioInternetAction.do?accion=consultarCuadroAnalitico&amp;idCuadro=CF107">tasas de valores gubernamentales</a> · <a href="https://www.inegi.org.mx/servicios/xml/INPCA_M_O.xml">INEGI · Variación anual del INPC</a>.</p>
+        <p class="small muted">La investigación verificó respuesta HTTP 200 de los cuatro feeds. El adaptador usa URLs oficiales fijas desde servidor, validación y caché; no envía información financiera del usuario a las fuentes. La verificación local cubrió aplicación explícita, conservación del supuesto y fallo de la fuente; su disponibilidad futura no está garantizada.</p>
+        <h3>El catálogo es una revisión editorial fechada</h3>
+        <p>Los productos, costos y programas son snapshots editoriales versionados. <strong>No hay un crawler ni un monitor de cambios de productos funcionando en esta versión.</strong> Las únicas referencias con consulta GET refrescable son CETES a 28 días, FIX, UDI e inflación anual del INPC. Una revisión reciente de una página no vuelve vigente un tarifario antiguo.</p>
+        <p>La siguiente etapa de actualización requiere detectar cambios, revisar evidencia y resolver conflictos antes de publicar. La fecha límite de revisión editorial de una regla tampoco reemplaza su vigencia contractual.</p>
+      </section>
+
+      <section id="hoja-de-ruta" aria-labelledby="roadmap-title">
+        <span class="section-number">06 · Hoja de ruta</span>
+        <h2 id="roadmap-title">Construir sobre confianza, datos y permisos verificables</h2>
+        <p>El orden considera frecuencia del problema, gravedad del error, utilidad transversal y dependencia técnica. Es una priorización cualitativa; no un puntaje calculado de impacto comercial.</p>
+        <ol class="roadmap">
+          <li><h3>Verificar captura, mercado y comparación de compras</h3><span class="status designed">Verificado en local · con límites</span><p><strong>Depende de:</strong> pruebas técnicas, revisión de fuentes y validación renderizada por UX/UI.</p><ul><li>Guardar una sola vez, conservar contexto y deshacer sin borrar cambios posteriores.</li>
+<li>Distinguir cero, desconocido y vencido en todos los estados de la biblioteca.</li>
+<li>Funcionar con teclado, móvil y movimiento reducido; conservar la selección al filtrar.</li>
+<li>Un fallo externo no cambia el supuesto ni fabrica una referencia.</li>
+<li>Los programas incompletos o con revisión vencida explican su estado sin inventar una ganadora.</li>
+<li>Un beneficio con costos de redención desconocidos permanece fuera de la recomendación de efectivo comparable.</li></ul></li>
+          <li><h3>Modelar ingresos y compromisos con incertidumbre</h3><span class="status designed">Requiere persistencia</span><p><strong>Depende de:</strong> evolución versionada del esquema y respaldos, migración y protección frente a clientes antiguos.</p><ul><li>Separar esperado, parcial, atrasado y conciliado.</li>
+<li>Probar importación repetida, confirmación doble, fechas, cuentas y cancelaciones.</li>
+<li>Modificar recurrencias sin alterar silenciosamente el historial.</li></ul></li>
+          <li><h3>Construir coordinación real del hogar</h3><span class="status designed">Requiere autorización</span><p><strong>Depende de:</strong> identidad, espacios y membresías; políticas de acceso también para exportaciones, respaldos e IA.</p><ul><li>Revocar acceso con el comportamiento de sesiones y APIs definido y probado.</li>
+<li>Impedir lectura de información privada por URL, identificador o consulta indirecta.</li>
+<li>Explicar el reparto y contabilizar reembolsos sin duplicar gastos.</li></ul></li>
+          <li><h3>Probar el regreso y la cadencia de revisión</h3><span class="status hypothesis">Hipótesis por validar</span><p><strong>Depende de:</strong> estado de revisión persistente, cobertura por cuenta y preferencias explícitas.</p><ul><li>Mostrar lo esencial sin esconder datos pendientes.</li>
+<li>Posponer sin marcar como resuelto.</li>
+<li>Evaluar comprensión y trabajo de mantenimiento con usuarios; no asumir que más avisos ayudan.</li></ul></li>
+          <li><h3>Mantener y ampliar la evidencia del mercado</h3><span class="status designed">Requiere operación de datos</span><p><strong>Depende de:</strong> fuentes y derechos de uso verificados, versiones por producto y segmento, detección y revisión de cambios antes de publicar. El directorio actual es editorial; el monitoreo automático todavía no existe.</p><ul><li>Conservar evidencia y fechas para cada costo.</li>
+<li>Detener publicación automática ante documentos contradictorios.</li>
+<li>Separar registros históricos de disponibilidad comercial.</li>
+<li>Agregar cobertura sin añadir navegación principal innecesaria.</li></ul></li>
+        </ol>
+        <div class="note"><p><strong>Una dependencia concreta del repositorio:</strong> el respaldo actual usa <code>schemaVersion 1</code> y normaliza campos definidos. Cobros, revisiones y hogares necesitan una evolución de datos compatible antes de persistir nuevas estructuras. La captura actual reutiliza transacciones existentes y evita esa migración.</p></div>
+        <p class="source">Factibilidad interna: <a href="../src/services/backup.js">normalización y respaldo</a>, <a href="../server/workspace/identity.js">identidad y autorización</a> y <a href="../server/workspace/repository.js">persistencia de cuentas</a>. Revisión sobre el baseline registrado en <code>artifacts/ui-review/daily-value-baseline.json</code>.</p>
+        <h3>Medir decisiones y continuidad por ciclos</h3>
+        <p>Se propone un estudio todavía no ejecutado: dos rondas moderadas con 12 unidades —cuatro de finanzas personales, cuatro de ingresos variables y cuatro hogares con ambos adultos—. Los contextos pueden superponerse. Las tareas comparan experiencia actual y propuesta, alternando el orden.</p>
+        <p>Los escenarios incluyen un pago desde una cuenta insuficiente aunque el total alcance; un cobro esperado que se retrasa; aportaciones y reembolsos compartidos; y volver después de semanas con saldos antiguos. El piloto observaría al menos cuatro ciclos elegidos por cada unidad, que no siempre equivalen a cuatro semanas.</p>
+        <div class="metric"><strong>Decisiones correctas</strong><p>Tareas resueltas sin ayuda, tiempo y errores críticos. Separar resultados por contexto y dificultad.</p></div>
+        <div class="metric"><strong>Ciclos útiles</strong><p>Ciclos con una decisión útil completada entre todos los ciclos debidos tras la activación, incluidos aquellos sin visita.</p></div>
+        <div class="metric"><strong>Continuidad al cuarto ciclo</strong><p>Unidades que completan un cuarto ciclo útil entre las activadas cuyo cuarto ciclo ya venció; distinguir cadencia y contexto.</p></div>
+        <div class="metric"><strong>Límites de calidad</strong><p>Duplicados, exposición indebida, comprensión de cobertura, esfuerzo de mantenimiento, abandono de captura y preocupación declarada. En hogares, medir a cada integrante.</p></div>
+        <p class="small muted">No hay una línea base que permita prometer porcentajes de mejora. Abrir la aplicación, completar una racha o recibir una notificación no acredita una decisión útil.</p>
+        <p>La evidencia sobre recordatorios exige cautela: un ensayo publicado en 2025 encontró un aumento de 0.13 puntos porcentuales en una medida de depósitos de ahorro con su mejor intervención. Estudió clientes de un banco estadounidense durante dos meses de 2022; no demuestra retención ni resultados para Sifran.</p>
+        <p class="source"><a href="https://academic.oup.com/pnasnexus/article/4/9/pgaf280/8244974">PNAS Nexus · Ensayo de recordatorios</a>. El <a href="https://www.consumerfinance.gov/consumer-tools/educator-tools/financial-well-being-resources/explore-findings/">marco de bienestar del CFPB</a> aporta dimensiones de control, capacidad ante imprevistos, metas y libertad de elección; no sustituye la evaluación local.</p>
+      </section>
+
+      <section id="metodo" aria-labelledby="metodo-title">
+        <span class="section-number">07 · Método y fuentes</span>
+        <h2 id="metodo-title">Qué sabemos, qué inferimos y qué falta comprobar</h2>
+        <p>La investigación combina documentos oficiales, documentación de proveedores, testimonios públicos y factibilidad del repositorio. Los hechos de una fuente conservan su alcance; las decisiones para Sifran son inferencias de diseño. Las mejoras de comprensión, continuidad y bienestar son hipótesis pendientes de pruebas.</p>
+        <ul>
+          <li><strong>Foros:</strong> 17 hilos abiertos en cuatro comunidades, 16 usados y uno excluido por evidencia insuficiente y señales promocionales. Un hilo adicional con autopromoción se usó sólo como contexto secundario. No se inventaron fechas absolutas de publicaciones a partir de etiquetas relativas.</li>
+          <li><strong>Productos:</strong> nueve referencias funcionales y Fintonic como posicionamiento; más de 20 páginas primarias. Las capacidades documentadas no equivalen a una prueba de uso o disponibilidad en México.</li>
+          <li><strong>Datos financieros:</strong> fuentes primarias, consulta y vigencia diferenciadas. Algunas vistas dinámicas de CONDUSEF no pudieron recuperarse con el lector disponible tras un reintento; no se concluye que estén fuera de servicio.</li>
+          <li><strong>Límites:</strong> no se realizaron entrevistas ni experimentos con usuarios de Sifran. La biblioteca es una muestra editorial; no verifica aprobación individual, todos los costos contractuales ni toda la oferta mexicana.</li>
+        </ul>
+        <p>La ampliación futura debe preservar marca, entidad legal emisora y red de pagos como campos distintos, así como separar disponibilidad comercial de vigencia de costos. La fecha de un documento tiene prioridad sobre un nombre de archivo o parámetro de URL cuando éstos son inconsistentes.</p>
+        <p class="source">Fuentes de uso y alcance: <a href="https://www.banxico.org.mx/footer-es/salvedad-politicas-uso-banco-.html">Banco de México · Políticas</a> · <a href="https://www.inegi.org.mx/inegi/terminos.html">INEGI · Términos</a> · <a href="https://www.kardmatch.com.mx/acerca-de-kardmatch/terminos-y-condiciones-de-uso-kardmatch.asp">Kardmatch · Términos</a>.</p>
+        <h3 id="catalogo-fuentes">Fichas detalladas y fuentes del directorio</h3>
+        <p class="small muted">La lista siguiente conserva las ocho fichas detalladas de tarjetas y la guía original de seis familias, con tres ofertas BBVA. El alcance ampliado de 192 tarjetas, 109 registros de financiamiento y 247 URLs se consulta en el <a href="mexico-credit-market.json">inventario auditable</a>; no se confunde con cobertura completa de costos. Consulta: 18 de octubre de 2026.</p>
+        <div id="catalog-source-list"><ul class="source-list"><li><strong>Tarjeta Azul BBVA · BBVA México</strong><br><a href="https://www.bbva.mx/personas/productos/tarjetas-de-credito/tarjeta-de-credito-azul.html">BBVA Azul: requisitos, comisiones y CAT</a></li>
+<li><strong>Tarjeta de Crédito Joy Banamex · Banamex</strong><br><a href="https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-joy-sin-anualidad">Joy Banamex: costos y condiciones</a></li>
+<li><strong>Tarjeta de Crédito LikeU · Banco Santander México</strong><br><a href="https://www.santander.com.mx/personas/credito-y-financiamiento/tarjetas-de-credito/likeu">LikeU: página oficial</a> · <a href="https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:eadbc941-a74c-4127-ac61-b4250eb85b52/original/as/Cards_Folleto_TDC_LikeUMastercard_Jun2026_V2_0726.pdf">Folleto LikeU: julio–diciembre de 2026</a></li>
+<li><strong>Tarjeta de Crédito HSBC Zero · HSBC México</strong><br><a href="https://www.hsbc.com.mx/tarjetas-de-credito/productos/zero/">HSBC Zero: página y requisitos</a> · <a href="https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/folleto_digital_zero.pdf">Folleto HSBC Zero: agosto de 2026</a></li>
+<li><strong>Tarjeta de Crédito Clásica Banorte · Banco Mercantil del Norte</strong><br><a href="https://www.banorte.com/Personal/TDC/Clasica.html">Clásica Banorte: requisitos y costos</a> · <a href="https://www.banorte.com/dam/jcr:53a48148-c63e-446b-8d27-f8521310f4c0/Folleto%20Cl%C3%A1sica%20oct26.pdf">Folleto Clásica: octubre de 2026</a></li>
+<li><strong>Tarjeta de Crédito Nu · Nubank, S.A., Institución de Banca Múltiple</strong><br><a href="https://nubank.com.mx/credito/">Nu: tarjeta de crédito</a> · <a href="https://nubank.com.mx/cat/">Nu: CAT publicado</a> · <a href="https://cdn.nubank.com.mx/mex/credito/folleto-informativo.pdf">Folleto Nu: discrepancia de fechas</a></li>
+<li><strong>Tarjeta de Crédito Klar con Garantía · Klar Technologies, S.A. de C.V., S.F.P.</strong><br><a href="https://www.klar.mx/tarjeta-de-credito-con-garantia">Klar: tarjeta con garantía</a> · <a href="https://www.klar.mx/cat">Klar: costos de tarjeta con y sin garantía</a></li>
+<li><strong>Stori Green · Stori México, S.A. de C.V., Sociedad Financiera Popular</strong><br><a href="https://www.storicard.com/stori-card">Stori Green: página y requisitos</a> · <a href="https://www.storicard.com/files/costos-y-comisiones-credito.pdf?v=20260213">Tarifario Stori: renglón STORI GREEN</a></li>
+<li><strong>Préstamo personal · Préstamo Personal Inmediato BBVA</strong><br><a href="https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-personal-inmediato.html">BBVA: préstamo personal</a></li>
+<li><strong>Préstamo de nómina · Creditón Nómina BBVA con seguro de vida</strong><br><a href="https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-nomina.html">BBVA: préstamo de nómina</a></li>
+<li><strong>Crédito automotriz · ficha educativa sin oferta individual</strong><br><a href="https://www.bbva.mx/personas/productos/creditos/credito-auto.html">BBVA: crédito de auto</a></li>
+<li><strong>Crédito hipotecario · Hipoteca Fija BBVA</strong><br><a href="https://www.bbva.mx/personas/productos/creditos/credito-hipotecario/hipoteca-fija.html">BBVA: Hipoteca Fija</a></li>
+<li><strong>Consolidación de deudas · ficha educativa sin oferta individual</strong><br><a href="https://www.bbva.mx/educacion-financiera/creditos/credito-de-nomina-prestamo/ppi-prestamos-para-pagar-deudas.html">BBVA: préstamos para pagar deudas</a></li>
+<li><strong>Crédito con garantía prendaria · ficha educativa sin oferta individual</strong><br><a href="https://www.montepiedad.com.mx/empeno-vehiculos/">Nacional Monte de Piedad: vehículo en garantía</a></li></ul></div>
+        <h3>Registro de investigación</h3>
+        <p class="small">El <a href="daily-value-research.json">archivo JSON</a> conserva hallazgos, denominadores, contratos, dependencias, métricas y registro de fuentes. Los enlaces siguientes facilitan revisar la evidencia sin confundir testimonios con estadísticas.</p>
+        <details><summary>Estadísticas, investigación y fundamentos de UX</summary><div><ul class="source-list"><li id="source-inegi-enif"><a href="https://inegi.org.mx/contenidos/programas/enif/2024/doc/enif_2024_resultados.pdf">INEGI · ENIF 2024, presentación de resultados</a></li>
+<li id="source-inegi-ensafi"><a href="https://www.inegi.org.mx/contenidos/programas/ensafi/2023/doc/ensafi_2023_nota_tecnica.pdf">INEGI · ENSAFI 2023, nota técnica</a></li>
+<li id="source-cfpb-wellbeing"><a href="https://www.consumerfinance.gov/consumer-tools/educator-tools/financial-well-being-resources/explore-findings/">CFPB · Hallazgos sobre bienestar financiero</a></li>
+<li id="source-savings-rct"><a href="https://academic.oup.com/pnasnexus/article/4/9/pgaf280/8244974">PNAS Nexus · Ensayo de recordatorios de ahorro</a></li>
+<li id="source-nng-load"><a href="https://www.nngroup.com/articles/minimize-cognitive-load/">Nielsen Norman Group · Minimizar carga cognitiva</a></li>
+<li id="source-nng-dashboard"><a href="https://www.nngroup.com/articles/dashboards-preattentive/">Nielsen Norman Group · Atributos preatentivos en paneles</a></li></ul></div></details>
+        <details><summary>Documentación de productos y políticas</summary><div><ul class="source-list"><li id="source-ynab-targets"><a href="https://www.ynab.com/features/goal-tracking">YNAB · Seguimiento de objetivos</a></li>
+<li id="source-ynab-together"><a href="https://www.ynab.com/terms/ynab-together">YNAB Together · Términos de uso</a></li>
+<li id="source-monarch-flex"><a href="https://help.monarch.com/hc/en-us/articles/32125337244052-Using-Flex-Budgeting">Monarch · Flex Budgeting</a></li>
+<li id="source-monarch-review"><a href="https://www.monarch.com/blog/assign-transactions-to-a-household-member-for-review">Monarch · Asignación de revisión a un miembro</a></li>
+<li id="source-monarch-currency"><a href="https://help.monarch.com/hc/en-us/articles/360048393552-International-Accounts-and-Currency">Monarch · Cuentas internacionales y moneda</a></li>
+<li id="source-copilot-dashboard"><a href="https://help.copilot.money/en/articles/6045480-dashboard-tab-overview">Copilot · Panel de inicio</a></li>
+<li id="source-copilot-recurring"><a href="https://help.copilot.money/en/articles/10244751-recurrings-faq">Copilot · Preguntas sobre recurrencias</a></li>
+<li id="source-copilot-international"><a href="https://help.copilot.money/en/articles/10715424-international-currency">Copilot · Moneda internacional</a></li>
+<li id="source-simplifi-watchlists"><a href="https://support.simplifi.quicken.com/en/articles/3472367-using-watchlists-on-the-web-app">Simplifi · Listas de seguimiento</a></li>
+<li id="source-simplifi-spending"><a href="https://support.simplifi.quicken.com/en/articles/4212702-understanding-your-spending-plan">Simplifi · Plan de gasto</a></li>
+<li id="source-simplifi-projection"><a href="https://support.simplifi.quicken.com/en/articles/3357429-using-projected-cash-flow">Simplifi · Proyección de flujo</a></li>
+<li id="source-actual-import"><a href="https://actualbudget.org/docs/transactions/importing/">Actual · Importación y conciliación</a></li>
+<li id="source-actual-schedules"><a href="https://actualbudget.org/docs/schedules/">Actual · Programación de movimientos</a></li>
+<li id="source-actual-sync"><a href="https://actualbudget.org/docs/getting-started/sync/">Actual · Sincronización y alcance del cifrado</a></li>
+<li id="source-lunch-recurring"><a href="https://support.lunchmoney.app/finances/recurring-items/creating-recurring-items">Lunch Money · Crear recurrencias</a></li>
+<li id="source-lunch-budget"><a href="https://support.lunchmoney.app/guides/budgeting/step-2-setting-up-your-budget">Lunch Money · Configurar el presupuesto</a></li>
+<li id="source-lunch-collaborators"><a href="https://support.lunchmoney.app/settings/collaborators">Lunch Money · Colaboradores</a></li>
+<li id="source-rocket-payday"><a href="https://help.rocketmoney.com/en/articles/6235627-enabling-payday-view">Rocket Money · Requisitos de Payday View</a></li>
+<li id="source-bbva-apartados"><a href="https://www.bbva.mx/educacion-financiera/ahorro/ahorro/que-es-un-apartado-de-dinero.html">BBVA · Apartados</a></li>
+<li id="source-honeydue"><a href="https://support.honeydue.com/en/articles/3179542-will-my-partner-see-my-bank-account-balances-and-transactions">Honeydue · Compartir saldos y movimientos</a><small>Documentación antigua; comportamiento actual no probado.</small></li>
+<li id="source-fintonic"><a href="https://www.fintonic.com/es-ES/inicio/">Fintonic · Sitio de producto</a></li>
+<li id="source-kardmatch-terms"><a href="https://www.kardmatch.com.mx/acerca-de-kardmatch/terminos-y-condiciones-de-uso-kardmatch.asp">Kardmatch · Términos y condiciones</a></li></ul></div></details>
+        <details><summary>Testimonios revisados y exclusión</summary><div><ul class="source-list"><li id="source-forum-couple-freelance"><a href="https://www.reddit.com/r/MexicoFinanciero/comments/1hcx9im/banda_casada_de_freelancer_c%C3%B3mo_hacen_para/">Organizar dinero en una pareja con trabajo independiente</a></li>
+<li id="source-forum-fortnight"><a href="https://www.reddit.com/r/MexicoFinanciero/comments/1rf2b24/c%C3%B3mo_manejan_sus_finanzas_personalesfamiliares/">Organización personal y familiar por quincena</a></li>
+<li id="source-forum-overwhelmed"><a href="https://www.reddit.com/r/ynab/comments/1dqj5kq/do_you_find_ynab_overwhelming/">Carga percibida de mantener el presupuesto</a></li>
+<li id="source-forum-freelance"><a href="https://www.reddit.com/r/ynab/comments/1bickju/am_i_using_ynab_right/">Confusión entre objetivos e ingreso disponible</a></li>
+<li id="source-forum-seasonal"><a href="https://www.reddit.com/r/ynab/comments/1ugzvgz/ynab_system_for_very_variable_income/">Ingresos muy variables y gastos compartidos</a></li>
+<li id="source-forum-new-freelance"><a href="https://www.reddit.com/r/ynab/comments/1rl76kz/help_like_im_5_new_budget_and_unselfemployed/">Primer presupuesto como trabajador independiente</a></li>
+<li id="source-forum-private"><a href="https://www.reddit.com/r/MonarchMoney/comments/1v4m9rv/private_budgets_and_transactions/">Presupuestos y movimientos privados</a></li>
+<li id="source-forum-msi"><a href="https://www.reddit.com/r/MexicoFinanciero/comments/1jkid5d/hay_forma_de_saber_con_bbva_cu%C3%A1nto_va_a_ser_el/">Anticipar el próximo pago de tarjeta antes del corte</a></li>
+<li id="source-forum-mobile"><a href="https://www.reddit.com/r/MexicoFinanciero/comments/134wmor/qu%C3%A9_app_usan_para_sus_finanzas_personales_y/">Herramientas de registro, móvil y privacidad</a></li>
+<li id="source-forum-drilldown"><a href="https://www.reddit.com/r/MonarchMoney/comments/1vohjqo/cash_flow_reports_monarch_is_officially_losing/">Continuidad entre reporte y detalle</a></li>
+<li id="source-forum-couple-admin"><a href="https://www.reddit.com/r/MonarchMoney/comments/1ko31tl/couples_who_track_expenses_together_how_do_you/">Reparto del trabajo de registrar en pareja</a></li>
+<li id="source-forum-anxiety"><a href="https://www.reddit.com/r/ynab/comments/1oc8hsf/budgeting_apps_stress_me_out_rather_than_helping/">Estrés asociado al presupuesto</a></li>
+<li id="source-forum-month-covered"><a href="https://www.reddit.com/r/ynab/comments/1t5otxg/my_month_is_paid_for_and_i_can_finally_breathe/">Alivio declarado al cubrir el mes</a></li>
+<li id="source-forum-deleted"><a href="https://www.reddit.com/r/copilotmoney/comments/1wnhxpu/support_just_deleted_my_transactions/">Relato de eliminación de movimientos</a><small>Incidente relatado; no reproducido.</small></li>
+<li id="source-forum-missing"><a href="https://www.reddit.com/r/copilotmoney/comments/1f1sv9s/missing_transaction_data/">Relato de movimientos faltantes</a><small>Incidente relatado; no reproducido.</small></li>
+<li id="source-forum-secondary"><a href="https://www.reddit.com/r/MexicoFinanciero/comments/1vookd4/que_app_de_finanzas_usan_para_sus_finanzas/">Herramientas de finanzas utilizadas</a><small>Contexto secundario; señales de autopromoción impiden tratarlo como evidencia decisiva.</small></li>
+<li id="source-forum-excluded"><a href="https://www.reddit.com/r/MexicoFinanciero/comments/1vlirf0/c%C3%B3mo_ahorran_si_sus_ingresos_cambian_cada_mes/">Hilo excluido sobre ingreso variable</a><small>Autor eliminado y posible contenido promocional; no sustenta decisiones.</small></li></ul></div></details>
+        <details><summary>Fuentes públicas de crédito e indicadores</summary><div><ul class="source-list"><li id="source-banxico-card-comparison"><a href="https://www.banxico.org.mx/tarjetascat/TarjetasEntrada.jsp">Banco de México · Comparación de tarjetas por CAT</a><small>Documentos por segmento; excluyen productos cuya participación no supera 0.1% del segmento. No es un censo de todas las tarjetas.</small></li>
+<li id="source-banxico-card-history"><a href="https://www.banxico.org.mx/tarjetascat/TarjetasEntradaHistoricos.jsp">Banco de México · Histórico de comparación de tarjetas</a></li>
+<li id="source-banxico-rss"><a href="https://www.banxico.org.mx/statistics/rss-indicators-banco-mexico.html">Banco de México · Indicadores RSS</a></li>
+<li id="source-banxico-cetes-table"><a href="https://www.banxico.org.mx/SieInternet/consultarDirectorioInternetAction.do?accion=consultarCuadroAnalitico&amp;idCuadro=CF107">Banco de México · Cuadro CF107, valores gubernamentales</a></li>
+<li id="source-banxico-terms"><a href="https://www.banxico.org.mx/footer-es/salvedad-politicas-uso-banco-.html">Banco de México · Políticas de uso</a></li>
+<li id="source-inegi-feed"><a href="https://www.inegi.org.mx/servicios/feedsnoticias/feeds.html">INEGI · Feeds de indicadores</a></li>
+<li id="source-inegi-inpc-feed"><a href="https://www.inegi.org.mx/servicios/xml/INPCA_M_O.xml">INEGI · Feed de variación anual del INPC</a></li>
+<li id="source-inegi-terms"><a href="https://www.inegi.org.mx/inegi/terminos.html">INEGI · Términos de libre uso</a></li></ul></div></details>
+        <details><summary>Directorio ampliado y programas de beneficios</summary><div><ul class="source-list">
+<li id="source-benefit-source-01"><a href="https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:7d6d6b86-b947-4401-996e-830a04318331/original/as/tyc-cashback.pdf">Términos Cashback Baby publicados el 1 de octubre de 2026</a></li>
+<li id="source-benefit-source-02"><a href="https://www.santander.com.mx/personas/beneficios/cashback/comercios-participantes/">Directorio de comercios participantes</a></li>
+<li id="source-benefit-source-03"><a href="https://prime.bancoplata.mx/file-service/static/cashback_conditions_public.pdf">Condiciones del programa de cashback Plata</a></li>
+<li id="source-benefit-source-04"><a href="https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/terminos_condiciones_2now.pdf">Términos Saldo HSBC 2Now</a></li>
+<li id="source-benefit-source-05"><a href="https://www.hsbc.com.mx/tarjetas-de-credito/productos/2now/">HSBC 2Now: retiro de saldo sin costo</a></li>
+<li id="source-benefit-source-06"><a href="https://banco.hey.inc/content/dam/heybanco/terminos-condiciones/beneficios/recompensas.pdf">Recompensas Hey: términos vigentes desde febrero de 2026</a></li>
+<li id="source-benefit-source-07"><a href="https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-costco">Condiciones de recompensas Costco Banamex</a></li>
+<li id="source-benefit-source-08"><a href="https://www.vexi.mx/centro-de-ayuda/terminos-y-condiciones-cashback">Términos Vexi Cashback</a></li>
+<li id="source-benefit-source-09"><a href="https://www.bbva.mx/content/dam/public-web/mexico/documents/personas/tarjetas/promociones-tdc/tyc-puntos-bbva.pdf">Términos de Puntos BBVA</a></li>
+<li id="source-benefit-source-10"><a href="https://assetsmcproa.liverpool.com.mx/pdf/CAT_Tarjetas_Liverpool_TyC.pdf">Liverpool: tarjetas y Puntos Rosas</a></li>
+<li id="source-benefit-source-11"><a href="https://assetsmcproa.suburbia.com.mx/pdf/Terminos_Condiciones_Credito_Suburbia.pdf">Suburbia: términos de crédito y monedero</a></li>
+<li id="source-benefit-source-12"><a href="https://www.elpalaciodehierro.com/on/demandware.static/-/Library-Sites-palacio-content-global/default/PDF/Informativas/Terminos-y-condiciones/Beneficios-de-Tarjeta-Palacio.pdf">Beneficios de Tarjeta Palacio</a></li>
+<li id="source-benefit-source-13"><a href="https://www.storicard.com/files/terminos-y-condiciones-stori-alianzas.pdf?v=20251114">Términos de alianzas Stori, actualización de junio de 2026</a></li>
+<li id="source-benefit-source-14"><a href="https://www.storicard.com/farmacias-similares">Simi x Stori: cómo transferir el cashback base</a></li>
+<li id="source-benefit-source-15"><a href="https://rappicard.mx/condiciones-cashback/">RappiCard: cashback de octubre de 2026</a></li>
+<li id="source-benefit-source-16"><a href="https://web.didiglobal.com/mx/tarjeta-de-credito/tc-cashback.pdf">DiDi Card: condiciones de cashback</a></li>
+<li id="source-benefit-source-17"><a href="https://didifinance.com/tarjeta-de-credito">Producto actual DiDi Card</a></li>
+<li id="source-benefit-source-18"><a href="https://www.storicard.com/files/stori-black/programa-redime-tu-cashback.pdf?v=20250603">Stori Black: programa Redime tu Cashback</a></li>
+<li id="source-benefit-source-19"><a href="https://www.storicard.com/files/shein/SheinTyCBeneficios.pdf?v=20241125">SHEIN x Stori: beneficios y condiciones</a></li>
+<li id="source-benefit-source-20"><a href="https://www.klar.mx/plus">Información oficial: Klar Plus</a></li>
+<li id="source-benefit-source-21"><a href="https://www.klar.mx/platino">Información oficial: Klar Platino</a></li>
+<li id="source-benefit-source-22"><a href="https://www.klar.mx/uber">Información oficial: Uber Card Platino</a></li>
+<li id="source-benefit-source-23"><a href="https://www.banregio.com/personas/tarjetas/banregio.php">Información oficial: Win Banregio</a></li>
+<li id="source-benefit-source-24"><a href="https://www.uala.mx/promociones/mastercardoffers">Información oficial: Mastercard Offers para Ualá</a></li>
+<li id="source-market-amex-types"><a href="https://www.americanexpress.com/es-mx/tarjetas-de-credito/nuestras-tarjetas/">American Express México · Catálogo de tarjetas</a></li>
+<li id="source-market-nafin-program"><a href="https://www.nafin.com/portalnf/content/financiamiento/tu-primer-credito.html">Nafin · Tu Primer Crédito</a></li>
+<li id="source-market-fira-funding"><a href="https://www.fira.gob.mx/Nd/FondeoFira.jsp">FIRA · Fondeo mediante intermediarios</a></li>
+</ul></div></details>
+        <details class="source-group">
+          <summary>Fuentes primarias añadidas para ahorro</summary>
+          <ol class="source-list">
+            <li id="source-savings-source-01"><a href="https://nubank.com.mx/gat/">Nu: tasas, GAT y vigencias</a> <span class="source-note">Consulta: 18 de octubre de 2026. La vigencia se documenta por observación en el inventario.</span></li>
+            <li id="source-savings-source-02"><a href="https://www.openbank.mx/assets/OK_MX/es-MX/precontract/v1/MX.OB.CUENTA.NOREM.T%26C.pdf">Openbank: términos de Apartados Open, programa septiembre–diciembre de 2026</a> <span class="source-note">Consulta: 18 de octubre de 2026. La vigencia se documenta por observación en el inventario.</span></li>
+            <li id="source-savings-source-03"><a href="https://www.mercadopago.com.mx/ayuda/Terminos-rendimientos_15581">Mercado Pago: términos de inversión en MPAGORF y cuenta GBM</a> <span class="source-note">Consulta: 18 de octubre de 2026. La vigencia se documenta por observación en el inventario.</span></li>
+            <li id="source-savings-source-04"><a href="https://gbm.com/faqs/que-diferencia-existe-entre-smart-cash-y-smart-cash-dolares/">GBM: diferencias entre Smart Cash y Smart Cash Dólares</a> <span class="source-note">Consulta: 18 de octubre de 2026. La vigencia se documenta por observación en el inventario.</span></li>
+            <li id="source-savings-source-05"><a href="https://actinvertrade.actinver.com/preguntas-frecuentes.html">Actinver Trade: preguntas frecuentes, ACTIREN y costos</a> <span class="source-note">Consulta: 18 de octubre de 2026. La vigencia se documenta por observación en el inventario.</span></li>
+            <li id="source-savings-source-06"><a href="https://www.cpm.coop/rendicuenta">Caja Popular Mexicana: Rendicuenta</a> <span class="source-note">Consulta: 18 de octubre de 2026. La vigencia se documenta por observación en el inventario.</span></li>
+          </ol>
+        </details>
+      </section>
+      <footer class="footer">
+        <p>Sifran · Investigación de valor cotidiano · MX-MARKET-DOCS r2</p>
+        <p>Composición del informe: UX-DIRECTION r4; revisión de superficies integradas: UX-DIRECTION r7. Fuentes consultadas al 18 de octubre de 2026. Verificado en local con límites documentados; sin despliegue ni estudio con usuarios.</p>
+        <p><a href="#informe">Volver al inicio</a> · <a href="daily-value-research.json" download>Descargar evidencia estructurada</a></p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

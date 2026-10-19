@@ -1,18 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { motion } from 'motion/react';
 import {
-  ArrowUpRight, ChevronDown, Command, Download, Eye, EyeOff, HelpCircle,
-  LayoutDashboard, ListFilter, LogOut, MoreHorizontal, Plus, RefreshCw,
-  Search, Settings, Sparkles, Upload, UserRound, Waypoints,
+  ArrowRight, ChevronDown, Download, Eye, EyeOff, Grid2X2, HelpCircle,
+  LogOut, Plus, RefreshCw, Search, Settings, Sparkles, UserRound, Waypoints,
 } from 'lucide-react';
-import { NAVIGATION_GROUPS, NAVIGATION_ITEMS } from '../data/navigation.js';
+import { getPrimaryNavigationId, NAVIGATION_ITEMS, PRIMARY_NAVIGATION } from '../data/navigation.js';
 import Modal from './ui/Modal';
 import Brand, { BrandMark } from './Brand';
+import './Navigation.css';
+
+const mobileDestinations = ['dashboard', 'plan', 'transactions', 'tools'];
+const navTransition = { type: 'spring', stiffness: 420, damping: 38 };
 
 export default function Navbar({
   activeTab, setActiveTab, exchangeRateData, onRefreshRate, displayCurrency,
   setDisplayCurrency, privacyMode, setPrivacyMode, onOpenCommandPalette,
   onOpenSettings, onOpenPricing, onOpenOnboarding, onOpenRoadmap, onLogout,
-  financialData, onQuickAdd, onOpenAssistant, onImportStatement, isCurrent = () => true, readOnly = false,
+  financialData, onQuickAdd, onOpenAssistant, isCurrent = () => true, readOnly = false,
 }) {
   const alive = useRef(true);
   useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
@@ -24,28 +28,21 @@ export default function Navbar({
   const profileName = typeof financialData?.profileName === 'string' ? financialData.profileName.trim() : '';
   const profileInitial = Array.from(profileName)[0]?.toLocaleUpperCase('es-MX');
   const currentItem = NAVIGATION_ITEMS.find(item => item.id === activeTab) || NAVIGATION_ITEMS[0];
-  const navigate = id => {
-    setMenuOpen(false);
-    setActiveTab(id);
-  };
-  const runAction = callback => {
-    setMenuOpen(false);
-    callback?.();
-  };
+  const primaryId = getPrimaryNavigationId(activeTab);
+  const primaryItem = PRIMARY_NAVIGATION.find(item => item.id === primaryId);
+  const pendingDebtsCount = Array.isArray(financialData?.deudasPendientes) ? financialData.deudasPendientes.length : 0;
+
+  const navigate = id => { setMenuOpen(false); setActiveTab(id); };
+  const runAction = callback => { setMenuOpen(false); callback?.(); };
   const openAssistant = () => runAction(onOpenAssistant || (() => navigate('assistant')));
   const quickAdd = () => { if (!readOnly) runAction(onQuickAdd || (() => navigate('transactions'))); };
-  const importStatement = () => { if (!readOnly) runAction(onImportStatement || (() => navigate('statements'))); };
   const handleRefresh = async () => {
     if (isRefreshing) return;
     setIsRefreshing(true);
     setRefreshError('');
-    try {
-      await onRefreshRate?.();
-    } catch {
-      setRefreshError('No se pudo actualizar. Intenta de nuevo.');
-    } finally {
-      setIsRefreshing(false);
-    }
+    try { await onRefreshRate?.(); }
+    catch { if (alive.current && isCurrent()) setRefreshError('No se pudo actualizar. Intenta de nuevo.'); }
+    finally { if (alive.current) setIsRefreshing(false); }
   };
   const handleExportExcel = async () => {
     if (exporting.current) return;
@@ -56,11 +53,8 @@ export default function Navbar({
       if (!alive.current || !isCurrent()) return;
       exportFinancesToExcel(financialData, exchangeRateData?.rate || 19.25);
       setExportStatus('success');
-    } catch {
-      setExportStatus('error');
-    } finally {
-      exporting.current = false;
-    }
+    } catch { if (alive.current && isCurrent()) setExportStatus('error'); }
+    finally { exporting.current = false; }
   };
   const handleSkipToContent = event => {
     event.preventDefault();
@@ -68,119 +62,115 @@ export default function Navbar({
     mainContent?.focus({ preventScroll: true });
     mainContent?.scrollIntoView({ block: 'start', behavior: 'auto' });
   };
-  const isMoreActive = !['dashboard', 'transactions', 'assistant'].includes(activeTab);
-
-  const renderNavigation = (mobile = false) => NAVIGATION_GROUPS.map(group => (
-    <div className="navigation-group" key={group}>
-      <p className="navigation-group-label">{group}</p>
-      <div className={mobile ? 'mobile-route-grid' : undefined}>
-        {NAVIGATION_ITEMS.filter(item => item.group === group).map(item => {
-          const Icon = item.icon;
-          return (
-            <button
-              type="button" key={item.id} onClick={() => navigate(item.id)}
-              className={'navigation-item ' + (activeTab === item.id ? 'is-active ' : '') + (item.accent === 'ai' ? 'navigation-item-ai' : '')}
-              aria-current={activeTab === item.id ? 'page' : undefined}
-              title={item.description}
-            >
-              <Icon size={18} strokeWidth={1.7} aria-hidden="true" />
-              <span>{item.label}</span>
-              {item.id === 'assistant' && <span className="navigation-ai-dot" aria-hidden="true" />}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  ));
 
   return (
     <>
       <a className="skip-link" href="#main-content" onClick={handleSkipToContent}>Ir al contenido</a>
-      <aside className="app-sidebar print:hidden">
-        <button type="button" className="brand-lockup" onClick={() => navigate('dashboard')} aria-label="Sifran, ir al resumen">
+      <aside className="app-sidebar sf-nav-sidebar print:hidden">
+        <button type="button" className="brand-lockup sf-nav-brand" onClick={() => navigate('dashboard')} aria-label="Sifran, ir al resumen">
           <Brand className="h-9 w-auto" decorative />
         </button>
-        <nav className="sidebar-navigation" aria-label="Navegación principal">{renderNavigation()}</nav>
-        <div className="sidebar-bottom">
-          <button type="button" className="sidebar-premium" onClick={onOpenPricing}>
-            <span className="premium-icon"><Sparkles size={18} aria-hidden="true" /></span>
-            <span><strong>Un paso más allá</strong><small>Explora Sifran Premium</small></span>
-            <ArrowUpRight size={17} aria-hidden="true" />
-          </button>
-          <div className="sidebar-utilities">
-            <button type="button" onClick={onOpenSettings}><Settings size={17} aria-hidden="true" /> Ajustes</button>
-            <button type="button" onClick={onOpenOnboarding} className="icon-button" aria-label="Abrir guía de inicio"><HelpCircle size={18} aria-hidden="true" /></button>
+        <div className="sf-nav-scroll">
+          <p className="sf-nav-section-label">Tu espacio financiero</p>
+          <nav className="sf-nav-primary" aria-label="Navegación principal">
+            {PRIMARY_NAVIGATION.map(item => {
+              const Icon = item.icon;
+              const isActive = primaryId === item.id;
+              return (
+                <motion.button type="button" key={item.id} onClick={() => navigate(item.id)}
+                  className={`sf-nav-destination ${isActive ? 'is-active' : ''}`}
+                  aria-current={isActive ? 'page' : undefined} whileTap={{ scale: 0.985 }}>
+                  {isActive && <motion.span className="sf-nav-active-surface" layoutId="sifran-sidebar-active" transition={navTransition} aria-hidden="true" />}
+                  <Icon size={20} strokeWidth={1.7} aria-hidden="true" />
+                  <span className="sf-nav-destination-copy"><strong>{item.label}</strong><small>{item.hint}</small></span>
+                  {item.id === 'plan' && pendingDebtsCount > 0 && <span className="sf-nav-pending" title={`${pendingDebtsCount} deudas por completar`} aria-label={`${pendingDebtsCount} deudas por completar`}>{pendingDebtsCount}</span>}
+                </motion.button>
+              );
+            })}
+          </nav>
+          <div className="sf-nav-assistant-area">
+            <motion.button type="button" onClick={openAssistant} className={`sf-nav-destination sf-nav-assistant ${activeTab === 'assistant' ? 'is-active' : ''}`} aria-current={activeTab === 'assistant' ? 'page' : undefined} whileTap={{ scale: 0.985 }}>
+              <Sparkles size={20} strokeWidth={1.7} aria-hidden="true" />
+              <span className="sf-nav-destination-copy"><strong>Asistente IA</strong><small>Resuelve tus dudas</small></span>
+              <ArrowRight size={15} aria-hidden="true" />
+            </motion.button>
           </div>
+        </div>
+        <div className="sf-nav-utilities">
+          <button type="button" onClick={onOpenOnboarding}><HelpCircle size={18} aria-hidden="true" /><span>Guía de inicio</span></button>
+          <button type="button" onClick={onOpenSettings}><Settings size={18} aria-hidden="true" /><span>Ajustes</span></button>
         </div>
       </aside>
 
-      <header className="app-topbar print:hidden">
-        <div className="topbar-location">
-          <span className="topbar-mobile-brand" aria-hidden="true"><BrandMark size={22} /></span>
-          <span className="topbar-breadcrumb">Mi espacio <span>/</span></span>
-          <span className="topbar-page">{currentItem.label}</span>
+      <header className="app-topbar sf-nav-topbar print:hidden">
+        <div className="sf-nav-location">
+          <span className="sf-nav-mobile-brand" aria-hidden="true"><BrandMark size={24} /></span>
+          {primaryItem && primaryItem.id !== activeTab && <><button type="button" className="sf-nav-parent" onClick={() => navigate(primaryItem.id)}>{primaryItem.label}</button><span className="sf-nav-location-separator" aria-hidden="true">/</span></>}
+          <span className="sf-nav-current-page">{currentItem.label}</span>
         </div>
-        <div className="topbar-actions">
-          <button type="button" onClick={onOpenCommandPalette} className="topbar-search" aria-label="Buscar herramientas y acciones, Control K">
-            <Search size={17} aria-hidden="true" /><span>Buscar cualquier cosa</span><kbd><Command size={11} aria-hidden="true" /> K</kbd>
+        <div className="sf-nav-topbar-actions">
+          <button type="button" onClick={onOpenCommandPalette} className="sf-nav-search" aria-label="Buscar herramientas y acciones, Control K" aria-keyshortcuts="Control+k Meta+k">
+            <Search size={19} aria-hidden="true" /><span>Buscar en Sifran</span><kbd>Ctrl K</kbd>
           </button>
-          <div className="topbar-divider" aria-hidden="true" />
-          <button
-            type="button" className={'icon-button ' + (privacyMode ? 'privacy-active' : '')}
+          <div className="sf-nav-currency-quick" role="group" aria-label="Moneda rápida">
+            {[['MXN', 'MXN'], ['USD', 'USD'], ['ORIGINAL', 'Original']].map(([id, label]) => (
+              <button type="button" key={id} disabled={readOnly} onClick={() => setDisplayCurrency(id)} aria-pressed={displayCurrency === id}>{label}</button>
+            ))}
+          </div>
+          <button type="button" className={`icon-button sf-nav-privacy ${privacyMode ? 'privacy-active' : ''}`}
             onClick={() => setPrivacyMode(!privacyMode)} aria-pressed={privacyMode}
-            aria-label={privacyMode ? 'Mostrar importes' : 'Ocultar importes'}
-            title={privacyMode ? 'Mostrar importes' : 'Ocultar importes'}
-          >
-            {privacyMode ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
+            aria-label={privacyMode ? 'Mostrar información' : 'Ocultar información'} title={privacyMode ? 'Mostrar información' : 'Ocultar información'}>
+            {privacyMode ? <EyeOff size={19} aria-hidden="true" /> : <Eye size={19} aria-hidden="true" />}
           </button>
-          <button type="button" className="button-primary topbar-add" disabled={readOnly} onClick={quickAdd}><Plus size={17} aria-hidden="true" /> Añadir</button>
-          <button type="button" className="profile-button" onClick={() => setMenuOpen(true)} aria-label="Abrir menú de cuenta y herramientas" aria-expanded={menuOpen}>
-            <span aria-hidden="true">{profileInitial || <UserRound size={16} />}</span><ChevronDown size={13} aria-hidden="true" />
+          <motion.button type="button" className="button-primary sf-nav-add" aria-label="Registrar movimiento" disabled={readOnly || privacyMode} onClick={quickAdd} whileTap={{ scale: 0.97 }}><Plus size={18} aria-hidden="true" /><span>Registrar<span className="sf-nav-add-detail"> movimiento</span></span></motion.button>
+          <button type="button" className="sf-nav-profile" onClick={() => setMenuOpen(true)} aria-label="Abrir cuenta y preferencias" aria-haspopup="dialog" aria-expanded={menuOpen}>
+            <span aria-hidden="true">{profileInitial || <UserRound size={17} />}</span><ChevronDown size={13} aria-hidden="true" />
           </button>
         </div>
       </header>
 
-      <nav className="mobile-bottom-nav print:hidden" aria-label="Navegación móvil">
-        <button type="button" className={activeTab === 'dashboard' ? 'is-active' : ''} onClick={() => navigate('dashboard')} aria-current={activeTab === 'dashboard' ? 'page' : undefined}><LayoutDashboard size={20} aria-hidden="true" /><span>Resumen</span></button>
-        <button type="button" className={activeTab === 'transactions' ? 'is-active' : ''} onClick={() => navigate('transactions')} aria-current={activeTab === 'transactions' ? 'page' : undefined}><ListFilter size={20} aria-hidden="true" /><span>Movimientos</span></button>
-        <button type="button" className="mobile-add" disabled={readOnly} onClick={quickAdd}><span className="mobile-add-icon"><Plus size={22} aria-hidden="true" /></span><span>Añadir</span></button>
-        <button type="button" className={activeTab === 'assistant' ? 'is-active' : ''} onClick={openAssistant} aria-current={activeTab === 'assistant' ? 'page' : undefined}><Sparkles size={20} aria-hidden="true" /><span>Asistente</span></button>
-        <button type="button" className={isMoreActive || menuOpen ? 'is-active' : ''} onClick={() => setMenuOpen(true)} aria-expanded={menuOpen}><MoreHorizontal size={22} aria-hidden="true" /><span>Más</span></button>
+      <nav className="sf-nav-mobile print:hidden" aria-label="Navegación móvil">
+        {mobileDestinations.map(id => {
+          const item = PRIMARY_NAVIGATION.find(destination => destination.id === id);
+          const Icon = item.icon;
+          const isActive = primaryId === id;
+          return (
+            <motion.button type="button" key={id} className={isActive ? 'is-active' : ''} onClick={() => navigate(id)} aria-current={isActive ? 'page' : undefined} whileTap={{ scale: 0.96 }}>
+              {isActive && <motion.span className="sf-nav-mobile-active" layoutId="sifran-mobile-active" transition={navTransition} aria-hidden="true" />}
+              <Icon size={21} strokeWidth={1.8} aria-hidden="true" /><span>{id === 'plan' ? 'Plan' : item.label}</span>
+            </motion.button>
+          );
+        })}
       </nav>
 
-      <Modal isOpen={menuOpen} onClose={() => setMenuOpen(false)} title="Todo tu espacio" description="Tus herramientas y preferencias, a un toque." className="navigation-sheet" wide>
-        <div className="sheet-quick-actions">
-          <button type="button" className="button-primary" disabled={readOnly} onClick={quickAdd}><Plus size={17} aria-hidden="true" /> Movimiento</button>
-          <button type="button" className="button-secondary" disabled={readOnly} onClick={importStatement}><Upload size={17} aria-hidden="true" /> Estado de cuenta</button>
-          <button type="button" className="button-secondary" onClick={openAssistant}><Sparkles size={17} aria-hidden="true" /> Asistente</button>
-        </div>
-        <nav aria-label="Todas las herramientas" className="sheet-navigation">{renderNavigation(true)}</nav>
-        <div className="sheet-preferences">
+      <Modal isOpen={menuOpen} onClose={() => setMenuOpen(false)} title="Cuenta y preferencias" description={profileName || 'Personaliza tu espacio y administra tus datos.'} className="sf-nav-account">
+        <button type="button" className="sf-nav-directory-link" onClick={() => navigate('tools')}><Grid2X2 size={20} aria-hidden="true" /><span><strong>Explorar herramientas</strong><small>Todo lo que puedes hacer en Sifran</small></span><ArrowRight size={18} aria-hidden="true" /></button>
+        <div className="sf-nav-preferences">
           <div>
-            <p className="eyebrow">Moneda de visualización</p>
-            <div className="currency-control" role="group" aria-label="Moneda de visualización">
+            <p className="sf-nav-preference-label">Moneda de visualización</p>
+            <div className="sf-nav-currency" role="group" aria-label="Moneda de visualización">
               {[['MXN', 'MXN'], ['USD', 'USD'], ['ORIGINAL', 'Original']].map(([id, label]) => (
                 <button type="button" key={id} disabled={readOnly} onClick={() => setDisplayCurrency(id)} aria-pressed={displayCurrency === id}>{label}</button>
               ))}
             </div>
           </div>
-          <div className="exchange-control">
-            <span className="eyebrow">Tipo de cambio USD / MXN</span>
-            <div><strong>{Number.isFinite(exchangeRateData?.rate) ? exchangeRateData.rate.toFixed(2) : 'Sin actualizar'}</strong><button type="button" className="icon-button" onClick={handleRefresh} disabled={isRefreshing} aria-label="Actualizar tipo de cambio"><RefreshCw size={16} className={isRefreshing ? 'animate-spin' : ''} aria-hidden="true" /></button></div>
+          <div className="sf-nav-exchange">
+            <p className="sf-nav-preference-label">Tipo de cambio USD / MXN</p>
+            <div><strong>{Number.isFinite(exchangeRateData?.rate) ? exchangeRateData.rate.toFixed(2) : 'Sin actualizar'}</strong><button type="button" className="icon-button" onClick={handleRefresh} disabled={isRefreshing} aria-label="Actualizar tipo de cambio"><RefreshCw size={17} className={isRefreshing ? 'animate-spin' : ''} aria-hidden="true" /></button></div>
             <small>{exchangeRateData?.isManual ? 'Valor manual' : exchangeRateData?.source || 'Fuente pendiente'}</small>
-            {refreshError && <p role="status" className="text-xs text-rose-300">{refreshError}</p>}
+            {refreshError && <p role="status" className="sf-nav-status is-error">{refreshError}</p>}
           </div>
         </div>
-        <div className="sheet-account-actions">
-          <button type="button" onClick={() => runAction(onOpenSettings)}><Settings size={17} aria-hidden="true" /> Ajustes</button>
-          <button type="button" onClick={handleExportExcel} disabled={exportStatus === 'loading'} aria-busy={exportStatus === 'loading'}><Download size={17} aria-hidden="true" /> {exportStatus === 'loading' ? 'Preparando Excel…' : 'Exportar Excel'}</button>
-          <button type="button" onClick={() => runAction(onOpenOnboarding)}><HelpCircle size={17} aria-hidden="true" /> Guía de inicio</button>
-          <button type="button" onClick={() => runAction(onOpenRoadmap)}><Waypoints size={17} aria-hidden="true" /> Novedades y planes</button>
-          <button type="button" onClick={() => runAction(onOpenPricing)}><Sparkles size={17} aria-hidden="true" /> Explorar Premium</button>
-          <button type="button" className="logout-action" onClick={() => runAction(onLogout)}><LogOut size={17} aria-hidden="true" /> Cerrar sesión</button>
+        <div className="sf-nav-account-actions">
+          <button type="button" onClick={() => runAction(onOpenSettings)}><Settings size={18} aria-hidden="true" /> Ajustes y respaldos</button>
+          <button type="button" onClick={handleExportExcel} disabled={exportStatus === 'loading'} aria-busy={exportStatus === 'loading'}><Download size={18} aria-hidden="true" /> {exportStatus === 'loading' ? 'Preparando Excel…' : 'Exportar a Excel'}</button>
+          <button type="button" onClick={() => runAction(onOpenOnboarding)}><HelpCircle size={18} aria-hidden="true" /> Guía de inicio</button>
+          <button type="button" onClick={() => runAction(onOpenRoadmap)}><Waypoints size={18} aria-hidden="true" /> Novedades y planes</button>
+          <button type="button" onClick={() => runAction(onOpenPricing)}><Sparkles size={18} aria-hidden="true" /> Funciones Premium</button>
+          <button type="button" className="sf-nav-logout" onClick={() => runAction(onLogout)}><LogOut size={18} aria-hidden="true" /> Cerrar sesión</button>
         </div>
-        {exportStatus === 'error' && <p role="alert" className="mt-3 text-xs text-rose-300">No pudimos generar el archivo Excel. Intenta exportarlo de nuevo.</p>}
-        {exportStatus === 'success' && <p role="status" className="mt-3 text-xs text-emerald-300">Se inició la descarga del archivo Excel.</p>}
+        {exportStatus === 'error' && <p role="alert" className="sf-nav-status is-error">No pudimos generar el archivo Excel. Intenta exportarlo de nuevo.</p>}
+        {exportStatus === 'success' && <p role="status" className="sf-nav-status">Se inició la descarga del archivo Excel.</p>}
       </Modal>
     </>
   );

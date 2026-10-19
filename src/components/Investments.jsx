@@ -1,173 +1,65 @@
 import React, { useState } from 'react';
-import { Sparkles, Shield, TrendingUp, DollarSign } from 'lucide-react';
-import { formatMoney, convertCurrency } from '../services/exchangeRate';
+import { ArrowRight, Shield, TrendingUp } from 'lucide-react';
+import { motion, useReducedMotion } from 'motion/react';
+import { formatMoney } from '../services/exchangeRate';
+import { projectMonthlySavings, summarizeCashReserve } from '../services/investmentProjection';
+import OfficialRateReference, { referenceDate } from './OfficialRateReference';
 
-export default function Investments({ financialData, cashFlow, exchangeRate = 19.25 }) {
-  const { totalCostodeVida } = cashFlow;
-
-  // Fondo de Emergencia: Metas
-  const meta3Meses = totalCostodeVida * 3;
-  const meta6Meses = totalCostodeVida * 6;
-  const meta12Meses = totalCostodeVida * 12;
-
-  // Ahorro líquido actual (convertido a MXN en caso de cuentas en USD)
-  const ahorroLiquido = (financialData?.activos || [])
-    .filter(a => a.tipo === 'Efectivo' || a.tipo === 'Inversión')
-    .reduce((sum, a) => sum + convertCurrency(a.monto, a.moneda, 'MXN', exchangeRate), 0);
-
-  const progreso3m = meta3Meses > 0 ? Math.min(100, Math.round((ahorroLiquido / meta3Meses) * 100)) : 100;
-
-  // Calculadora de Interés Compuesto
-  const [monthlyContribution, setMonthlyContribution] = useState(5000);
-  const [annualRate, setAnnualRate] = useState(9.5); // 9.5% CETES
-  const [years, setYears] = useState(10);
-
-  // Fórmulas de valor futuro con salvaguarda r === 0
-  const r = (annualRate / 100) / 12;
-  const n = years * 12;
-  const valorFuturo = r === 0 
-    ? (monthlyContribution * n)
-    : (monthlyContribution * ((Math.pow(1 + r, n) - 1) / r));
-  const totalAportado = monthlyContribution * n;
-  const rendimiento = Math.max(0, valorFuturo - totalAportado);
-
+export default function Investments({ financialData, cashFlow, exchangeRate = 19.25, onNavigateTab }) {
+  const monthlyExpenses = cashFlow?.totalCostodeVida;
+  const reserve = summarizeCashReserve({ financialData, monthlyExpenses, exchangeRate });
+  const [monthlyContribution, setMonthlyContribution] = useState('5000');
+  const [annualRate, setAnnualRate] = useState('9.5');
+  const [years, setYears] = useState('10');
+  const [rateOrigin, setRateOrigin] = useState(null);
+  const [appliedMessage, setAppliedMessage] = useState('');
+  const reducedMotion = useReducedMotion();
+  const projection = projectMonthlySavings({ monthlyContribution, annualRate, years });
+  const money = value => formatMoney(value, 'MXN');
+  const rateDescription = rateOrigin === 'own' ? 'Supuesto propio.' : rateOrigin ? 'CETES a 28 días · colocación ' + referenceDate(rateOrigin.effectiveDate) + '. Tasa fija durante toda la simulación.' : 'Valor de ejemplo; puedes cambiarlo.';
+  const applyReference = reference => {
+    setAnnualRate(String(reference.value));
+    setRateOrigin(reference);
+    setAppliedMessage('Se aplicó ' + reference.value.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' % anual como tasa fija supuesta. La proyección se actualizó.');
+  };
   return (
-    <div className="space-y-6">
-      
-      {/* Fondo de Emergencia */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-        <div className="flex items-center gap-2 mb-2">
-          <Shield className="w-5 h-5 text-emerald-400" />
-          <h2 className="text-xl font-extrabold text-white tracking-tight">
-            Fondo de Emergencia: Tu Escudo de Paz Mental
-          </h2>
+    <div className="investments-view">
+      <header className="investments-header"><span className="investments-eyebrow">PLANEA TU AHORRO</span><h1>Ahorro e inversión</h1><p>Revisa el efectivo que tienes y explora lo que podrías aportar con el tiempo.</p></header>
+      {onNavigateTab && <div><button type="button" className="button-secondary" onClick={() => onNavigateTab('credit-library', { view: 'savings' })}>Explorar cuentas y opciones de ahorro<ArrowRight size={17} aria-hidden="true" /></button></div>}
+      <section className="investments-panel" aria-labelledby="reserve-heading">
+        <div className="investments-section-heading"><Shield size={19} aria-hidden="true" /><h2 id="reserve-heading">Tu efectivo frente a tus gastos</h2></div>
+        <p className="investments-description">Compara sólo tus activos registrados como efectivo con tus gastos necesarios mensuales. Las inversiones quedan fuera de esta referencia.</p>
+        <div className="investments-reserve-summary">
+          <div><span>Efectivo registrado{reserve.excluded > 0 ? ' con importe válido' : ''}</span><strong>{money(reserve.amount)}</strong><small>{reserve.count === 0 ? 'No hay activos registrados como efectivo.' : reserve.allDated ? 'Fechas de saldo: ' + reserve.dates.map(referenceDate).join(' · ') + '.' : 'No hay fecha de corte registrada para todos los saldos.'}</small></div>
+          <div><span>Gastos necesarios registrados</span><strong>{reserve.expensesKnown ? <>{money(Number(monthlyExpenses))}<small> / mes</small></> : 'Por configurar'}</strong><small>{reserve.expensesKnown ? 'No incluye otros gastos ni pagos de deuda.' : 'Registra gastos mensuales completos y mayores a cero para calcular la cobertura.'}</small></div>
+          <div><span>Cobertura de estos gastos</span><strong>{reserve.coverage === null ? 'Sin referencia' : reserve.coverage.toLocaleString('es-MX', { maximumFractionDigits: 1 }) + ' meses'}</strong><small>{reserve.coverage === null ? 'La cobertura requiere saldos y gastos válidos.' : 'Calculada con el efectivo y los gastos registrados.'}</small></div>
         </div>
-        <p className="text-xs text-slate-400 mb-6">
-          Calculado con base en tu costo de vida mensual de {formatMoney(totalCostodeVida, 'MXN')}/mes.
-        </p>
-
-        {/* Progress Bar */}
-        <div className="bg-slate-950/80 p-5 rounded-2xl border border-slate-800 space-y-4">
-          <div className="flex justify-between items-center text-xs">
-            <span className="font-bold text-slate-300">Cobertura Inicial (Meta 3 Meses):</span>
-            <span className="font-black text-emerald-400 font-mono">{progreso3m}% completado</span>
-          </div>
-
-          <div className="w-full h-3.5 bg-slate-800 rounded-full overflow-hidden p-0.5">
-            <div
-              className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full transition-all duration-500"
-              style={{ width: `${progreso3m}%` }}
-            ></div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
-            <div className="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
-              <span className="text-slate-400 text-[10px] block uppercase">3 Meses (Esencial)</span>
-              <span className="font-bold text-white text-base font-mono block mt-0.5">
-                {formatMoney(meta3Meses, 'MXN')}
-              </span>
-              <span className="text-[10px] text-emerald-400">Primer objetivo</span>
-            </div>
-
-            <div className="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
-              <span className="text-slate-400 text-[10px] block uppercase">6 Meses (Robusto)</span>
-              <span className="font-bold text-white text-base font-mono block mt-0.5">
-                {formatMoney(meta6Meses, 'MXN')}
-              </span>
-              <span className="text-[10px] text-slate-400">Tranquilidad total</span>
-            </div>
-
-            <div className="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
-              <span className="text-slate-400 text-[10px] block uppercase">12 Meses (Invencible)</span>
-              <span className="font-bold text-white text-base font-mono block mt-0.5">
-                {formatMoney(meta12Meses, 'MXN')}
-              </span>
-              <span className="text-[10px] text-slate-400">Libertad absoluta</span>
-            </div>
-          </div>
+        {reserve.excluded > 0 && <p className="investments-notice">{reserve.excluded} {reserve.excluded === 1 ? 'saldo de efectivo no se pudo incluir' : 'saldos de efectivo no se pudieron incluir'} por un importe, moneda o tipo de cambio no válido. Completa esos datos para calcular la cobertura.</p>}
+        {reserve.hasUsd && <p className="investments-scope">El efectivo en USD se convierte con el tipo de cambio de tu espacio: {Number(exchangeRate).toLocaleString('es-MX', { maximumFractionDigits: 4 })} MXN por USD.</p>}
+        <div className="investments-reserve-goals">
+          {[3, 6, 12].map(months => <div key={months}><span>Referencia de {months} meses</span><strong>{reserve.expensesKnown && Number.isFinite(Number(monthlyExpenses) * months) ? money(Number(monthlyExpenses) * months) : 'Por configurar'}</strong></div>)}
         </div>
-      </div>
-
-      {/* Proyección de Interés Compuesto */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-        <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="w-5 h-5 text-teal-400" />
-          <h3 className="text-lg font-extrabold text-white tracking-tight">
-            Calculadora de Rendimientos & Crecimiento Compuesto (CETES / Sofipos)
-          </h3>
+        {reserve.progress !== null && <div className="investments-progress"><div><span>Frente a la referencia de 3 meses</span><span>{Math.floor(reserve.progress)} %</span></div><div role="progressbar" aria-label="Efectivo frente a 3 meses de gastos registrados" aria-valuenow={Math.floor(reserve.progress)} aria-valuemin={0} aria-valuemax={100}><span style={{ width: reserve.progress + '%' }} /></div></div>}
+        <p className="investments-scope">Es una comparación de saldos registrados: no confirma su disponibilidad ni descuenta apartados. Las fechas de los saldos pueden ser distintas.</p>
+      </section>
+      <section className="investments-panel investments-simulation" aria-labelledby="savings-projection-heading">
+        <div className="investments-section-heading"><TrendingUp size={19} aria-hidden="true" /><h2 id="savings-projection-heading">Explora cómo puede crecer tu ahorro</h2></div>
+        <p className="investments-description">Ajusta aportación, plazo y tasa. Esta es una simulación.</p>
+        <OfficialRateReference onApply={applyReference} />
+        <div className="investments-inputs">
+          <div className="investments-field"><label htmlFor="savings-monthly">Aportación mensual (MXN)</label><input id="savings-monthly" type="number" inputMode="decimal" min="0" step="500" value={monthlyContribution} onChange={event => setMonthlyContribution(event.target.value)} aria-invalid={Boolean(projection.errors.monthlyContribution)} aria-describedby="savings-monthly-help" /><p id="savings-monthly-help" className={projection.errors.monthlyContribution ? 'investments-field-error' : ''}>{projection.errors.monthlyContribution || 'Aportaciones al cierre de cada mes.'}</p></div>
+          <div className="investments-field"><label htmlFor="savings-rate">Tasa anual supuesta (%)</label><input id="savings-rate" type="number" inputMode="decimal" min="-100" max="1000" step="0.01" value={annualRate} onChange={event => { setAnnualRate(event.target.value); setRateOrigin('own'); setAppliedMessage(''); }} aria-invalid={Boolean(projection.errors.annualRate)} aria-describedby="savings-rate-help" /><p id="savings-rate-help" className={projection.errors.annualRate ? 'investments-field-error' : ''}>{projection.errors.annualRate || rateDescription}</p></div>
+          <div className="investments-field"><label htmlFor="savings-years">Plazo (años)</label><input id="savings-years" type="number" inputMode="numeric" min="1" max="40" step="1" value={years} onChange={event => setYears(event.target.value)} aria-invalid={Boolean(projection.errors.years)} aria-describedby="savings-years-help" /><p id="savings-years-help" className={projection.errors.years ? 'investments-field-error' : ''}>{projection.errors.years || 'Entre 1 y 40 años completos.'}</p></div>
         </div>
-        <p className="text-xs text-slate-400 mb-6">
-          Una vez liquidadas tus deudas caras, tu flujo libre mensual trabajará para ti a tasas de interés compuesto.
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <div>
-            <label className="block text-xs text-slate-400 font-semibold uppercase mb-1">
-              Ahorro Mensual
-            </label>
-            <input
-              type="number"
-              step="500"
-              value={monthlyContribution}
-              onChange={(e) => setMonthlyContribution(Number(e.target.value))}
-              className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white font-mono"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs text-slate-400 font-semibold uppercase mb-1">
-              Rendimiento Anual (%)
-            </label>
-            <input
-              type="number"
-              step="0.5"
-              value={annualRate}
-              onChange={(e) => setAnnualRate(Number(e.target.value))}
-              className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white font-mono"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs text-slate-400 font-semibold uppercase mb-1">
-              Horizonte (Años)
-            </label>
-            <input
-              type="number"
-              min="1"
-              max="40"
-              value={years}
-              onChange={(e) => setYears(Number(e.target.value))}
-              className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white font-mono"
-            />
-          </div>
+        <div className="investments-apply-status" role="status" aria-live="polite" aria-atomic="true">{appliedMessage && <motion.span key={appliedMessage} initial={reducedMotion ? false : { opacity: 0, y: 3 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.18 }}>{appliedMessage}</motion.span>}</div>
+        <div className="investments-results">
+          <div><span>Total aportado</span><strong>{projection.valid ? money(projection.contributed) : '—'}</strong></div>
+          <div className={projection.valid && projection.returns < 0 ? 'investments-result-loss' : ''}><span>Rendimiento estimado</span><strong>{projection.valid ? money(projection.returns) : '—'}</strong></div>
+          <div className="investments-result-total"><span>Total proyectado</span><strong>{projection.valid ? money(projection.total) : '—'}</strong></div>
         </div>
-
-        {/* Future Value Outputs */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-5 bg-slate-950/80 rounded-2xl border border-slate-800">
-          <div>
-            <span className="text-[11px] font-bold uppercase text-slate-400 block">Total Aportado de Tu Dinero</span>
-            <span className="text-xl font-bold text-slate-200 font-mono mt-0.5 block">
-              {formatMoney(totalAportado, 'MXN')}
-            </span>
-          </div>
-
-          <div>
-            <span className="text-[11px] font-bold uppercase text-teal-400 block">Rendimientos Ganados</span>
-            <span className="text-xl font-bold text-teal-300 font-mono mt-0.5 block">
-              +{formatMoney(rendimiento, 'MXN')}
-            </span>
-          </div>
-
-          <div>
-            <span className="text-[11px] font-bold uppercase text-emerald-400 block">Valor Futuro Total</span>
-            <span className="text-2xl font-black text-emerald-400 font-mono mt-0.5 block">
-              {formatMoney(valorFuturo, 'MXN')}
-            </span>
-          </div>
-        </div>
-
-      </div>
-
+        {!projection.valid && <p className="investments-notice">Revisa los campos indicados para calcular la proyección.</p>}
+        <p className="investments-assumptions">Proyección con aportaciones mensuales y tasa fija con capitalización mensual. No incluye impuestos, inflación ni cambios futuros de tasa. La referencia de CETES no garantiza este resultado.</p>
+      </section>
     </div>
   );
 }

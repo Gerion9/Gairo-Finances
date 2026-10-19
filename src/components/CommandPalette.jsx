@@ -1,10 +1,13 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowDown, ArrowRight, ArrowUp, Calculator, CornerDownLeft, Download, Plus, Search, Settings, Sparkles, Upload, Waypoints, X } from 'lucide-react';
-import { NAVIGATION_ITEMS } from '../data/navigation.js';
+import { motion } from 'motion/react';
+import { ArrowDown, ArrowRight, ArrowUp, Calculator, CornerDownLeft, Download, FileDown, Layers3, Plus, Search, Settings, Sparkles, Upload, Waypoints, X } from 'lucide-react';
+import { NAVIGATION_ITEMS, NAVIGATION_SHORTCUTS, PRIMARY_NAVIGATION } from '../data/navigation.js';
+import { actionUnavailableReason } from '../services/actionAvailability.js';
+import { normalizeSearch, searchNavigationItems } from '../services/navigationSearch.js';
 import useModalFocus from '../hooks/useModalFocus';
+import './Navigation.css';
 
-const normalize = text => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es-MX').trim();
 const calculatorItems = [
   ['cat', 'CAT real', 'Costo anual total de un crédito'],
   ['msi', 'Meses sin intereses', 'MSI o descuento de contado'],
@@ -22,15 +25,18 @@ const calculatorItems = [
 const actionItems = [
   { id: 'new-transaction', label: 'Registrar movimiento', description: 'Añade un ingreso o gasto', action: 'newTransaction', icon: Plus },
   { id: 'import-statement', label: 'Importar estado de cuenta', description: 'Revisa movimientos de tu banco', action: 'importStatement', icon: Upload },
-  { id: 'ask-assistant', label: 'Preguntar al asistente', description: 'Consulta tus finanzas con Claude', action: 'openAssistant', icon: Sparkles },
+  { id: 'ask-assistant', label: 'Preguntar al asistente', description: 'Resuelve dudas sobre tus finanzas', action: 'openAssistant', icon: Sparkles },
+  { id: 'new-debt', label: 'Añadir una deuda', description: 'Registra un crédito o revisa la conciliación de tu plan', action: 'newDebt', icon: Layers3 },
   { id: 'export-excel', label: 'Exportar a Excel', description: 'Descarga tu libro financiero', action: 'exportExcel', icon: Download },
+  { id: 'export-backup', label: 'Descargar respaldo', description: 'Guarda una copia de tus datos', action: 'exportBackup', icon: FileDown },
   { id: 'settings', label: 'Abrir ajustes', description: 'Preferencias, acceso y respaldos', action: 'openSettings', icon: Settings },
   { id: 'pricing', label: 'Explorar Premium', description: 'Conoce las funciones disponibles', action: 'openPricing', icon: Sparkles },
   { id: 'roadmap', label: 'Novedades y próximos pasos', description: 'Consulta los planes de la aplicación', action: 'openRoadmap', icon: Waypoints },
 ].map(item => ({ ...item, group: 'Acciones rápidas' }));
-const allItems = [...actionItems.slice(0, 3), ...NAVIGATION_ITEMS.map(item => ({ ...item, tab: item.id })), ...calculatorItems, ...actionItems.slice(3)];
+const allItems = [...actionItems.slice(0, 3), ...NAVIGATION_SHORTCUTS, ...NAVIGATION_ITEMS.map(item => ({ ...item, tab: item.id })), ...calculatorItems, ...actionItems.slice(3)];
+const suggestedItems = [...actionItems.slice(0, 3), ...NAVIGATION_SHORTCUTS, ...PRIMARY_NAVIGATION.map(item => ({ ...item, tab: item.id })), actionItems.find(item => item.action === 'openSettings')];
 
-export default function CommandPalette({ isOpen, onClose, onNavigateTab, onAction }) {
+export default function CommandPalette({ isOpen, onClose, onNavigateTab, onAction, readOnly = false, privacyMode = false }) {
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const dialogRef = useModalFocus(isOpen, onClose);
@@ -38,8 +44,8 @@ export default function CommandPalette({ isOpen, onClose, onNavigateTab, onActio
   const baseId = useId();
   const listId = baseId + '-results';
   const filtered = useMemo(() => {
-    const terms = normalize(query).split(/\s+/).filter(Boolean);
-    return allItems.filter(item => terms.every(term => normalize(item.label + ' ' + item.description + ' ' + item.group).includes(term)));
+    const source = normalizeSearch(query) ? allItems : suggestedItems;
+    return searchNavigationItems(source, query);
   }, [query]);
 
   useEffect(() => {
@@ -50,18 +56,18 @@ export default function CommandPalette({ isOpen, onClose, onNavigateTab, onActio
   }, [activeIndex, isOpen]);
 
   const selectItem = item => {
-    if (!item) return;
+    if (!item || actionUnavailableReason(item.action, { readOnly, privacyMode })) return;
     onClose();
     if (item.action) onAction?.(item.action);
     else if (item.calculator) onNavigateTab?.(item.tab, { calculator: item.calculator });
-    else onNavigateTab?.(item.tab);
+    else onNavigateTab?.(item.tab, item.options);
   };
 
   if (!isOpen) return null;
 
   return createPortal(
     <div className="modal-backdrop command-backdrop" onClick={event => { if (event.target === event.currentTarget) onClose(); }}>
-      <section ref={dialogRef} className="command-panel" role="dialog" aria-modal="true" aria-label="Buscar herramientas y acciones" tabIndex={-1}>
+      <motion.section ref={dialogRef} className="command-panel sf-command" role="dialog" aria-modal="true" aria-label="Buscar herramientas y acciones" tabIndex={-1} initial={{ opacity: 0, y: -10, scale: 0.985 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.18, ease: 'easeOut' }}>
         <div className="command-input-row">
           <Search size={21} aria-hidden="true" />
           <input
@@ -78,26 +84,33 @@ export default function CommandPalette({ isOpen, onClose, onNavigateTab, onActio
               } else if (event.key === 'Enter') {
                 event.preventDefault();
                 selectItem(filtered[activeIndex]);
+              } else if (event.key === 'Home' && (event.ctrlKey || event.metaKey)) {
+                event.preventDefault();
+                setActiveIndex(0);
+              } else if (event.key === 'End' && (event.ctrlKey || event.metaKey)) {
+                event.preventDefault();
+                setActiveIndex(Math.max(0, filtered.length - 1));
               }
             }}
           />
           <button type="button" className="icon-button" onClick={onClose} aria-label="Cerrar búsqueda"><X size={18} aria-hidden="true" /></button>
         </div>
-        <div className="command-results-heading"><span>{query ? 'Resultados' : 'Acciones y herramientas'}</span><span role="status" aria-live="polite">{filtered.length} disponibles</span></div>
+        <div className="command-results-heading"><span>{query.trim() ? 'Resultados de búsqueda' : 'Accesos directos'}</span><span role="status" aria-live="polite">{query.trim() ? `${filtered.length} ${filtered.length === 1 ? 'resultado' : 'resultados'}` : 'Escribe para explorar todo'}</span></div>
         <div className="command-results" role="listbox" id={listId} aria-label="Resultados de búsqueda">
           {filtered.length === 0 ? (
             <div className="command-empty"><Search size={28} aria-hidden="true" /><strong>No encontramos esa herramienta</strong><p>Prueba con “gastos”, “estado de cuenta” o “CAT”.</p></div>
           ) : filtered.map((item, index) => {
             const Icon = item.icon;
+            const reason = actionUnavailableReason(item.action, { readOnly, privacyMode });
             return (
               <button
                 type="button" role="option" tabIndex={-1} key={item.id} id={baseId + '-' + item.id}
                 ref={element => { resultRefs.current[index] = element; }}
-                aria-selected={index === activeIndex} onClick={() => selectItem(item)} onMouseMove={() => { if (index !== activeIndex) setActiveIndex(index); }}
+                aria-selected={index === activeIndex} aria-disabled={!!reason || undefined} onClick={() => selectItem(item)} onMouseMove={() => { if (index !== activeIndex) setActiveIndex(index); }}
                 className={'command-result ' + (index === activeIndex ? 'is-selected' : '')}
               >
                 <span className={'command-result-icon ' + (item.icon === Sparkles ? 'is-ai' : '')}><Icon size={19} strokeWidth={1.7} aria-hidden="true" /></span>
-                <span className="command-result-copy"><strong>{item.label}</strong><small>{item.description}</small></span>
+                <span className="command-result-copy"><strong>{item.label}</strong><small>{reason || item.description}</small></span>
                 <span className="command-result-group">{item.group}</span>
                 <ArrowRight size={16} aria-hidden="true" />
               </button>
@@ -105,7 +118,7 @@ export default function CommandPalette({ isOpen, onClose, onNavigateTab, onActio
           })}
         </div>
         <footer className="command-footer"><span><ArrowUp size={12} aria-hidden="true" /><ArrowDown size={12} aria-hidden="true" /> Navegar</span><span><CornerDownLeft size={13} aria-hidden="true" /> Abrir</span><span><kbd>esc</kbd> Cerrar</span></footer>
-      </section>
+      </motion.section>
     </div>, document.body,
   );
 }

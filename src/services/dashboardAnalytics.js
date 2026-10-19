@@ -144,16 +144,19 @@ export function pendingPayments(data = {}, now = new Date(), exchangeRate, displ
   const monthKey = localDateKey(now).slice(0, 7);
   const lastDay = new Date(year, month + 1, 0).getDate();
   const paid = data.pagosRealizadosMes?.[monthKey] || {};
+  const manualTax = data.honorarios?.modo === 'MANUAL' && Number(data.honorarios.provisionFiscalMensual) > 0;
+  const expenses = [...asArray(data.gastosNecesarios).filter(Boolean).map(expense => ({ ...expense, kind: 'Gasto necesario' })), ...asArray(data.gastosOpcionales).filter(Boolean).map(expense => ({ ...expense, kind: 'Gasto opcional' }))]
+    .filter(expense => !manualTax || expense.id !== 'provision-fiscal');
+  if (manualTax) expenses.push({ id: 'provision-fiscal', nombre: 'Provisión de impuestos', monto: data.honorarios.provisionFiscalMensual, diaPago: data.honorarios.diaPagoImpuestos, kind: 'Provisión fiscal' });
   const items = [
     ...asArray(data.deudas).filter((debt) => validBalance(debt?.saldo, debt?.moneda) && Number(debt.saldo) > 0).map((debt) => ({
       ...debt, day: debt.diaPagoLimite, originalAmount: Math.min(Number(debt.saldo), Math.max(0, finiteNumber(debt.pagoMinimo))), kind: 'Pago mínimo', currency: debt.moneda || 'MXN',
     })),
-    ...asArray(data.gastosNecesarios).filter(Boolean).map((expense) => ({ ...expense, day: expense.diaPago, originalAmount: finiteNumber(expense.monto), kind: 'Gasto necesario', currency: 'MXN' })),
-    ...asArray(data.gastosOpcionales).filter(Boolean).map((expense) => ({ ...expense, day: expense.diaPago, originalAmount: finiteNumber(expense.monto), kind: 'Gasto opcional', currency: 'MXN' })),
+    ...expenses.map(expense => ({ ...expense, day: expense.diaPago, originalAmount: finiteNumber(expense.monto), currency: 'MXN' })),
   ];
   return items.flatMap((item) => {
     const day = Number(item.day);
-    if (paid[item.id] || item.originalAmount <= 0 || !Number.isInteger(day) || day < 1 || day > 31) return [];
+    if (paid[item.id] === true || item.originalAmount <= 0 || !Number.isInteger(day) || day < 1 || day > 31) return [];
     const date = new Date(year, month, Math.min(day, lastDay));
     const amountMXN = convertCurrency(item.originalAmount, item.currency, 'MXN', exchangeRate);
     return [{ ...item, date, dateKey: localDateKey(date), daysRemaining: calendarDistance(date, now), amount: displayAmount(amountMXN, displayCurrency, exchangeRate) }];

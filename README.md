@@ -50,12 +50,15 @@ npm install --legacy-peer-deps
 npm run dev
 ```
 
-Abre http://localhost:5173. La vista local permite revisar el acceso y recuperar el respaldo anterior. **No simula identidad de Sites ni conecta datos o claves remotos.** Los endpoints locales muestran conexión pendiente. La aplicación completa se verifica en el Site privado.
+Abre http://localhost:5173. La vista local permite revisar el acceso y recuperar el respaldo anterior. No simula identidad de Sites ni accede a cuentas financieras remotas. Las API privadas muestran conexión pendiente; `GET /api/reference-rates` sí puede consultar las cuatro fuentes oficiales públicas desde URLs fijas, sin enviar datos de la cuenta. La autenticación y sincronización completas se verifican en el Site privado.
 
 ```powershell
+node scripts/check-market-data.mjs
 npm test
 npm run build
 ```
+
+El control de datos de mercado se ejecuta antes de integrar cambios en directorios, fichas y programas. Revisa el resultado junto con las fuentes y fechas: una comprobación estructural no acredita vigencia comercial ni sustituye la revisión editorial. La última suite completa aprobó 931 pruebas en 43 archivos; el build final terminó sin advertencias. Comandos, entradas y resultados se conservan en [la verificación automatizada](artifacts/ui-review/product-polish-tests-summary-r4.json).
 
 Las pruebas de persistencia usan SQLite real en memoria mediante Python 3, sin datos personales ni llamadas pagadas a Anthropic. La compilación produce `dist/client`, `dist/server/index.js` y metadatos Sites. El adaptador oficial se usa únicamente durante build con Vite 6.4.3; se verificó la integración con Node 20.15.1. Su manifiesto declara Node 22.13+/Vite 8, por lo que esta instalación conserva explícitamente `--legacy-peer-deps` y no habilita su simulador local de autenticación.
 
@@ -65,15 +68,76 @@ El esquema está en `db/schema.ts`. `npm run db:generate` genera migraciones Dri
 
 ## Experiencia
 
-- Navegación lateral, menú móvil completo, búsqueda `Ctrl/Cmd + K`, foco visible y movimiento reducido.
-- Registro rápido con `N`; vista privada con `Ctrl/Cmd + Shift + P`.
-- Resumen de margen estimado, presupuesto, patrimonio, deuda y próximos pagos sin marcar.
+- Inicio vacío con cuatro tareas: registrar un movimiento, seguir un cobro, organizar una deuda y explorar productos financieros. El presupuesto es opcional y no genera un asunto de revisión por estar vacío.
+- Seis destinos principales con descripciones: Resumen, Plan de pagos, Movimientos, Presupuesto, Patrimonio y Herramientas. El directorio conserva búsqueda y objetivo durante la sesión; la búsqueda prioriza los nombres exactos e incluye términos como «cobro» o «cajitas».
+- Navegación móvil con acceso directo al plan, búsqueda `Ctrl/Cmd + K`, foco visible y transiciones con Motion que respetan movimiento reducido.
+- Resumen adaptado a los registros disponibles: movimientos y cobros pendientes aparecen aunque no haya presupuesto. Los cobros conservan su moneda y se distinguen del saldo disponible; los saldos incompletos no se presentan como cero.
+- Registro rápido contextual con `N`: guardar conserva la vista actual, los recientes requieren confirmación y el aviso permite ver o deshacer. Vista privada con `Ctrl/Cmd + Shift + P`.
+- Con presupuesto configurado, el Resumen conserva margen estimado, cascada, patrimonio, deuda y próximos pagos sin marcar.
 - Movimientos con búsqueda, periodo, categorías, importación revisada y eliminación con deshacer.
 - Totales en MXN o USD; «Original» conserva cada moneda en filas y usa MXN para agregados.
 - Cuatro reglas de pago, proyecciones completas y tabla de resultados, sin inventar liquidación al agotar el horizonte.
 - Presupuesto editable desde cero, respaldos JSON, exportación Excel, impresión y herramientas de educación y cálculo.
 
-Las rutas aparecen en la URL y admiten Atrás/Adelante. En móvil, «Más» abre el catálogo completo. Reducir la navegación nunca elimina la revisión de una importación financiera.
+Las rutas aparecen en la URL y admiten Atrás/Adelante. Los paneles del plan usan `#plan?panel=...`, las calculadoras `#calculators?tool=...`, movimientos `#transactions?view=registered|expected` y mercado `#credit-library?view=cards|loans|savings|purchase`. En móvil, «Herramientas» abre el catálogo completo con búsqueda y un selector de objetivo. Volver al directorio recupera el control de origen y su posición; abrir una sección desde la paleta lleva al contenido de destino. Los formularios de movimientos y la revisión de importaciones conservan su estado al cambiar de sección.
+
+Cuando la edición del espacio está pausada, Herramientas sigue permitiendo buscar y navegar. Las acciones de edición muestran el motivo de su bloqueo; la vista privada conserva sus propias restricciones.
+
+Presupuesto, deudas y patrimonio enlazan al editor del plan cuando sus registros coinciden con la conciliación. Si existen ajustes o registros independientes, se conservan sus pantallas de edición con una indicación de origen. Guardar un escenario aplica únicamente los campos modificados; importar una conciliación revisada permite reemplazar el inventario explícitamente.
+
+Las pruebas canónicas sólo incluyen `src/` y `tests/`; se excluyen copias históricas y vistas de prueba en `artifacts/`. Las vistas locales de QA con datos sintéticos no forman parte del cliente compilado ni acreditan sincronización remota.
+
+La revisión del Resumen reúne fechas, movimientos y datos pendientes. Cada asunto explica su causa y abre el registro o filtro correspondiente; volver conserva el paso durante la sesión. Cerrar o continuar no confirma pagos. La edición de movimientos conserva su ID y metadatos importados, y permite deshacer campos sin sobrescribir modificaciones posteriores. Los enlaces desde la revisión conservan mes, categoría y fecha límite de los movimientos considerados.
+
+La cascada del presupuesto conserva el acumulado y el cero común al cambiar de orientación en pantallas estrechas. El simulador compara referencia y escenario por fecha, cuenta y moneda, distingue apertura de cierre, muestra mínimos y faltantes y ofrece una tabla con el mismo alcance. Sus valores son proyecciones, no acreditaciones bancarias. La investigación, fuentes y decisiones de esta iteración se documentan en [docs/ux-research.json](docs/ux-research.json); las propuestas futuras están separadas de las funciones implementadas.
+
+## Mercado de México y decisiones de compra
+
+**Herramientas → Explorar productos financieros** abre «Productos financieros en México», con categorías Tarjetas, Préstamos y Ahorro. **Qué tarjeta usar** ofrece acceso directo a la comparación de una compra. La búsqueda, los filtros y la carga progresiva permiten explorar sin presentar todas las fichas a la vez.
+
+| Capa de información | Cobertura del corte editorial del 18 de octubre de 2026 |
+|---|---|
+| Directorio de tarjetas | 192 productos identificados. |
+| Financiamiento | 109 productos, modalidades o programas; no son 109 préstamos directos independientes. |
+| Evidencia del directorio | 247 URLs referenciadas; los estados distinguen oferta documentada y contratación por confirmar. |
+| Fichas de costos | 17 tarjetas y 13 ofertas de préstamos; los campos pendientes permanecen explícitos. |
+| Programas de beneficios | 25 documentados con alcance explícito. |
+| Reglas calculables | 5 programas en 4 tarjetas: LikeU, Plata —sin Plus y con Plus—, HSBC 2Now y Simi x Stori Green. |
+| Ahorro e inversión | 65 modalidades: 58 fichas detalladas y 7 registros limitados; 59 fuentes primarias. |
+
+Identificación, ficha de costos y regla calculable son niveles distintos de evidencia. El directorio incluye tarjetas de crédito, servicios, cooperativas y tiendas; préstamos, modalidades y programas institucionales conservan su tipo. Un registro histórico, una invitación o una lista de espera no se presenta como oferta disponible para cualquier persona. Se deduplican alias, migraciones, campañas, niveles y versiones físicas/digitales; una modalidad materialmente distinta se conserva con su alcance.
+
+Las listas muestran CAT, tasa ordinaria, anualidad y cargos periódicos de tarjetas, junto a beneficios publicados; en préstamos, CAT, tasa, apertura, mantenimiento, monto y plazo aparecen antes de los requisitos desplegables. Cada costo conserva fuente, tratamiento de IVA y fechas conocidas. Los rangos no se promedian y las membresías opcionales no se suman automáticamente a la anualidad. «Con costos documentados» facilita la entrada; «Con beneficios» y «Todo el directorio» conservan acceso visible al resto del catálogo.
+
+La comparación usa las tarjetas que la persona declara tener y una compra concreta: importe, fecha, categoría, canal, modalidad de pago, condiciones y tope restante del periodo. La selección de tarjetas y de modalidades de ahorro se guarda en las preferencias de cada espacio privado; compra, topes y confirmaciones temporales se vuelven a evaluar. Recordar tarjetas no crea deudas ni verifica crédito disponible. No transforma desconocidos en cero, no estima intereses desde CAT y no afirma que una tarjeta sea la mejor en general. Las reglas incompletas, contradictorias o con revisión vencida conservan su explicación. La primera evaluación muestra qué falta confirmar; cada resultado reúne sus ajustes con Aplicar y Cancelar.
+
+Simi x Stori Green permite estimar acumulación bruta, pero queda fuera de la recomendación de efectivo comparable mientras sus costos de redención sigan sin confirmar. Saldo HSBC 2Now se expresa como equivalente estimado en MXN según las condiciones documentadas de canje; no es efectivo disponible inmediatamente. Una recomendación comparable requiere pago total confirmado y evidencia suficiente; puntos, monederos, bonificaciones y promociones no se suman como si fueran efectivo universal.
+
+Ahorro permite comparar hasta tres modalidades por disponibilidad, mecanismo, liquidez, rendimiento publicado, costos, requisitos, entidad, protección y fechas. Sus 65 modalidades no equivalen a 65 proveedores. Las 248 observaciones conservan 231 cifras y 17 desconocidos; tasa anual, GAT nominal, GAT real, objetivo promocional y rendimiento histórico no se ordenan como si fueran equivalentes. No calcula ganancias ni atribuye a fondos o reportos la protección de depósitos bancarios. Ejemplos primarios: [mecanismos de GBM](https://gbm.com/faqs/que-diferencia-existe-entre-smart-cash-y-smart-cash-dolares/), [fondo utilizado en Mercado Pago](https://www.mercadopago.com.mx/ayuda/Terminos-rendimientos_15581) y [condiciones de Apartados Open](https://www.openbank.mx/assets/OK_MX/es-MX/precontract/v1/MX.OB.CUENTA.NOREM.T%26C.pdf).
+
+La [auditoría de ahorro](docs/mexico-savings-market.json) registra 24 fichas con razón social completa por consolidar y 115 observaciones numéricas con alguna fecha pendiente. Covalto, Banco Azteca, Sabadell y Kubo conservan evidencia limitada por acceso insuficiente; Libertad queda como pendiente documental. Una ficha detallada no implica contrato íntegro ni elegibilidad confirmada.
+
+Fuentes de las reglas calculables: [Santander Cashback Baby](https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:7d6d6b86-b947-4401-996e-830a04318331/original/as/tyc-cashback.pdf), [Plata](https://prime.bancoplata.mx/file-service/static/cashback_conditions_public.pdf), [HSBC 2Now](https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/terminos_condiciones_2now.pdf) y [alianzas Stori](https://www.storicard.com/files/terminos-y-condiciones-stori-alianzas.pdf?v=20251114). Cada ficha conserva sus propios enlaces.
+
+### Cómo se actualiza la información
+
+Los directorios, costos, beneficios y modalidades de ahorro son **snapshots editoriales versionados**. Esta versión no incluye un crawler ni un monitor de productos funcionando. La fecha de consulta no acredita vigencia: se distinguen publicación, periodo, disponibilidad comercial, vigencia contractual y revisión editorial.
+
+Sólo cuatro referencias oficiales tienen una consulta GET refrescable: CETES a 28 días, FIX, UDI e inflación anual del INPC. El adaptador de [referencias públicas](server/references/publicRates.js) conserva fechas y estados de frescura, limita las respuestas y usa caché. Actualizar una referencia no modifica automáticamente un supuesto de inversión. CETES es una referencia anualizada de una colocación; FIX no es el precio de compra o venta de un banco y la inflación observada no es un pronóstico. Fuentes: [Banco de México](https://www.banxico.org.mx/statistics/rss-indicators-banco-mexico.html) e [INEGI](https://www.inegi.org.mx/servicios/feedsnoticias/feeds.html).
+
+La ampliación automática futura requiere revisar fuentes y derechos de uso, detectar cambios y resolver conflictos antes de publicar. El directorio actual es parcial; no acredita todo el mercado, aprobación individual ni verificación registral completa.
+
+### Investigación y estado de verificación
+
+El [informe editorial](docs/daily-value-research.html) y su [evidencia estructurada](docs/daily-value-research.json) conservan la investigación previa. La [ampliación de literatura y comunidades](docs/product-excellence-research.html), con [evidencia estructurada](docs/product-excellence-research.json), documenta cinco decisiones, sus límites y un protocolo de usabilidad todavía no ejecutado. El [inventario de crédito](docs/mexico-credit-market.json) registra cobertura y deduplicación; la [auditoría de costos y beneficios](docs/mexico-credit-details.json) refleja las fichas cuantitativas integradas, con fuentes por campo. Los datos operativos viven en [directorio de crédito](src/data/mexicoCreditDirectory.js), [fichas de costos](src/data/creditCatalog.js), [programas de beneficios](src/data/cardBenefits.js) y [catálogo de ahorro](src/data/mexicoSavingsCatalog.js).
+
+**Verificación local actual:** 931 pruebas en 43 archivos y build final sin advertencias. El navegador aprobó 47 comprobaciones en 11 grupos sobre fixtures aislados: Inicio, búsqueda, rutas, regreso a Herramientas, lectura, privacidad, conservación de borradores y carga con reintento. UI/UX aprobó las superficies renderizadas; la revisión de código cerró los hallazgos de foco. El [registro integrado](docs/product-polish-qa.json) distingue las pruebas ejecutadas, la reutilización de evidencia y los límites. Una interacción quedó limitada por `aria-disabled`; la revisión automática rechazó forzar una acción de escritura deshabilitada, y esa activación y su equivalente por teclado no se ejecutaron.
+
+Tarjetas se carga al entrar al catálogo; Ahorro y Compra se cargan al visitarse y conservan su estado al regresar. La [medición del build](artifacts/ui-review/product-polish-performance-r4.json) registra 21.27% menos JavaScript minificado hasta la primera visita a Tarjetas, o 13.31% menos al comprimir cada archivo con gzip. La entrada por sí sola requiere 7.19% menos JavaScript. Al visitar todas las vistas, el acumulado crece 0.67% con el conjunto de mejoras: el beneficio medido es diferir trabajo. Estas cifras no representan tiempos de carga, LCP ni INP.
+
+La [verificación anterior de mercado y visualización](docs/product-excellence-qa.json) conserva su evidencia histórica. El cierre actual no acredita guardado en una cuenta privada real, conformidad WCAG integral, usabilidad con usuarios ni despliegue; los errores de carga se probaron con un importador controlado. La coordinación real de hogares, membresías y permisos compartidos sigue siendo trabajo futuro; los espacios actuales permanecen independientes.
+
+Cobros esperados registra acuerdos, fechas y parcialidades sin sumar expectativas al efectivo. Permite vincular un ingreso existente sin duplicarlo o registrar un ingreso recibido; deshacer un vínculo conserva el movimiento. Muestra totales separados por moneda y distingue cancelación de pago recibido. El control de repetición identifica operaciones, no sustituye una conciliación bancaria ni detecta cualquier duplicado semántico de una importación.
 
 ## Claude y estados de cuenta
 
@@ -116,6 +180,8 @@ src/services/storage.js     Lectura del respaldo anterior
 server/sites/              Worker y rutas del Site
 server/workspace/          Autorización y persistencia D1
 server/ai/worker-ai.js      Claude, contexto de cuenta y cuota D1
+server/references/         Adaptador de referencias oficiales públicas
+src/data/                  Directorios, fichas y programas editoriales
 db/                        Esquema Drizzle
 drizzle/                   Migraciones de esquema
 tests/                     Autorización, CAS y cuota con SQLite

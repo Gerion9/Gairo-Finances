@@ -25,9 +25,9 @@ export default function FinancialHealthScore({ financialData, exchangeRate, onNa
 
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-extrabold text-white tracking-tight">
+                <h1 className="text-xl font-extrabold text-white tracking-tight">
                   Diagnóstico de Salud Financiera
-                </h2>
+                </h1>
                 <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
                   score >= 70 ? 'bg-emerald-500/20 text-emerald-400' : (score >= 50 ? 'bg-amber-500/20 text-amber-400' : 'bg-rose-500/20 text-rose-400')
                 }`}>

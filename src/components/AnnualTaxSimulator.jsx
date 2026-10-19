@@ -52,7 +52,7 @@ export default function AnnualTaxSimulator({ financialData = {} }) {
             <Landmark className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white">Simulador de escenario fiscal anual</h2>
+            <h1 className="text-xl font-bold text-white">Simulador de escenario fiscal anual</h1>
             <p className="text-xs text-slate-400 mt-0.5">
               Estimación orientativa con una fórmula simplificada. La tarifa y los requisitos del ejercicio fiscal no están validados en esta herramienta.
             </p>

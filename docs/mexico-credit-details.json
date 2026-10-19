@@ -1,0 +1,2763 @@
+{
+  "schemaVersion": 1,
+  "reviewedOn": "2026-10-18",
+  "scope": "Fichas editoriales de costos y condiciones públicas. Una ficha documentada no equivale a oferta individual, contratación disponible ni cobertura de todo el mercado.",
+  "publicationRules": [
+    "CAT, tasa ordinaria y cargos conservan tipo, fechas y fuente por campo.",
+    "Los rangos publicados no se convierten en promedios; los cargos mensuales no se anualizan ni se suman a la anualidad.",
+    "Las membresías opcionales y los cargos por tramos conservan sus condiciones; no se calcula una cuota única.",
+    "Los beneficios publicados no acreditan una ganancia neta ni modifican las reglas calculables de una compra.",
+    "Un campo desconocido no vale cero. Fechas de consulta y vigencia comercial son conceptos distintos."
+  ],
+  "retrievalNotes": [
+    {
+      "entryId": "banamex-personal",
+      "field": "costs.cat",
+      "consultedOn": "2026-10-18",
+      "method": "POST de consulta pública utilizado por la página oficial del producto, sin autenticación ni datos del usuario.",
+      "endpoint": "https://www.banamex.com/query",
+      "body": {
+        "operation": "getAll",
+        "site": "7",
+        "entity": "pt_cats",
+        "page": "0",
+        "page_size": "100"
+      },
+      "recordId": 118,
+      "product": "Crédito Personal",
+      "observation": {
+        "cat": "36.8%",
+        "fecha": "02 de julio de 2026",
+        "fechaVigenciaFin": "02 de enero de 2027"
+      },
+      "limitation": "La tasa del servicio no coincide con otras referencias de la página; se conserva como desconocida. El enlace visible apunta a la página consumidora, no al endpoint POST."
+    }
+  ],
+  "cards": [
+    {
+      "entryType": "card",
+      "consultedOn": "2026-10-18",
+      "currency": "MXN",
+      "id": "hsbc-2now",
+      "name": "Tarjeta de Crédito HSBC 2Now",
+      "issuer": "HSBC México",
+      "canonicalUrl": "https://www.hsbc.com.mx/tarjetas-de-credito/productos/2now/",
+      "costs": {
+        "annualFee": {
+          "amount": 0,
+          "unit": "MXN",
+          "frequency": "annual",
+          "label": "Anualidad del titular",
+          "classification": "none",
+          "taxTreatment": "Sin IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "La administración mensual se cobra por separado si no se cumple el uso requerido.",
+          "sources": [
+            {
+              "title": "HSBC 2Now: folleto de costos y requisitos",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/folleto_digital_2now.pdf"
+            }
+          ]
+        },
+        "maintenanceFee": {
+          "amount": 186,
+          "unit": "MXN",
+          "frequency": "monthly",
+          "label": "Administración mensual del titular",
+          "taxTreatment": "Más IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Se exenta con al menos $3,500 MXN en operaciones elegibles del titular y adicionales entre fechas de corte.",
+          "sources": [
+            {
+              "title": "HSBC 2Now: folleto de costos y requisitos",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/folleto_digital_2now.pdf"
+            }
+          ]
+        },
+        "cat": {
+          "percent": 91.6,
+          "label": "CAT promedio publicado para fines informativos y de comparación.",
+          "asOf": "2026-08-07",
+          "validThrough": "2026-12-07",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "HSBC 2Now: folleto de costos y requisitos",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/folleto_digital_2now.pdf"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 45.42,
+          "label": "Promedio ponderada por saldo, anual variable.",
+          "asOf": "2026-08-07",
+          "validThrough": "2026-12-07",
+          "taxTreatment": "IVA no precisado para esta tasa",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "HSBC 2Now: folleto de costos y requisitos",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/folleto_digital_2now.pdf"
+            }
+          ]
+        }
+      },
+      "requirements": [
+        "De 18 a 74 años y 11 meses; ingreso mensual mínimo publicado de $15,000 MXN.",
+        "Un año en el empleo actual, historial crediticio, identificación y comprobantes requeridos por HSBC.",
+        "Sujeta a evaluación y aprobación individual."
+      ],
+      "otherFees": [
+        "Administración mensual de adicional: $49 MXN más IVA; se exenta con $1 MXN en operaciones elegibles de esa adicional entre cortes.",
+        "Pago tardío: $509 MXN más IVA por evento.",
+        "Disposición de efectivo: 8% del monto más IVA."
+      ],
+      "benefits": [
+        "2% en Puntos 2Now sobre los primeros $42,500 MXN de compras elegibles entre cortes: máximo 850 puntos. Un punto equivale a $1 MXN para canje; los puntos vencen en 12 meses.",
+        "Canje en comercios físicos o retiro de Saldo 2Now en HSBC o MULTIRED, con tarjeta al corriente y sin bloqueo. El saldo acumulado no es efectivo disponible hoy."
+      ],
+      "limitations": [
+        "Los términos de recompensas excluyen meses sin intereses en un párrafo y después indican considerarlos por su total. Se conserva el conflicto y no se calcula esa modalidad.",
+        "El CAT y la tasa promedio no sustituyen las condiciones de la oferta o contrato individual.",
+        "La vigencia de las comisiones no se infiere de la vigencia del CAT."
+      ],
+      "evidence": [
+        {
+          "title": "HSBC 2Now: tarjeta, requisitos y retiro de recompensas",
+          "url": "https://www.hsbc.com.mx/tarjetas-de-credito/productos/2now/"
+        },
+        {
+          "title": "HSBC 2Now: folleto de costos y requisitos",
+          "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/folleto_digital_2now.pdf"
+        },
+        {
+          "title": "HSBC 2Now: términos de Puntos 2Now",
+          "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/terminos_condiciones_2now.pdf"
+        }
+      ]
+    },
+    {
+      "entryType": "card",
+      "consultedOn": "2026-10-18",
+      "currency": "MXN",
+      "id": "banamex-costco",
+      "name": "Tarjeta de Crédito Costco Banamex",
+      "issuer": "Banamex",
+      "canonicalUrl": "https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-costco",
+      "costs": {
+        "annualFee": {
+          "amount": null,
+          "unit": "MXN",
+          "frequency": "annual",
+          "label": "Anualidad por confirmar",
+          "classification": "unknown",
+          "taxTreatment": "Por confirmar",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "El cobro vigente se presenta como administración mensual. El legal conserva $650 MXN de administración; no se suma ni se convierte en una anualidad adicional.",
+          "sources": [
+            {
+              "title": "Costco Banamex: costos, requisitos y recompensa anual",
+              "url": "https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-costco"
+            },
+            {
+              "title": "Costco Banamex: anexo de comisiones, julio de 2026",
+              "url": "https://www.banamex.com/resources/pdf/es/personas/creditos/tarjetas_credito/anexo-comisiones-costco.pdf"
+            }
+          ]
+        },
+        "maintenanceFee": {
+          "amount": 54.17,
+          "unit": "MXN",
+          "frequency": "monthly",
+          "label": "Administración mensual del titular",
+          "taxTreatment": "Más IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "El anexo de julio de 2026 establece cobro mensual. La página explica la transición de pagos anteriores al 30 de julio de 2026; confirmar el calendario individual.",
+          "sources": [
+            {
+              "title": "Costco Banamex: anexo de comisiones, julio de 2026",
+              "url": "https://www.banamex.com/resources/pdf/es/personas/creditos/tarjetas_credito/anexo-comisiones-costco.pdf"
+            },
+            {
+              "title": "Costco Banamex: costos, requisitos y recompensa anual",
+              "url": "https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-costco"
+            }
+          ]
+        },
+        "cat": {
+          "percent": 79.9,
+          "label": "CAT promedio publicado para fines informativos y de comparación.",
+          "asOf": "2026-07-27",
+          "validThrough": "2027-01-27",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Costco Banamex: costos, requisitos y recompensa anual",
+              "url": "https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-costco"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 58.29,
+          "label": "Promedio ponderada anual; crédito de tasa variable.",
+          "asOf": "2026-07-27",
+          "validThrough": "2027-01-27",
+          "taxTreatment": "IVA no precisado para esta tasa",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Costco Banamex: costos, requisitos y recompensa anual",
+              "url": "https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-costco"
+            }
+          ]
+        }
+      },
+      "requirements": [
+        "Mayor de 18 años; ingreso mensual mínimo comprobable de $7,000 MXN.",
+        "INE o documentación de residencia y pasaporte para extranjeros; comprobante de domicilio de hasta tres meses.",
+        "Sujeta a evaluación y aprobación individual."
+      ],
+      "otherFees": [
+        "Administración mensual de adicional: $27.08 MXN más IVA.",
+        "Pago tardío: $360 MXN más IVA por evento.",
+        "Reposición por robo o extravío: $130 MXN más IVA."
+      ],
+      "benefits": [
+        "Reembolso anual: gasolina Costco 5% hasta $10,000 MXN de facturación mensual y después 3%; educación 4% hasta $20,000 MXN y después 1%; Costco 3%; restaurantes, streaming, TV e internet 2%; otras compras y agregadores 1%.",
+        "La recompensa se acredita en diciembre estando al corriente y se usa sólo en tiendas físicas Costco México. No aplica en gasolinas ni en costco.com.mx."
+      ],
+      "limitations": [
+        "La recompensa tiene canje restringido; no equivale a cashback líquido ni a una devolución inmediata.",
+        "El cálculo de recompensas depende de tramos y gasto previo del periodo; no se sustituye por una tasa única.",
+        "El anexo sólo identifica julio de 2026; no se inventa un día de publicación ni una vigencia para las cuotas."
+      ],
+      "evidence": [
+        {
+          "title": "Costco Banamex: costos, requisitos y recompensa anual",
+          "url": "https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-costco"
+        },
+        {
+          "title": "Costco Banamex: anexo de comisiones, julio de 2026",
+          "url": "https://www.banamex.com/resources/pdf/es/personas/creditos/tarjetas_credito/anexo-comisiones-costco.pdf"
+        }
+      ]
+    },
+    {
+      "entryType": "card",
+      "consultedOn": "2026-10-18",
+      "currency": "MXN",
+      "id": "plata-credito",
+      "name": "Tarjeta de Crédito Plata",
+      "issuer": "Banco Plata, S.A., Institución de Banca Múltiple",
+      "canonicalUrl": "https://bancoplata.mx/es",
+      "costs": {
+        "annualFee": {
+          "amount": 199,
+          "unit": "MXN",
+          "frequency": "annual",
+          "label": "Anualidad base",
+          "classification": "annual",
+          "taxTreatment": "Más IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Tarifa base anual; el folleto indica sin costo los primeros tres meses. La exención promocional depende de elegibilidad y vigencia.",
+          "sources": [
+            {
+              "title": "Banco Plata: folleto informativo de Tarjeta de Crédito",
+              "url": "https://prime.bancoplata.mx/file-service/static/eula/booklet.pdf"
+            },
+            {
+              "title": "Banco Plata: promoción de exención de anualidades",
+              "url": "https://prime.bancoplata.mx/file-service/static/terms_and_conditions_early_bird_plata_card_sin_anualidades.pdf"
+            }
+          ]
+        },
+        "cat": {
+          "percent": 169.3,
+          "label": "CAT promedio publicado para fines informativos y de comparación.",
+          "asOf": "2026-09-18",
+          "validThrough": null,
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Banco Plata: folleto informativo de Tarjeta de Crédito",
+              "url": "https://prime.bancoplata.mx/file-service/static/eula/booklet.pdf"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 105.91,
+          "label": "Ordinaria fija anual, promedio ponderada por saldo.",
+          "asOf": "2026-09-18",
+          "validThrough": null,
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Banco Plata: folleto informativo de Tarjeta de Crédito",
+              "url": "https://prime.bancoplata.mx/file-service/static/eula/booklet.pdf"
+            }
+          ]
+        },
+        "optionalSubscriptionFee": {
+          "amount": 99,
+          "unit": "MXN",
+          "frequency": "monthly",
+          "label": "Plata Plus opcional · importe máximo",
+          "taxTreatment": "Más IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Membresía opcional para Crédito: hasta $99 MXN más IVA al mes. El importe individual se informa en la aplicación; no es un cargo obligatorio de la tarjeta.",
+          "sources": [
+            {
+              "title": "Banco Plata: términos de Plata Plus",
+              "url": "https://prime.bancoplata.mx/file-service/static/eula/terms_and_conditions_plata_plus.pdf"
+            }
+          ]
+        }
+      },
+      "requirements": [
+        "Mayor de edad, mexicano o extranjero residente con identificación y documentación migratoria aplicable.",
+        "Solicitud y evaluación individual; ingreso mínimo no consolidado en esta ficha."
+      ],
+      "otherFees": [
+        "Pago tardío: $400 MXN más IVA por evento. Disposición de efectivo: 10% del monto más IVA.",
+        "Contratar parcialización a 3, 6, 9 o 12 meses tiene cargos de 10.5%, 21%, 22.5% o 30% más IVA, respectivamente, sobre el importe inicial. Meses sin intereses no implica libre de estos cargos."
+      ],
+      "benefits": [
+        "Selecciona categorías cada mes. «Todas tus compras» devuelve 0.5% sin Plus o 1% con Plus; tope compartido mensual de $1,000 MXN o $3,000 MXN, respectivamente. Algunas categorías llegan a 15%, según oferta individual y sus condiciones.",
+        "El cashback se abona a Plata Cuenta o al crédito si no hay cuenta. Las operaciones excluidas y la elegibilidad de cada compra se rigen por los términos del programa.",
+        "La promoción de exención de anualidades está dirigida a mexicanos mayores de 18 años y nuevos clientes durante la promoción; se pierde si coinciden pago en exceso no reclamado e inactividad superior a tres meses."
+      ],
+      "limitations": [
+        "No se documentó una fecha de fin de vigencia para el CAT ni la tasa; la fecha de cálculo no prueba vigencia actual.",
+        "El tarifario lista «Recompensas básico» por $99 MXN más IVA al mes. No se determinó su obligatoriedad ni si se acumula con Plus; no se trata como un cargo inevitable.",
+        "Los términos de Plus permiten hasta diez categorías elegibles y los de cashback mencionan hasta cuatro sin distinguir modalidad. No se consolida un número universal.",
+        "El aviso web de promoción dice hasta el 19 de octubre sin indicar el año; no se adopta como una fecha ISO ni se garantiza elegibilidad.",
+        "No se descuenta ni se justifica el costo de Plus mediante una estimación aislada de recompensa por compra."
+      ],
+      "evidence": [
+        {
+          "title": "Banco Plata: Tarjeta de Crédito",
+          "url": "https://bancoplata.mx/es"
+        },
+        {
+          "title": "Banco Plata: folleto informativo de Tarjeta de Crédito",
+          "url": "https://prime.bancoplata.mx/file-service/static/eula/booklet.pdf"
+        },
+        {
+          "title": "Banco Plata: términos de Plata Plus",
+          "url": "https://prime.bancoplata.mx/file-service/static/eula/terms_and_conditions_plata_plus.pdf"
+        },
+        {
+          "title": "Banco Plata: condiciones del programa de cashback",
+          "url": "https://prime.bancoplata.mx/file-service/static/cashback_conditions_public.pdf"
+        },
+        {
+          "title": "Banco Plata: promoción de exención de anualidades",
+          "url": "https://prime.bancoplata.mx/file-service/static/terms_and_conditions_early_bird_plata_card_sin_anualidades.pdf"
+        }
+      ]
+    },
+    {
+      "entryType": "card",
+      "consultedOn": "2026-10-18",
+      "currency": "MXN",
+      "id": "hey-credito",
+      "name": "Tarjeta de Crédito Hey",
+      "issuer": "Hey Banco",
+      "canonicalUrl": "https://banco.hey.inc/universo-hey/para-ti-o-tu-negocio/tarjetas-de-credito-hey",
+      "costs": {
+        "annualFee": {
+          "amount": null,
+          "unit": "MXN",
+          "frequency": "annual",
+          "label": "Anualidad según modalidad",
+          "classification": "conditional",
+          "taxTreatment": "Más IVA en el programa Recompensas",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Sin anualidad en la modalidad sin Recompensas; $600 MXN más IVA al año al contratar Recompensas. El CAT publicado contempla esta anualidad.",
+          "sources": [
+            {
+              "title": "Hey Banco: folleto Hey You y Biz, actualización de agosto de 2026",
+              "url": "https://banco.hey.inc/content/dam/heybanco/folletos/folletos-hey-you-biz.pdf"
+            },
+            {
+              "title": "Hey Banco: Recompensas, vigentes desde el 3 de febrero de 2026",
+              "url": "https://banco.hey.inc/content/dam/heybanco/terminos-condiciones/beneficios/recompensas.pdf"
+            },
+            {
+              "title": "Hey Banco: Tarjetas de Crédito Hey",
+              "url": "https://banco.hey.inc/universo-hey/para-ti-o-tu-negocio/tarjetas-de-credito-hey"
+            }
+          ]
+        },
+        "cat": {
+          "percent": 58.6,
+          "label": "CAT promedio de la modalidad con Recompensas opcionales; contempla administración de $600 MXN más IVA al año. No se traslada a la modalidad sin el programa.",
+          "asOf": "2026-04-30",
+          "validThrough": "2026-10-30",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Hey Banco: folleto Hey You y Biz, actualización de agosto de 2026",
+              "url": "https://banco.hey.inc/content/dam/heybanco/folletos/folletos-hey-you-biz.pdf"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 45.45,
+          "label": "Promedio ponderada anual variable.",
+          "asOf": "2026-04-30",
+          "validThrough": "2026-10-30",
+          "taxTreatment": "IVA no precisado para esta tasa",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Hey Banco: folleto Hey You y Biz, actualización de agosto de 2026",
+              "url": "https://banco.hey.inc/content/dam/heybanco/folletos/folletos-hey-you-biz.pdf"
+            }
+          ]
+        },
+        "optionalSubscriptionFee": {
+          "amount": 600,
+          "unit": "MXN",
+          "frequency": "annual",
+          "label": "Recompensas Hey opcionales · cuota anual",
+          "taxTreatment": "Más IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Programa opcional de $600 MXN más IVA al año; renovación automática y sin reembolso del periodo contratado al cancelar. La modalidad sin Recompensas no cobra esta cuota.",
+          "sources": [
+            {
+              "title": "Hey Banco: Recompensas, vigentes desde el 3 de febrero de 2026",
+              "url": "https://banco.hey.inc/content/dam/heybanco/terminos-condiciones/beneficios/recompensas.pdf"
+            },
+            {
+              "title": "Hey Banco: folleto Hey You y Biz, actualización de agosto de 2026",
+              "url": "https://banco.hey.inc/content/dam/heybanco/folletos/folletos-hey-you-biz.pdf"
+            }
+          ]
+        }
+      },
+      "requirements": [
+        "Solicitud y evaluación individual; la página publica una línea de hasta $250,000 MXN sujeta a aprobación.",
+        "Edad e ingreso mínimos no consolidados en esta ficha.",
+        "Para Recompensas: Cuenta Hey activa y validada, y tarjetas de crédito y de recompensas activas."
+      ],
+      "otherFees": [
+        "Pago tardío: $300 MXN más IVA.",
+        "Disposición de efectivo: 6% del monto más IVA.",
+        "Tarjeta adicional: $100 MXN más IVA por evento. Reposición por robo o extravío: $150 MXN más IVA."
+      ],
+      "benefits": [
+        "Recompensas opcionales por $600 MXN más IVA al año: 1% en compras elegibles y 1% adicional con tarjeta virtual en los comercios enumerados; no es 2% en cualquier compra por internet.",
+        "Tope mensual equivalente al 1% de la línea de crédito. Las recompensas vencen en dos años.",
+        "Uso mediante Tarjeta de Recompensas o transferencia a Cuenta Hey. La transferencia tiene una retención publicada de 20%; esta retención no aplica al uso de la Tarjeta de Recompensas."
+      ],
+      "limitations": [
+        "Recompensas excluye efectivo, SPEI, hoteles, renta de autos, casinos y apuestas, intereses y comisiones, según sus términos.",
+        "El programa se renueva automáticamente cada año; cancelar no reembolsa el periodo contratado.",
+        "El folleto combina una referencia TIIE más margen con un máximo de tasa; no se convierten en un rango numérico comparable ni en una tasa personalizada.",
+        "No se infiere una comisión mensual de cero ni una vigencia de cuotas a partir del CAT."
+      ],
+      "evidence": [
+        {
+          "title": "Hey Banco: Tarjetas de Crédito Hey",
+          "url": "https://banco.hey.inc/universo-hey/para-ti-o-tu-negocio/tarjetas-de-credito-hey"
+        },
+        {
+          "title": "Hey Banco: folleto Hey You y Biz, actualización de agosto de 2026",
+          "url": "https://banco.hey.inc/content/dam/heybanco/folletos/folletos-hey-you-biz.pdf"
+        },
+        {
+          "title": "Hey Banco: Recompensas, vigentes desde el 3 de febrero de 2026",
+          "url": "https://banco.hey.inc/content/dam/heybanco/terminos-condiciones/beneficios/recompensas.pdf"
+        }
+      ]
+    },
+    {
+      "entryType": "card",
+      "consultedOn": "2026-10-18",
+      "currency": "MXN",
+      "id": "rappicard",
+      "name": "RappiCard",
+      "issuer": "Banco Mercantil del Norte",
+      "canonicalUrl": "https://rappicard.mx/",
+      "costs": {
+        "annualFee": {
+          "amount": 0,
+          "unit": "MXN",
+          "frequency": "annual",
+          "label": "Anualidad del titular",
+          "classification": "none",
+          "taxTreatment": "Sin comisión anual",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Anualidad publicada en el sitio de RappiCard; no implica que no existan comisiones por otros eventos.",
+          "sources": [
+            {
+              "title": "RappiCard: tarjeta y costos publicados",
+              "url": "https://rappicard.mx/"
+            }
+          ]
+        },
+        "cat": {
+          "percent": 101.4,
+          "label": "CAT promedio publicado para fines informativos y de comparación.",
+          "asOf": null,
+          "validThrough": "2026-12-06",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "RappiCard: tarjeta y costos publicados",
+              "url": "https://rappicard.mx/"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 71.77,
+          "label": "Promedio ponderada anual fija.",
+          "asOf": null,
+          "validThrough": "2026-12-06",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "RappiCard: tarjeta y costos publicados",
+              "url": "https://rappicard.mx/"
+            }
+          ]
+        }
+      },
+      "requirements": [
+        "Mayor de 18 años; solicitud y evaluación individual.",
+        "Para las recompensas: ser titular y estar al corriente, sujeto a confirmación del programa aplicable al contrato.",
+        "Ingreso mínimo y edad máxima no consolidados en esta ficha."
+      ],
+      "otherFees": [
+        "Cargos por atraso, disposición de efectivo y reposición no consolidados; el anexo anterior encontrado está vencido. No se consideran iguales a cero."
+      ],
+      "benefits": [
+        "Términos de cashback publicados para el 1–31 de octubre de 2026: 1% con tarjeta física o digital; 3% dentro de Rappi, incluido Travel; 5% con Rappi Pro Black dentro de Rappi, excepto Travel. Su aplicabilidad al contrato Banorte debe confirmarse.",
+        "Para las tasas dentro de Rappi, la tarjeta debe cargarse automáticamente en la aplicación de su titular; el alta manual recibe 1%. Pro Black es una suscripción cuyo costo no está consolidado aquí.",
+        "El tope publicado es $1,500 MXN durante la vigencia del contrato, ampliable discrecionalmente hasta $5,000 MXN; no es mensual. Canje como abono a la deuda desde $1 MXN, o tarjetas de regalo y recargas desde $10 MXN."
+      ],
+      "limitations": [
+        "El aviso publica vigencia del 7 de junio al 6 de diciembre de 2026, pero no fecha de cálculo. No se usa el inicio de vigencia como fecha de cálculo.",
+        "Los términos de cashback todavía identifican a Tarjetas del Futuro, S.A.P.I., mientras el sitio identifica a Banorte. Deben confirmarse vigencia y aplicabilidad por contrato; no se extienden los beneficios a todo nuevo cliente Banorte.",
+        "No se trasladan comisiones del anexo de enero–junio de 2026 ni se presume que el 5% esté incluido gratuitamente en cualquier tarjeta."
+      ],
+      "evidence": [
+        {
+          "title": "RappiCard: tarjeta y costos publicados",
+          "url": "https://rappicard.mx/"
+        },
+        {
+          "title": "RappiCard: condiciones de cashback, octubre de 2026",
+          "url": "https://rappicard.mx/condiciones-cashback/"
+        }
+      ]
+    },
+    {
+      "entryType": "card",
+      "consultedOn": "2026-10-18",
+      "currency": "MXN",
+      "id": "banregio-win",
+      "name": "Tarjeta WIN Banregio",
+      "issuer": "Banco Regional · Banregio",
+      "canonicalUrl": "https://www.banregio.com/personas/tarjetas/banregio.php",
+      "costs": {
+        "annualFee": {
+          "amount": 0,
+          "unit": "MXN",
+          "frequency": "annual",
+          "label": "Anualidad del titular",
+          "classification": "none",
+          "taxTreatment": "Sin IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Sin anualidad publicada; otros cargos por uso o eventos son independientes.",
+          "sources": [
+            {
+              "title": "Banregio: Tarjeta WIN, costos y beneficios",
+              "url": "https://www.banregio.com/personas/tarjetas/banregio.php"
+            }
+          ]
+        },
+        "cat": {
+          "percent": 40.6,
+          "label": "CAT promedio publicado para fines informativos y de comparación.",
+          "asOf": "2026-04-30",
+          "validThrough": "2026-10-30",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Banregio: Tarjeta WIN, costos y beneficios",
+              "url": "https://www.banregio.com/personas/tarjetas/banregio.php"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 34.2,
+          "label": "Promedio ponderada anual variable.",
+          "asOf": "2026-04-30",
+          "validThrough": "2026-10-30",
+          "taxTreatment": "IVA no precisado para esta tasa",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Banregio: Tarjeta WIN, costos y beneficios",
+              "url": "https://www.banregio.com/personas/tarjetas/banregio.php"
+            }
+          ]
+        }
+      },
+      "requirements": [
+        "De 18 a 79 años y 11 meses; ingreso mensual mínimo publicado de $50,000 MXN.",
+        "Identificación, comprobantes de ingresos y domicilio, solicitud y evaluación crediticia."
+      ],
+      "otherFees": [
+        "Disposición de efectivo: 5% del monto más IVA.",
+        "Tarjeta adicional: $200 MXN más IVA por evento.",
+        "Pago tardío: $300 MXN o el pago mínimo, lo que sea menor, más IVA.",
+        "Reposición por robo o extravío: $190 MXN más IVA."
+      ],
+      "benefits": [
+        "1% de recompensas con tarjeta física y 2% en compras por internet con la Tarjeta Virtual. Permite pagar con el saldo de recompensas, sujeto a reglas de redención."
+      ],
+      "limitations": [
+        "Topes, vigencia y costos de redención de recompensas no consolidados; no se prometen recompensas ilimitadas ni canje en efectivo.",
+        "La tasa promedio publicada no es una cotización individual. El margen sobre TIIE del tarifario no se convierte en una tasa efectiva.",
+        "La vigencia de las comisiones no se infiere de la fecha del CAT."
+      ],
+      "evidence": [
+        {
+          "title": "Banregio: Tarjeta WIN, costos y beneficios",
+          "url": "https://www.banregio.com/personas/tarjetas/banregio.php"
+        },
+        {
+          "title": "Banregio: tabla de comisiones de tarjetas de crédito",
+          "url": "https://portalbanregio.s3.amazonaws.com/assets/naranja/img/Tarjetas-Credito.pdf"
+        }
+      ]
+    },
+    {
+      "entryType": "card",
+      "consultedOn": "2026-10-18",
+      "currency": "MXN",
+      "id": "stori-simi-green",
+      "name": "Stori Green x Farmacias Similares",
+      "issuer": "Stori México, S.A. de C.V., Sociedad Financiera Popular",
+      "canonicalUrl": "https://www.storicard.com/farmacias-similares",
+      "costs": {
+        "annualFee": {
+          "amount": 0,
+          "unit": "MXN",
+          "frequency": "annual",
+          "label": "Anualidad del titular",
+          "classification": "none",
+          "taxTreatment": "Sin IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "La comisión de apertura de STORI GREEN es independiente de la anualidad.",
+          "sources": [
+            {
+              "title": "Stori: costos y comisiones, renglón STORI GREEN",
+              "url": "https://www.storicard.com/files/costos-y-comisiones-credito.pdf?v=20260213"
+            }
+          ]
+        },
+        "cat": {
+          "percent": 202.2,
+          "label": "CAT promedio ponderado de STORI GREEN.",
+          "asOf": "2026-07-01",
+          "validThrough": "2026-12-31",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Stori: costos y comisiones, renglón STORI GREEN",
+              "url": "https://www.storicard.com/files/costos-y-comisiones-credito.pdf?v=20260213"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 114.6,
+          "label": "Fija promedio ponderada anual de STORI GREEN.",
+          "asOf": "2026-07-01",
+          "validThrough": "2026-12-31",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Stori: costos y comisiones, renglón STORI GREEN",
+              "url": "https://www.storicard.com/files/costos-y-comisiones-credito.pdf?v=20260213"
+            }
+          ]
+        },
+        "openingFee": {
+          "amount": 500,
+          "unit": "MXN",
+          "frequency": "one-time",
+          "label": "Comisión por apertura",
+          "taxTreatment": "No especificado en el renglón",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Contratación por apertura, una sola vez, para STORI GREEN; confirmar el tratamiento de IVA.",
+          "sources": [
+            {
+              "title": "Stori: costos y comisiones, renglón STORI GREEN",
+              "url": "https://www.storicard.com/files/costos-y-comisiones-credito.pdf?v=20260213"
+            }
+          ]
+        }
+      },
+      "requirements": [
+        "Persona física mayor de edad y nuevo cliente, con elegibilidad y notificación de Stori para la alianza.",
+        "INE, comprobante de domicilio y selfie según el proceso de solicitud.",
+        "La FAQ excluye la solicitud para clientes actuales de Green o Black; ingreso mínimo no consolidado."
+      ],
+      "otherFees": [
+        "Falta de pago: $300 MXN más IVA por evento.",
+        "Reposición por robo, extravío o deterioro: $150 MXN más IVA."
+      ],
+      "benefits": [
+        "Beneficio base de 2% en Farmacias Similares, hasta $500 MXN por mes calendario, con asignación al programa y tarjeta al corriente.",
+        "Bienvenida: 25% en la primera compra en Farmacias Similares, con límite publicado de $1,000 MXN por mes calendario. Fidelidad: 10% tras completar tres compras fuera de Similares; cada beneficio tiene tope de $500 MXN y acumulación y redención hasta el día 27 del mes.",
+        "La FAQ indica transferencia manual del beneficio base de 2% a Stori Cuenta+; la bienvenida se abona a la tarjeta. Los costos de redención no están consolidados."
+      ],
+      "limitations": [
+        "El tarifario STORI GREEN indica su aplicación a tarjetas de programa de lealtad; no se usa el renglón STORI GREEN CLÁSICA.",
+        "La asignación a la alianza debe confirmarse. No se suman automáticamente bienvenida, fidelidad y beneficio base.",
+        "El encabezado web dice «todas tus compras», pero la FAQ restringe el alcance al ecosistema Simi y los términos a Farmacias Similares. Esta ficha conserva el alcance de los términos.",
+        "La FAQ describe una compra mensual para el 10%, mientras los términos permiten continuar tras usar un beneficio previo; la cadencia no se automatiza."
+      ],
+      "evidence": [
+        {
+          "title": "Stori x Farmacias Similares: condiciones y preguntas frecuentes",
+          "url": "https://www.storicard.com/farmacias-similares"
+        },
+        {
+          "title": "Stori: costos y comisiones, renglón STORI GREEN",
+          "url": "https://www.storicard.com/files/costos-y-comisiones-credito.pdf?v=20260213"
+        },
+        {
+          "title": "Stori: términos de alianzas, actualización del 11 de junio de 2026",
+          "url": "https://www.storicard.com/files/terminos-y-condiciones-stori-alianzas.pdf?v=20251114"
+        }
+      ]
+    },
+    {
+      "entryType": "card",
+      "consultedOn": "2026-10-18",
+      "currency": "MXN",
+      "id": "stori-simi-garantizada",
+      "name": "Stori Garantizada Nivel 1 x Farmacias Similares",
+      "issuer": "Stori México, S.A. de C.V., Sociedad Financiera Popular",
+      "canonicalUrl": "https://www.storicard.com/files/terminos-y-condiciones-stori-alianzas.pdf?v=20251114",
+      "availability": "Variante documentada; contratación individual y asignación de alianza por confirmar.",
+      "costs": {
+        "annualFee": {
+          "amount": 0,
+          "unit": "MXN",
+          "frequency": "annual",
+          "label": "Anualidad del titular",
+          "classification": "none",
+          "taxTreatment": "Sin IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "La reserva de depósito es una garantía, no una comisión anual.",
+          "sources": [
+            {
+              "title": "Stori: costos de Tarjeta Garantizada Nivel 1",
+              "url": "https://www.storicard.com/files/costos-y-comisiones-garantizada.pdf?v=20261001"
+            }
+          ]
+        },
+        "cat": {
+          "percent": 241,
+          "label": "CAT promedio ponderado de Stori Garantizada Nivel 1.",
+          "asOf": "2026-07-01",
+          "validThrough": "2026-12-31",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Stori: costos de Tarjeta Garantizada Nivel 1",
+              "url": "https://www.storicard.com/files/costos-y-comisiones-garantizada.pdf?v=20261001"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 129.1,
+          "label": "Fija promedio ponderada anual de Stori Garantizada Nivel 1.",
+          "asOf": "2026-07-01",
+          "validThrough": "2026-12-31",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Stori: costos de Tarjeta Garantizada Nivel 1",
+              "url": "https://www.storicard.com/files/costos-y-comisiones-garantizada.pdf?v=20261001"
+            }
+          ]
+        },
+        "openingFee": {
+          "amount": null,
+          "unit": "MXN",
+          "frequency": "one-time",
+          "label": "Apertura de la tarjeta por verificar",
+          "taxTreatment": "Por verificar",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "No se consolidó el costo de apertura de la tarjeta. La contratación sin costo del depósito no acredita que la apertura de la tarjeta cueste cero.",
+          "sources": [
+            {
+              "title": "Stori: costos de Tarjeta Garantizada Nivel 1",
+              "url": "https://www.storicard.com/files/costos-y-comisiones-garantizada.pdf?v=20261001"
+            },
+            {
+              "title": "Stori: tarjeta con garantía y reserva de depósito",
+              "url": "https://www.storicard.com/stori-con-garantia"
+            }
+          ]
+        }
+      },
+      "requirements": [
+        "Mayor de 18 años y nuevo cliente, con asignación específica al programa de alianza confirmada por Stori.",
+        "Reserva de depósito que respalda la línea, hasta $20,000 MXN; el mínimo depende de lo indicado en la aplicación.",
+        "La página no exige comprobante de ingresos ni historial para la modalidad garantizada; la solicitud sigue sujeta al proceso del emisor."
+      ],
+      "otherFees": [
+        "Falta de pago: $300 MXN más IVA.",
+        "Reposición: $150 MXN más IVA por evento."
+      ],
+      "benefits": [
+        "Beneficio base de 2% en Farmacias Similares, hasta $500 MXN por mes calendario, con asignación al programa y tarjeta al corriente.",
+        "Bienvenida: 25% en la primera compra en Farmacias Similares, con límite publicado de $1,000 MXN por mes calendario. Fidelidad: 10% tras completar tres compras fuera de Similares; cada beneficio tiene tope de $500 MXN y acumulación y redención hasta el día 27 del mes.",
+        "La FAQ indica transferencia manual del beneficio base de 2% a Stori Cuenta+; la bienvenida se abona a la tarjeta. Los costos de redención no están consolidados.",
+        "La parte no utilizada de la reserva puede liberarse conforme al proceso; el resto se libera al pagar la deuda."
+      ],
+      "limitations": [
+        "Las tasas corresponden exclusivamente a Nivel 1; el tarifario identifica Nivel 2 como próximamente.",
+        "No se traslada la apertura de $500 MXN de STORI GREEN a la variante garantizada.",
+        "El GAT de la cuenta de depósito encontrado tenía vigencia vencida en julio de 2026; no se reutiliza como rendimiento de ahorro actual.",
+        "La asignación a la alianza debe confirmarse. No se suman automáticamente bienvenida, fidelidad y beneficio base.",
+        "El encabezado web dice «todas tus compras», pero la FAQ restringe el alcance al ecosistema Simi y los términos a Farmacias Similares. Esta ficha conserva el alcance de los términos.",
+        "La FAQ describe una compra mensual para el 10%, mientras los términos permiten continuar tras usar un beneficio previo; la cadencia no se automatiza."
+      ],
+      "evidence": [
+        {
+          "title": "Stori x Farmacias Similares: condiciones y preguntas frecuentes",
+          "url": "https://www.storicard.com/farmacias-similares"
+        },
+        {
+          "title": "Stori: términos de alianzas, actualización del 11 de junio de 2026",
+          "url": "https://www.storicard.com/files/terminos-y-condiciones-stori-alianzas.pdf?v=20251114"
+        },
+        {
+          "title": "Stori: costos de Tarjeta Garantizada Nivel 1",
+          "url": "https://www.storicard.com/files/costos-y-comisiones-garantizada.pdf?v=20261001"
+        },
+        {
+          "title": "Stori: tarjeta con garantía y reserva de depósito",
+          "url": "https://www.storicard.com/stori-con-garantia"
+        }
+      ]
+    },
+    {
+      "entryType": "card",
+      "consultedOn": "2026-10-18",
+      "currency": "MXN",
+      "id": "banregio-platinum",
+      "name": "Tarjeta Platinum Banregio",
+      "issuer": "Banco Regional · Banregio",
+      "canonicalUrl": "https://www.banregio.com/personas/tarjetas/platinum.php",
+      "costs": {
+        "annualFee": {
+          "amount": 0,
+          "unit": "MXN",
+          "frequency": "annual",
+          "label": "Anualidad del titular",
+          "classification": "none",
+          "taxTreatment": "Sin IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Sin anualidad publicada; otros cargos por uso o eventos son independientes.",
+          "sources": [
+            {
+              "title": "Banregio: Tarjeta Platinum, costos y beneficios",
+              "url": "https://www.banregio.com/personas/tarjetas/platinum.php"
+            }
+          ]
+        },
+        "cat": {
+          "percent": 34.1,
+          "label": "CAT promedio publicado para fines informativos y de comparación.",
+          "asOf": "2026-04-30",
+          "validThrough": "2026-10-30",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Banregio: Tarjeta Platinum, costos y beneficios",
+              "url": "https://www.banregio.com/personas/tarjetas/platinum.php"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 29.6,
+          "label": "Promedio ponderada anual variable.",
+          "asOf": "2026-04-30",
+          "validThrough": "2026-10-30",
+          "taxTreatment": "IVA no precisado para esta tasa",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Banregio: Tarjeta Platinum, costos y beneficios",
+              "url": "https://www.banregio.com/personas/tarjetas/platinum.php"
+            }
+          ]
+        }
+      },
+      "requirements": [
+        "De 18 a 79 años y 11 meses; ingreso mensual mínimo publicado de $75,000 MXN.",
+        "Identificación, comprobantes de ingresos y domicilio, solicitud y evaluación crediticia.",
+        "Experiencia con una tarjeta de crédito bancaria con línea de $50,000 MXN."
+      ],
+      "otherFees": [
+        "Disposición de efectivo: 4% del monto más IVA.",
+        "Tarjeta adicional: $200 MXN más IVA por evento.",
+        "Pago tardío: $300 MXN o el pago mínimo, lo que sea menor, más IVA.",
+        "Reposición por robo o extravío: $190 MXN más IVA."
+      ],
+      "benefits": [
+        "1.25% de recompensas con tarjeta física y 1.5% en compras por internet con la Tarjeta Virtual o con la física en el extranjero; redención sujeta a sus reglas."
+      ],
+      "limitations": [
+        "Topes, vigencia y costos de redención de recompensas no consolidados; no se prometen recompensas ilimitadas ni canje en efectivo.",
+        "La tasa promedio publicada no es una cotización individual. El margen sobre TIIE del tarifario no se convierte en una tasa efectiva.",
+        "La vigencia de las comisiones no se infiere de la fecha del CAT."
+      ],
+      "evidence": [
+        {
+          "title": "Banregio: Tarjeta Platinum, costos y beneficios",
+          "url": "https://www.banregio.com/personas/tarjetas/platinum.php"
+        },
+        {
+          "title": "Banregio: tabla de comisiones de tarjetas de crédito",
+          "url": "https://portalbanregio.s3.amazonaws.com/assets/naranja/img/Tarjetas-Credito.pdf"
+        }
+      ]
+    },
+    {
+      "entryType": "card",
+      "consultedOn": "2026-10-18",
+      "currency": "MXN",
+      "id": "bbva-azul",
+      "name": "Tarjeta Azul BBVA",
+      "issuer": "BBVA México",
+      "canonicalUrl": "https://www.bbva.mx/personas/productos/tarjetas-de-credito/tarjeta-de-credito-azul.html",
+      "costs": {
+        "annualFee": {
+          "amount": 748,
+          "taxTreatment": "Más IVA",
+          "conditions": "Administración anual de la tarjeta titular.",
+          "classification": "annual",
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://www.bbva.mx/personas/productos/tarjetas-de-credito/tarjeta-de-credito-azul.html"
+            }
+          ]
+        },
+        "cat": {
+          "percent": 89.4,
+          "asOf": "2026-07-13",
+          "validThrough": "2027-01-09",
+          "status": "documented",
+          "taxTreatment": "Sin IVA",
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://www.bbva.mx/personas/productos/tarjetas-de-credito/tarjeta-de-credito-azul.html"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 59.52,
+          "label": "Promedio ponderada anual por saldo; crédito de tasa variable.",
+          "asOf": "2026-07-13",
+          "validThrough": "2027-01-09",
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://www.bbva.mx/personas/productos/tarjetas-de-credito/tarjeta-de-credito-azul.html"
+            }
+          ]
+        }
+      },
+      "requirements": [
+        "Mayor de 18 años y residencia en México.",
+        "Ingreso mensual mínimo publicado: $6,000 MXN.",
+        "Identificación, comprobantes de ingresos y domicilio; domicilio de hasta tres meses.",
+        "Autorización para consultar historial y evaluación crediticia."
+      ],
+      "otherFees": [
+        "Pago tardío: $490 MXN más IVA por evento.",
+        "Reposición por robo o extravío: $192 MXN más IVA."
+      ],
+      "benefits": [],
+      "limitations": [
+        "CAT promedio sin IVA, informativo; no es una tasa personalizada.",
+        "BBVA Start, anunciado en el encabezado del sitio, es otro producto."
+      ],
+      "evidence": [
+        {
+          "title": "BBVA Azul: requisitos, comisiones y CAT",
+          "url": "https://www.bbva.mx/personas/productos/tarjetas-de-credito/tarjeta-de-credito-azul.html"
+        }
+      ]
+    },
+    {
+      "entryType": "card",
+      "consultedOn": "2026-10-18",
+      "currency": "MXN",
+      "id": "banamex-joy",
+      "name": "Tarjeta de Crédito Joy Banamex",
+      "issuer": "Banamex",
+      "canonicalUrl": "https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-joy-sin-anualidad",
+      "costs": {
+        "annualFee": {
+          "amount": 0,
+          "taxTreatment": "Sin comisión anual",
+          "conditions": "La penalización mensual por inactividad es independiente de la anualidad.",
+          "classification": "none",
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-joy-sin-anualidad"
+            }
+          ]
+        },
+        "maintenanceFee": {
+          "amount": 149,
+          "unit": "MXN",
+          "frequency": "monthly",
+          "label": "Penalización mensual por inactividad",
+          "taxTreatment": "Más IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Se exenta con al menos $300 MXN en operaciones elegibles antes del corte; MSI, intereses, IVA y comisiones no cuentan.",
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-joy-sin-anualidad"
+            }
+          ]
+        },
+        "cat": {
+          "percent": 81.2,
+          "asOf": "2026-07-27",
+          "validThrough": "2027-01-27",
+          "status": "documented",
+          "taxTreatment": "Sin IVA",
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-joy-sin-anualidad"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 60.93,
+          "label": "Promedio ponderada anual; crédito de tasa variable.",
+          "asOf": "2026-07-27",
+          "validThrough": "2027-01-27",
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-joy-sin-anualidad"
+            }
+          ]
+        }
+      },
+      "requirements": [
+        "Ingreso mensual mínimo comprobable: $7,000 MXN.",
+        "INE vigente; extranjeros: residencia temporal o permanente y pasaporte.",
+        "Comprobante de domicilio en México de hasta tres meses.",
+        "Sujeta a autorización."
+      ],
+      "otherFees": [
+        "Inactividad: $149 MXN más IVA al mes; se exenta con al menos $300 MXN en operaciones elegibles antes del corte.",
+        "Las parcialidades de MSI, intereses, IVA y comisiones no cuentan para la exención.",
+        "Pago tardío: $399 MXN más IVA."
+      ],
+      "benefits": [
+        "Cambio de fecha de corte una vez al año, sujeto a condiciones.",
+        "Tarjeta digital con CVV dinámico."
+      ],
+      "limitations": [
+        "CAT promedio sin IVA.",
+        "No participa en recompensas Banamex.",
+        "Límites de edad no consolidados en esta ficha."
+      ],
+      "evidence": [
+        {
+          "title": "Joy Banamex: costos y condiciones",
+          "url": "https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-joy-sin-anualidad"
+        }
+      ]
+    },
+    {
+      "entryType": "card",
+      "consultedOn": "2026-10-18",
+      "currency": "MXN",
+      "id": "santander-likeu",
+      "name": "Tarjeta de Crédito LikeU",
+      "issuer": "Banco Santander México",
+      "canonicalUrl": "https://www.santander.com.mx/personas/credito-y-financiamiento/tarjetas-de-credito/likeu",
+      "costs": {
+        "annualFee": {
+          "amount": 0,
+          "taxTreatment": "Sin IVA",
+          "conditions": "El mantenimiento mensual depende del uso.",
+          "classification": "none",
+          "sources": [
+            {
+              "title": "Folleto LikeU: julio–diciembre de 2026",
+              "url": "https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:eadbc941-a74c-4127-ac61-b4250eb85b52/original/as/Cards_Folleto_TDC_LikeUMastercard_Jun2026_V2_0726.pdf"
+            }
+          ]
+        },
+        "maintenanceFee": {
+          "amount": 169,
+          "unit": "MXN",
+          "frequency": "monthly",
+          "label": "Mantenimiento mensual",
+          "taxTreatment": "Más IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Se cobra si las compras acumuladas son menores a $200 MXN en el periodo.",
+          "sources": [
+            {
+              "title": "Folleto LikeU: julio–diciembre de 2026",
+              "url": "https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:eadbc941-a74c-4127-ac61-b4250eb85b52/original/as/Cards_Folleto_TDC_LikeUMastercard_Jun2026_V2_0726.pdf"
+            }
+          ]
+        },
+        "cat": {
+          "percent": 89.1,
+          "asOf": "2026-07-01",
+          "validThrough": "2026-12-31",
+          "status": "documented",
+          "taxTreatment": "Sin IVA",
+          "sources": [
+            {
+              "title": "Folleto LikeU: julio–diciembre de 2026",
+              "url": "https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:eadbc941-a74c-4127-ac61-b4250eb85b52/original/as/Cards_Folleto_TDC_LikeUMastercard_Jun2026_V2_0726.pdf"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 65.52,
+          "label": "Ordinaria promedio ponderada por saldo, anual variable, sin IVA.",
+          "asOf": "2026-07-01",
+          "validThrough": "2026-12-31",
+          "sources": [
+            {
+              "title": "Folleto LikeU: julio–diciembre de 2026",
+              "url": "https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:eadbc941-a74c-4127-ac61-b4250eb85b52/original/as/Cards_Folleto_TDC_LikeUMastercard_Jun2026_V2_0726.pdf"
+            }
+          ]
+        }
+      },
+      "requirements": [
+        "De 20 a 69 años y 11 meses, según folleto.",
+        "Ingreso mensual mínimo: $7,500 MXN.",
+        "Identificación, comprobantes de ingresos y domicilio, solicitud firmada; documentación adicional para extranjeros."
+      ],
+      "otherFees": [
+        "Mantenimiento: $169 MXN más IVA al mes si las compras acumuladas son menores a $200 MXN.",
+        "Las asistencias opcionales pueden tener costo."
+      ],
+      "benefits": [
+        "Tarjeta digital con código de seguridad dinámico."
+      ],
+      "limitations": [
+        "CAT promedio ponderado sin IVA.",
+        "El FAQ muestra una tasa de 66.35%; se conserva aquí la del folleto fechado de julio.",
+        "Recompensas sujetas a sus condiciones; no son rendimiento garantizado."
+      ],
+      "evidence": [
+        {
+          "title": "LikeU: página oficial",
+          "url": "https://www.santander.com.mx/personas/credito-y-financiamiento/tarjetas-de-credito/likeu"
+        },
+        {
+          "title": "Folleto LikeU: julio–diciembre de 2026",
+          "url": "https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:eadbc941-a74c-4127-ac61-b4250eb85b52/original/as/Cards_Folleto_TDC_LikeUMastercard_Jun2026_V2_0726.pdf"
+        }
+      ]
+    },
+    {
+      "entryType": "card",
+      "consultedOn": "2026-10-18",
+      "currency": "MXN",
+      "id": "hsbc-zero",
+      "name": "Tarjeta de Crédito HSBC Zero",
+      "issuer": "HSBC México",
+      "canonicalUrl": "https://www.hsbc.com.mx/tarjetas-de-credito/productos/zero/",
+      "costs": {
+        "annualFee": {
+          "amount": 0,
+          "taxTreatment": "Sin IVA",
+          "conditions": "Existe administración mensual exentable por uso.",
+          "classification": "none",
+          "sources": [
+            {
+              "title": "Folleto HSBC Zero: agosto de 2026",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/folleto_digital_zero.pdf"
+            }
+          ]
+        },
+        "maintenanceFee": {
+          "amount": 186,
+          "unit": "MXN",
+          "frequency": "monthly",
+          "label": "Administración mensual del titular",
+          "taxTreatment": "Más IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Se exenta con al menos $300 MXN en operaciones elegibles entre cortes.",
+          "sources": [
+            {
+              "title": "Folleto HSBC Zero: agosto de 2026",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/folleto_digital_zero.pdf"
+            }
+          ]
+        },
+        "cat": {
+          "percent": 95.5,
+          "asOf": "2026-08-07",
+          "validThrough": "2026-12-07",
+          "status": "documented",
+          "taxTreatment": "Sin IVA",
+          "sources": [
+            {
+              "title": "Folleto HSBC Zero: agosto de 2026",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/folleto_digital_zero.pdf"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 45.71,
+          "label": "Promedio ponderada por saldo publicada junto al CAT.",
+          "asOf": "2026-08-07",
+          "validThrough": "2026-12-07",
+          "sources": [
+            {
+              "title": "Folleto HSBC Zero: agosto de 2026",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/folleto_digital_zero.pdf"
+            }
+          ]
+        }
+      },
+      "requirements": [
+        "Persona física de 18 a 74 años y 11 meses.",
+        "La página indica ingreso mensual de $25,000 MXN, o $5,000 MXN con nómina HSBC; confirmar por canal.",
+        "Identificación, comprobantes de domicilio e ingresos e historial crediticio."
+      ],
+      "otherFees": [
+        "Administración mensual: $186 MXN más IVA; se exenta con al menos $300 MXN en operaciones elegibles entre cortes.",
+        "Pago tardío: $509 MXN más IVA por evento."
+      ],
+      "benefits": [
+        "Adicionales sin costo, sujetas a condiciones."
+      ],
+      "limitations": [
+        "CAT promedio sin IVA.",
+        "El folleto publica ingreso mínimo de $5,000 MXN y un año de antigüedad laboral; la página distingue ingresos según nómina. Confirmar requisitos, sin inferir elegibilidad."
+      ],
+      "evidence": [
+        {
+          "title": "HSBC Zero: página y requisitos",
+          "url": "https://www.hsbc.com.mx/tarjetas-de-credito/productos/zero/"
+        },
+        {
+          "title": "Folleto HSBC Zero: agosto de 2026",
+          "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/folleto_digital_zero.pdf"
+        }
+      ]
+    },
+    {
+      "entryType": "card",
+      "consultedOn": "2026-10-18",
+      "currency": "MXN",
+      "id": "banorte-clasica",
+      "name": "Tarjeta de Crédito Clásica Banorte",
+      "issuer": "Banco Mercantil del Norte",
+      "canonicalUrl": "https://www.banorte.com/Personal/TDC/Clasica.html",
+      "costs": {
+        "annualFee": {
+          "amount": 720,
+          "taxTreatment": "Más IVA",
+          "conditions": "Administración anual de la tarjeta titular.",
+          "classification": "annual",
+          "sources": [
+            {
+              "title": "Folleto Clásica: octubre de 2026",
+              "url": "https://www.banorte.com/dam/jcr:53a48148-c63e-446b-8d27-f8521310f4c0/Folleto%20Cl%C3%A1sica%20oct26.pdf"
+            }
+          ]
+        },
+        "cat": {
+          "percent": 119.5,
+          "asOf": "2026-08-19",
+          "validThrough": "2027-02-19",
+          "status": "documented",
+          "taxTreatment": "Sin IVA",
+          "sources": [
+            {
+              "title": "Folleto Clásica: octubre de 2026",
+              "url": "https://www.banorte.com/dam/jcr:53a48148-c63e-446b-8d27-f8521310f4c0/Folleto%20Cl%C3%A1sica%20oct26.pdf"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 62.06,
+          "label": "Promedio ponderada por saldo, anual variable, sin IVA.",
+          "asOf": "2026-08-19",
+          "validThrough": "2027-02-19",
+          "sources": [
+            {
+              "title": "Folleto Clásica: octubre de 2026",
+              "url": "https://www.banorte.com/dam/jcr:53a48148-c63e-446b-8d27-f8521310f4c0/Folleto%20Cl%C3%A1sica%20oct26.pdf"
+            }
+          ]
+        }
+      },
+      "requirements": [
+        "Persona física, incluida actividad empresarial.",
+        "De 18 a 69 años y 11 meses; ingreso mensual comprobable de $7,000 MXN.",
+        "Identificación, RFC, CURP y solicitud firmada.",
+        "Evaluación crediticia y verificación de identidad."
+      ],
+      "otherFees": [
+        "Administración anual de adicional: $300 MXN más IVA."
+      ],
+      "benefits": [
+        "Recompensa Total Banorte, sujeto a condiciones."
+      ],
+      "limitations": [
+        "CAT promedio sin IVA.",
+        "El CAT de 0% de meses sin intereses corresponde a esa modalidad, no al crédito ordinario."
+      ],
+      "evidence": [
+        {
+          "title": "Clásica Banorte: requisitos y costos",
+          "url": "https://www.banorte.com/Personal/TDC/Clasica.html"
+        },
+        {
+          "title": "Folleto Clásica: octubre de 2026",
+          "url": "https://www.banorte.com/dam/jcr:53a48148-c63e-446b-8d27-f8521310f4c0/Folleto%20Cl%C3%A1sica%20oct26.pdf"
+        }
+      ]
+    },
+    {
+      "entryType": "card",
+      "consultedOn": "2026-10-18",
+      "currency": "MXN",
+      "id": "nu-credito",
+      "name": "Tarjeta de Crédito Nu",
+      "issuer": "Nubank, S.A., Institución de Banca Múltiple",
+      "canonicalUrl": "https://nubank.com.mx/credito/",
+      "costs": {
+        "annualFee": {
+          "amount": 0,
+          "taxTreatment": "Sin IVA",
+          "conditions": "Anualidad de cero publicada en página y folleto.",
+          "classification": "none",
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://nubank.com.mx/credito/"
+            }
+          ]
+        },
+        "cat": {
+          "percent": null,
+          "asOf": null,
+          "validThrough": null,
+          "status": "unknown",
+          "taxTreatment": "Sin IVA",
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://nubank.com.mx/credito/"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": null,
+          "label": "Por confirmar: las fuentes oficiales presentan una discrepancia de vigencia.",
+          "asOf": null,
+          "validThrough": null,
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://nubank.com.mx/credito/"
+            }
+          ]
+        }
+      },
+      "requirements": [
+        "Mayoría de edad, residencia en México e identificación oficial vigente.",
+        "Solicitud en la aplicación, verificación de identidad y evaluación crediticia."
+      ],
+      "otherFees": [
+        "El folleto publica pago tardío de $400 MXN más IVA por evento."
+      ],
+      "benefits": [
+        "Sin anualidad; operación mediante la aplicación."
+      ],
+      "limitations": [
+        "La página publica CAT 148.1% y tasa 93.6%, calculados el 10 de abril de 2026; su vigencia terminó el 7 de octubre de 2026.",
+        "El folleto publica CAT 150.1% y tasa promedio 94.6%, calculados el 13 de agosto de 2026, pero muestra vigencia del 8 de octubre al 9 de febrero de 2026: fechas inconsistentes.",
+        "No se corrigió el año por inferencia ni se eligió un CAT vigente. Ingreso mínimo no consolidado."
+      ],
+      "evidence": [
+        {
+          "title": "Nu: tarjeta de crédito",
+          "url": "https://nubank.com.mx/credito/"
+        },
+        {
+          "title": "Nu: CAT publicado",
+          "url": "https://nubank.com.mx/cat/"
+        },
+        {
+          "title": "Folleto Nu: discrepancia de fechas",
+          "url": "https://cdn.nubank.com.mx/mex/credito/folleto-informativo.pdf"
+        }
+      ]
+    },
+    {
+      "entryType": "card",
+      "consultedOn": "2026-10-18",
+      "currency": "MXN",
+      "id": "klar-garantizada",
+      "name": "Tarjeta de Crédito Klar con Garantía",
+      "issuer": "Klar Technologies, S.A. de C.V., S.F.P.",
+      "canonicalUrl": "https://www.klar.mx/tarjeta-de-credito-con-garantia",
+      "costs": {
+        "annualFee": {
+          "amount": 0,
+          "taxTreatment": "Sin comisión",
+          "conditions": "Requiere depósito de garantía; ese depósito no es una anualidad.",
+          "classification": "none",
+          "sources": [
+            {
+              "title": "Klar: costos de tarjeta con y sin garantía",
+              "url": "https://www.klar.mx/cat"
+            }
+          ]
+        },
+        "cat": {
+          "percent": 187,
+          "asOf": "2026-05-01",
+          "validThrough": "2026-11-01",
+          "status": "documented",
+          "taxTreatment": "Sin IVA",
+          "sources": [
+            {
+              "title": "Klar: costos de tarjeta con y sin garantía",
+              "url": "https://www.klar.mx/cat"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 123.1,
+          "label": "Anual fija publicada al 1 de febrero de 2026.",
+          "asOf": "2026-02-01",
+          "validThrough": null,
+          "sources": [
+            {
+              "title": "Klar: costos de tarjeta con y sin garantía",
+              "url": "https://www.klar.mx/cat"
+            }
+          ]
+        }
+      },
+      "requirements": [
+        "Registro y depósito inicial de garantía.",
+        "Depósito y línea sujetos a las condiciones comunicadas por Klar."
+      ],
+      "otherFees": [
+        "Cobranza: $300 MXN más IVA después de cuatro días naturales de atraso.",
+        "Disposición de efectivo: 10% del monto más IVA."
+      ],
+      "benefits": [
+        "El tarifario publica cero cargos de apertura, mantenimiento y uso mínimo."
+      ],
+      "limitations": [
+        "CAT promedio sin IVA; el tarifario agrupa tarjetas con y sin garantía.",
+        "La fecha de la tasa difiere de la del CAT; no se documentó su fin de vigencia.",
+        "Edad, ingreso y garantía mínimos no consolidados.",
+        "Klar Platino y Uber Card tienen tarifarios diferentes."
+      ],
+      "evidence": [
+        {
+          "title": "Klar: tarjeta con garantía",
+          "url": "https://www.klar.mx/tarjeta-de-credito-con-garantia"
+        },
+        {
+          "title": "Klar: costos de tarjeta con y sin garantía",
+          "url": "https://www.klar.mx/cat"
+        }
+      ]
+    },
+    {
+      "entryType": "card",
+      "consultedOn": "2026-10-18",
+      "currency": "MXN",
+      "id": "stori-green",
+      "name": "Stori Green",
+      "issuer": "Stori México, S.A. de C.V., Sociedad Financiera Popular",
+      "canonicalUrl": "https://www.storicard.com/stori-card",
+      "costs": {
+        "annualFee": {
+          "amount": 0,
+          "taxTreatment": "Sin IVA",
+          "conditions": "Existe una comisión de apertura para esta variante.",
+          "classification": "none",
+          "sources": [
+            {
+              "title": "Tarifario Stori: renglón STORI GREEN",
+              "url": "https://www.storicard.com/files/costos-y-comisiones-credito.pdf?v=20260213"
+            }
+          ]
+        },
+        "cat": {
+          "percent": 202.2,
+          "asOf": "2026-07-01",
+          "validThrough": "2026-12-31",
+          "status": "documented",
+          "taxTreatment": "Sin IVA",
+          "sources": [
+            {
+              "title": "Tarifario Stori: renglón STORI GREEN",
+              "url": "https://www.storicard.com/files/costos-y-comisiones-credito.pdf?v=20260213"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 114.6,
+          "label": "Fija promedio ponderada anual, sin IVA.",
+          "asOf": "2026-07-01",
+          "validThrough": "2026-12-31",
+          "sources": [
+            {
+              "title": "Tarifario Stori: renglón STORI GREEN",
+              "url": "https://www.storicard.com/files/costos-y-comisiones-credito.pdf?v=20260213"
+            }
+          ]
+        }
+      },
+      "requirements": [
+        "Mayor de edad con INE vigente.",
+        "Solicitud y datos requeridos mediante la aplicación."
+      ],
+      "otherFees": [
+        "Apertura: $500 MXN una sola vez para STORI GREEN; el renglón no especifica IVA.",
+        "Falta de pago: $300 MXN más IVA por evento."
+      ],
+      "benefits": [
+        "Tarjeta digital antes de recibir la física, según el proceso publicado."
+      ],
+      "limitations": [
+        "CAT promedio ponderado sin IVA.",
+        "Se usa el tarifario de julio; la página conserva CAT 204.3% calculado en abril.",
+        "STORI GREEN CLÁSICA es otra variante dentro del mismo documento.",
+        "Ingreso mínimo y aprobación individual no consolidados."
+      ],
+      "evidence": [
+        {
+          "title": "Stori Green: página y requisitos",
+          "url": "https://www.storicard.com/stori-card"
+        },
+        {
+          "title": "Tarifario Stori: renglón STORI GREEN",
+          "url": "https://www.storicard.com/files/costos-y-comisiones-credito.pdf?v=20260213"
+        }
+      ]
+    }
+  ],
+  "loans": [
+    {
+      "consultedOn": "2026-10-18",
+      "id": "bbva-personal-inmediato",
+      "name": "Préstamo Personal Inmediato BBVA",
+      "issuer": "BBVA México",
+      "canonicalUrl": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-personal-inmediato.html",
+      "costs": {
+        "cat": {
+          "percent": 36.1,
+          "asOf": "2026-07-10",
+          "validThrough": "2027-01-10",
+          "status": "documented",
+          "taxTreatment": "Sin IVA",
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-personal-inmediato.html"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": null,
+          "label": "Rango de tasa anual fija, según evaluación.",
+          "asOf": null,
+          "validThrough": null,
+          "minPercent": 25.75,
+          "maxPercent": 39.95,
+          "taxTreatment": "Sin IVA",
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-personal-inmediato.html"
+            }
+          ]
+        },
+        "openingFee": {
+          "amount": 2.75,
+          "unit": "percent",
+          "taxTreatment": "Más IVA",
+          "conditions": "Del monto del crédito, una sola vez.",
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-personal-inmediato.html"
+            }
+          ]
+        }
+      },
+      "amountRange": "$3,000–$1,500,000 MXN",
+      "termRange": "6–72 meses",
+      "requirements": [
+        "Cuenta de depósito o tarjeta BBVA y oferta preaprobada vigente.",
+        "Mayor de 18 años; edad más plazo no mayor a 84 años y 364 días.",
+        "Historial, capacidad de pago y documentación solicitada."
+      ],
+      "benefits": [
+        "Pagos anticipados totales o parciales sin comisión; requiere estar al corriente y cubrir al menos el equivalente de un pago periódico.",
+        "Sin cobro de seguro ni aval o garantía.",
+        "Tasa fija durante el crédito; pagos quincenales o mensuales fijos antes de IVA."
+      ],
+      "otherFees": [
+        "Contratación: 2.75% del monto más IVA, por única vez.",
+        "El primer pago es irregular y cubre únicamente intereses más IVA."
+      ],
+      "limitations": [
+        "CAT promedio ponderado sin IVA; el rango de tasas no es una cotización.",
+        "Primer pago irregular de intereses más IVA; posteriores quincenales o mensuales."
+      ],
+      "evidence": [
+        {
+          "title": "Personal Inmediato: oferta y requisitos",
+          "url": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-personal-inmediato.html"
+        }
+      ],
+      "familyId": "personal"
+    },
+    {
+      "consultedOn": "2026-10-18",
+      "id": "santander-personal",
+      "familyId": "personal",
+      "name": "Crédito Personal Santander",
+      "issuer": "Banco Santander México",
+      "canonicalUrl": "https://www.santander.com.mx/personas/credito-y-financiamiento/creditos-personales/credito-personal-santander/",
+      "currency": "MXN",
+      "costs": {
+        "cat": {
+          "percent": 36.9,
+          "label": "CAT promedio ponderado, para fines informativos y de comparación.",
+          "asOf": "2026-08-31",
+          "validThrough": "2027-02-28",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Santander: folleto de créditos personales y de nómina, octubre de 2026",
+              "url": "https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:95f815f3-9707-4ddf-99b1-9ac025c2699a/original/as/folleto-electronico-ajuste-comision.pdf"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 28.32,
+          "label": "Ordinaria anual fija promedio ponderada; la tasa individual depende de la oferta.",
+          "asOf": "2026-08-31",
+          "validThrough": "2027-02-28",
+          "taxTreatment": "IVA no precisado para esta tasa",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Santander: folleto de créditos personales y de nómina, octubre de 2026",
+              "url": "https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:95f815f3-9707-4ddf-99b1-9ac025c2699a/original/as/folleto-electronico-ajuste-comision.pdf"
+            }
+          ]
+        },
+        "openingFee": {
+          "amount": 1.75,
+          "unit": "percent",
+          "frequency": "per-event",
+          "label": "Comisión por disposición máxima",
+          "taxTreatment": "Más IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Hasta 1.75% por evento sobre el monto contratado. Puede reducirse según el perfil; no es una cotización individual.",
+          "sources": [
+            {
+              "title": "Santander: folleto de créditos personales y de nómina, octubre de 2026",
+              "url": "https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:95f815f3-9707-4ddf-99b1-9ac025c2699a/original/as/folleto-electronico-ajuste-comision.pdf"
+            },
+            {
+              "title": "Santander: Crédito Personal, requisitos y comisión",
+              "url": "https://www.santander.com.mx/personas/credito-y-financiamiento/creditos-personales/credito-personal-santander/"
+            }
+          ]
+        }
+      },
+      "amountRange": "Hasta $3,000,000 MXN; mínimo por verificar.",
+      "termRange": "6–72 meses",
+      "requirements": [
+        "De 20 a 81 años; ingreso mensual mínimo publicado de $3,000 MXN.",
+        "Asalariados: dos años continuos entre empleo actual y anterior, con al menos tres meses en el actual. Actividad empresarial: dos años continuos.",
+        "Buenos antecedentes crediticios si existe historial; sujeto a evaluación y oferta.",
+        "Identificación y comprobante de domicilio de hasta dos meses. Independientes: dos declaraciones anuales, tres estados de cuenta y contrato de servicios, según el canal.",
+        "Seguro de vida e invalidez obligatorio. Se admite otra aseguradora que cumpla los requisitos del banco; prima no cuantificada en esta ficha."
+      ],
+      "otherFees": [
+        "Cobranza: $200 MXN por evento, hasta tres eventos consecutivos; tratamiento de IVA no explicitado en el folleto."
+      ],
+      "benefits": [
+        "Pagos anticipados totales o parciales sin penalización estando al corriente; se aplican al saldo insoluto conforme al contrato.",
+        "Sin garantía, sujeto a los requisitos y evaluación del banco."
+      ],
+      "limitations": [
+        "CAT y tasa promedio del folleto de octubre de 2026; no representan una oferta personalizada.",
+        "La página conserva un bloque con vigencia terminada el 30 de septiembre de 2026 y una referencia a nómina que no coincide con el cuerpo y el folleto. Se prioriza el folleto fechado.",
+        "El máximo de tasa de 60% aparece en el bloque web vencido y no se adopta como condición vigente.",
+        "No se documentó una vigencia propia de la comisión ni el costo del seguro. La fecha del CAT no se extiende a esos cargos."
+      ],
+      "evidence": [
+        {
+          "title": "Santander: folleto de créditos personales y de nómina, octubre de 2026",
+          "url": "https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:95f815f3-9707-4ddf-99b1-9ac025c2699a/original/as/folleto-electronico-ajuste-comision.pdf"
+        },
+        {
+          "title": "Santander: Crédito Personal, requisitos y comisión",
+          "url": "https://www.santander.com.mx/personas/credito-y-financiamiento/creditos-personales/credito-personal-santander/"
+        }
+      ]
+    },
+    {
+      "consultedOn": "2026-10-18",
+      "id": "banorte-personal",
+      "familyId": "personal",
+      "name": "Crédito Personal Banorte",
+      "issuer": "Banco Mercantil del Norte",
+      "canonicalUrl": "https://www.banorte.com/Personal/Credito-Personal-Banorte.html",
+      "currency": "MXN",
+      "costs": {
+        "cat": {
+          "percent": 28.8,
+          "label": "CAT promedio publicado para el escenario indicado por el banco.",
+          "asOf": "2026-04-30",
+          "validThrough": "2026-10-30",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Banorte: Crédito Personal, costos y condiciones",
+              "url": "https://www.banorte.com/Personal/Credito-Personal-Banorte.html"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 25.68,
+          "label": "Fija anual promedio ponderada; no es una tasa individual garantizada.",
+          "asOf": "2026-04-30",
+          "validThrough": "2026-10-30",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Banorte: Crédito Personal, costos y condiciones",
+              "url": "https://www.banorte.com/Personal/Credito-Personal-Banorte.html"
+            }
+          ]
+        },
+        "openingFee": {
+          "amount": 0,
+          "unit": "MXN",
+          "frequency": "one-time",
+          "label": "Comisión por apertura",
+          "taxTreatment": "Sin comisión",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Apertura sin comisión publicada por el banco.",
+          "sources": [
+            {
+              "title": "Banorte: Crédito Personal, costos y condiciones",
+              "url": "https://www.banorte.com/Personal/Credito-Personal-Banorte.html"
+            }
+          ]
+        }
+      },
+      "amountRange": "Hasta $500,000 MXN; mínimo por verificar.",
+      "termRange": null,
+      "requirements": [
+        "Ser cliente Banorte y contar con invitación; sujeto a evaluación crediticia.",
+        "Identificación y comprobante de domicilio; cargo mensual a la cuenta de pago.",
+        "Edad e ingreso mínimo no consolidados en esta ficha."
+      ],
+      "otherFees": [
+        "Otros cargos y sus condiciones no consolidados en esta ficha."
+      ],
+      "benefits": [
+        "Pagos anticipados totales o parciales sin penalización, según las condiciones del crédito.",
+        "Seguro de vida gratuito durante el crédito.",
+        "Sin aval ni garantía, sujeto a evaluación e invitación."
+      ],
+      "limitations": [
+        "El CAT se calcula con un crédito de $252,639 MXN a 36 meses. Ese escenario no acredita el rango de plazos de contratación.",
+        "No se incorporan el monto de hasta $1 millón ni el plazo de 12–36 meses de Crédito Personal Preferente: corresponde a otro segmento.",
+        "No se documentó una vigencia propia de la comisión de apertura. La fecha del CAT no se extiende a ese dato."
+      ],
+      "evidence": [
+        {
+          "title": "Banorte: Crédito Personal, costos y condiciones",
+          "url": "https://www.banorte.com/Personal/Credito-Personal-Banorte.html"
+        }
+      ]
+    },
+    {
+      "consultedOn": "2026-10-18",
+      "id": "hsbc-personal",
+      "name": "Crédito Personal HSBC",
+      "familyId": "personal",
+      "issuer": "HSBC México",
+      "canonicalUrl": "https://www.hsbc.com.mx/creditos/personales/personal/",
+      "currency": "MXN",
+      "costs": {
+        "cat": {
+          "percent": 37.3,
+          "label": "CAT promedio publicado, para fines informativos y de comparación.",
+          "asOf": "2026-06-30",
+          "validThrough": "2026-12-31",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "HSBC: comisiones y CAT de créditos al consumo, vigencia publicada a diciembre de 2026",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/comisiones/comisiones_credito_consumo.pdf"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": null,
+          "label": "Fija anual, según evaluación; rango publicado, no cotización individual.",
+          "asOf": "2026-06-30",
+          "validThrough": "2026-12-31",
+          "taxTreatment": "IVA no precisado para esta tasa",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "HSBC: comisiones y CAT de créditos al consumo, vigencia publicada a diciembre de 2026",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/comisiones/comisiones_credito_consumo.pdf"
+            }
+          ],
+          "minPercent": 28.99,
+          "maxPercent": 46.99
+        },
+        "openingFee": {
+          "amount": 1.77,
+          "unit": "percent",
+          "frequency": "per-event",
+          "label": "Comisión por disposición",
+          "taxTreatment": "Más IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "1.77% una vez por cada disposición del crédito.",
+          "sources": [
+            {
+              "title": "HSBC: comisiones y CAT de créditos al consumo, vigencia publicada a diciembre de 2026",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/comisiones/comisiones_credito_consumo.pdf"
+            },
+            {
+              "title": "HSBC: anexo de comisiones de Crédito Personal, emisión del 7 de julio de 2025",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/creditos/tarifas_comisiones_cred_personal.pdf"
+            }
+          ]
+        }
+      },
+      "amountRange": "Hasta $1,000,000 MXN; mínimo por verificar.",
+      "termRange": "6–60 meses",
+      "requirements": [
+        "Confirmar el segmento de contratación con HSBC; la página de Personal menciona clientes Advance.",
+        "De 18 a 74 años y 11 meses; buen historial crediticio y evaluación de capacidad de pago.",
+        "Ingresos mensuales mayores a $5,000 MXN.",
+        "Identificación y, para extranjeros, residencia; comprobante de domicilio de hasta dos meses y solicitud.",
+        "Comprobantes de ingresos de los últimos dos meses o seis estados de cuenta donde se reciben, según los requisitos de contratación."
+      ],
+      "otherFees": [
+        "Cobranza por pago vencido en crédito simple: $100 MXN para pago semanal y $366 MXN para pago quincenal o mensual; en cuenta corriente, $100 MXN. Importes más IVA, según la modalidad contratada."
+      ],
+      "benefits": [
+        "Pagos anticipados o adelantados sin penalización, conforme al contrato.",
+        "Pagos fijos según la oferta contratada.",
+        "Condonación por fallecimiento mediante aviso al banco y conforme a la cláusula Quinta; no se presenta como un seguro gratuito."
+      ],
+      "limitations": [
+        "El rango de tasas y el CAT son publicaciones informativas; no garantizan aprobación, monto ni tasa individual.",
+        "La vigencia del CAT y del rango de tasas no acredita una vigencia propia de la comisión por disposición.",
+        "Costo de seguros separado no documentado en esta ficha. La condonación por fallecimiento es una condición contractual.",
+        "El folleto enlazado conserva un plazo distinto y un CAT vencido; esta ficha usa el plazo de la página y los costos del tarifario de junio–diciembre de 2026.",
+        "La página de Personal menciona Advance, pero One tiene un CAT y rango de tasas diferentes; no se trasladan condiciones entre esos productos."
+      ],
+      "evidence": [
+        {
+          "title": "HSBC: Crédito Personal HSBC, requisitos y condiciones",
+          "url": "https://www.hsbc.com.mx/creditos/personales/personal/"
+        },
+        {
+          "title": "HSBC: comisiones y CAT de créditos al consumo, vigencia publicada a diciembre de 2026",
+          "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/comisiones/comisiones_credito_consumo.pdf"
+        },
+        {
+          "title": "HSBC: anexo de comisiones de Crédito Personal, emisión del 7 de julio de 2025",
+          "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/creditos/tarifas_comisiones_cred_personal.pdf"
+        },
+        {
+          "title": "HSBC: folleto Personal enlazado con CAT vencido",
+          "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/creditos/folleto_digital_personal.pdf"
+        }
+      ]
+    },
+    {
+      "consultedOn": "2026-10-18",
+      "id": "hsbc-personal-one",
+      "name": "Crédito Personal One",
+      "familyId": "personal",
+      "issuer": "HSBC México",
+      "canonicalUrl": "https://www.hsbc.com.mx/creditos/personales/one/",
+      "currency": "MXN",
+      "costs": {
+        "cat": {
+          "percent": 33.9,
+          "label": "CAT promedio publicado, para fines informativos y de comparación.",
+          "asOf": "2026-06-30",
+          "validThrough": "2026-12-31",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "HSBC: comisiones y CAT de créditos al consumo, vigencia publicada a diciembre de 2026",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/comisiones/comisiones_credito_consumo.pdf"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": null,
+          "label": "Fija anual, según evaluación; rango publicado, no cotización individual.",
+          "asOf": "2026-06-30",
+          "validThrough": "2026-12-31",
+          "taxTreatment": "IVA no precisado para esta tasa",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "HSBC: comisiones y CAT de créditos al consumo, vigencia publicada a diciembre de 2026",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/comisiones/comisiones_credito_consumo.pdf"
+            }
+          ],
+          "minPercent": 18.99,
+          "maxPercent": 39.99
+        },
+        "openingFee": {
+          "amount": 1.77,
+          "unit": "percent",
+          "frequency": "per-event",
+          "label": "Comisión por disposición",
+          "taxTreatment": "Más IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "1.77% una vez por cada disposición del crédito.",
+          "sources": [
+            {
+              "title": "HSBC: comisiones y CAT de créditos al consumo, vigencia publicada a diciembre de 2026",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/comisiones/comisiones_credito_consumo.pdf"
+            }
+          ]
+        }
+      },
+      "amountRange": "Hasta $1,000,000 MXN; mínimo por verificar.",
+      "termRange": "6–60 meses",
+      "requirements": [
+        "Ser cliente HSBC One y cumplir los requisitos de contratación.",
+        "De 18 a 74 años y 11 meses; buen historial crediticio y evaluación de capacidad de pago.",
+        "Ingresos mensuales mayores a $5,000 MXN.",
+        "Identificación y, para extranjeros, residencia; comprobante de domicilio de hasta dos meses y solicitud.",
+        "Comprobantes de ingresos de los últimos dos meses o seis estados de cuenta donde se reciben, según los requisitos de contratación."
+      ],
+      "otherFees": [
+        "Cobranza por pago vencido: $366 MXN en crédito simple y $100 MXN en cuenta corriente, más IVA; confirmar la modalidad contratada."
+      ],
+      "benefits": [
+        "Pagos anticipados o adelantados sin penalización, conforme al contrato.",
+        "Pagos fijos según la oferta contratada.",
+        "Condonación por fallecimiento mediante aviso al banco y conforme a la cláusula Quinta; no se presenta como un seguro gratuito."
+      ],
+      "limitations": [
+        "El rango de tasas y el CAT son publicaciones informativas; no garantizan aprobación, monto ni tasa individual.",
+        "La vigencia del CAT y del rango de tasas no acredita una vigencia propia de la comisión por disposición.",
+        "Costo de seguros separado no documentado en esta ficha. La condonación por fallecimiento es una condición contractual.",
+        "El tarifario también denomina Advance a esta variante; no se sustituyen sus tasas por las de Crédito Personal HSBC."
+      ],
+      "evidence": [
+        {
+          "title": "HSBC: Crédito Personal One, requisitos y condiciones",
+          "url": "https://www.hsbc.com.mx/creditos/personales/one/"
+        },
+        {
+          "title": "HSBC: comisiones y CAT de créditos al consumo, vigencia publicada a diciembre de 2026",
+          "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/comisiones/comisiones_credito_consumo.pdf"
+        }
+      ]
+    },
+    {
+      "consultedOn": "2026-10-18",
+      "id": "hsbc-personal-premier",
+      "name": "Crédito Personal Premier",
+      "familyId": "personal",
+      "issuer": "HSBC México",
+      "canonicalUrl": "https://www.hsbc.com.mx/creditos/personales/personal-premier/",
+      "currency": "MXN",
+      "costs": {
+        "cat": {
+          "percent": 26.7,
+          "label": "CAT promedio publicado, para fines informativos y de comparación.",
+          "asOf": "2026-06-30",
+          "validThrough": "2026-12-31",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "HSBC: comisiones y CAT de créditos al consumo, vigencia publicada a diciembre de 2026",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/comisiones/comisiones_credito_consumo.pdf"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": null,
+          "label": "Fija anual, según evaluación; rango publicado, no cotización individual.",
+          "asOf": "2026-06-30",
+          "validThrough": "2026-12-31",
+          "taxTreatment": "IVA no precisado para esta tasa",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "HSBC: comisiones y CAT de créditos al consumo, vigencia publicada a diciembre de 2026",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/comisiones/comisiones_credito_consumo.pdf"
+            }
+          ],
+          "minPercent": 14.9,
+          "maxPercent": 35.99
+        },
+        "openingFee": {
+          "amount": 1.77,
+          "unit": "percent",
+          "frequency": "per-event",
+          "label": "Comisión por disposición",
+          "taxTreatment": "Más IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "1.77% una vez por cada disposición del crédito.",
+          "sources": [
+            {
+              "title": "HSBC: comisiones y CAT de créditos al consumo, vigencia publicada a diciembre de 2026",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/comisiones/comisiones_credito_consumo.pdf"
+            }
+          ]
+        }
+      },
+      "amountRange": "Hasta $1,000,000 MXN; mínimo por verificar.",
+      "termRange": "6–60 meses",
+      "requirements": [
+        "Ser cliente HSBC Premier y cumplir los requisitos de contratación.",
+        "De 18 a 74 años y 11 meses; buen historial crediticio y evaluación de capacidad de pago.",
+        "Ingreso mínimo no cuantificado en la página consultada; confirmar requisitos del segmento Premier.",
+        "Identificación y, para extranjeros, residencia; comprobante de domicilio de hasta dos meses y solicitud.",
+        "Comprobantes de ingresos de los últimos dos meses o seis estados de cuenta donde se reciben, según los requisitos de contratación."
+      ],
+      "otherFees": [
+        "Cobranza por pago vencido: $366 MXN en crédito simple y $100 MXN en cuenta corriente, más IVA; confirmar la modalidad contratada."
+      ],
+      "benefits": [
+        "Pagos anticipados o adelantados sin penalización, conforme al contrato.",
+        "Pagos fijos según la oferta contratada.",
+        "Condonación por fallecimiento mediante aviso al banco y conforme a la cláusula Quinta; no se presenta como un seguro gratuito."
+      ],
+      "limitations": [
+        "El rango de tasas y el CAT son publicaciones informativas; no garantizan aprobación, monto ni tasa individual.",
+        "La vigencia del CAT y del rango de tasas no acredita una vigencia propia de la comisión por disposición.",
+        "Costo de seguros separado no documentado en esta ficha. La condonación por fallecimiento es una condición contractual.",
+        "La promoción enlazada de apertura de 0–1.77% venció el 30 de junio de 2026; no se aplica a esta ficha."
+      ],
+      "evidence": [
+        {
+          "title": "HSBC: Crédito Personal Premier, requisitos y condiciones",
+          "url": "https://www.hsbc.com.mx/creditos/personales/personal-premier/"
+        },
+        {
+          "title": "HSBC: comisiones y CAT de créditos al consumo, vigencia publicada a diciembre de 2026",
+          "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/comisiones/comisiones_credito_consumo.pdf"
+        }
+      ]
+    },
+    {
+      "consultedOn": "2026-10-18",
+      "id": "banamex-personal",
+      "familyId": "personal",
+      "name": "Crédito Personal Banamex",
+      "issuer": "Banamex",
+      "canonicalUrl": "https://www.banamex.com/es/personas/creditos/credito-personal.html",
+      "currency": "MXN",
+      "costs": {
+        "cat": {
+          "percent": 36.8,
+          "label": "CAT promedio publicado por la consulta oficial que utiliza la página; no es una cotización individual.",
+          "asOf": "2026-07-02",
+          "validThrough": "2027-01-02",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Banamex: Crédito Personal y CAT cargado por la página oficial",
+              "url": "https://www.banamex.com/es/personas/creditos/credito-personal.html"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": null,
+          "label": "Anual fija según perfil; las referencias públicas de tasa no coinciden.",
+          "asOf": null,
+          "validThrough": null,
+          "taxTreatment": "Tratamiento de IVA por confirmar para la tasa individual",
+          "status": "unknown",
+          "sources": [
+            {
+              "title": "Banamex: Crédito Personal y CAT cargado por la página oficial",
+              "url": "https://www.banamex.com/es/personas/creditos/credito-personal.html"
+            }
+          ]
+        },
+        "openingFee": {
+          "amount": 0,
+          "unit": "MXN",
+          "frequency": "one-time",
+          "label": "Comisión por apertura",
+          "taxTreatment": "Sin comisión",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Sin comisión de apertura; otros cargos por disposición o modalidad son independientes.",
+          "sources": [
+            {
+              "title": "Banamex: Crédito Personal y CAT cargado por la página oficial",
+              "url": "https://www.banamex.com/es/personas/creditos/credito-personal.html"
+            }
+          ]
+        }
+      },
+      "amountRange": "$10,000–$750,000 MXN",
+      "termRange": "24, 36, 48 o 60 meses",
+      "requirements": [
+        "Ser cliente con cuenta Banamex y contar con invitación; sujeto a evaluación.",
+        "De 21 a 79 años; la FAQ especifica hasta 79 años y 11 meses. Ingreso mensual mínimo de $8,000 MXN.",
+        "Identificación y CURP o documentación de residencia permanente, comprobante de domicilio de hasta tres meses y teléfono."
+      ],
+      "otherFees": [
+        "Disposición para transferencia de saldo: $150 MXN más IVA; no se presenta como comisión general de apertura."
+      ],
+      "benefits": [
+        "Pagos anticipados sin penalización, conforme al contrato.",
+        "Liberación de la deuda por fallecimiento sin costo si el crédito está al corriente; no se equipara a un seguro independiente.",
+        "Sin aval, sujeto a invitación y evaluación.",
+        "Redisposición hasta diez veces sólo con oferta, pagos al corriente, domiciliación y disponibilidad de al menos $3,000 MXN; disposición mínima de $1,000 MXN."
+      ],
+      "limitations": [
+        "La página comercial, los controles del simulador y el servicio público de datos muestran referencias de tasa distintas. No se elige una ni se construye un rango como si fuera la oferta individual.",
+        "El CAT se obtuvo del servicio público que llena la página del producto; no de una simulación ni de datos privados del usuario.",
+        "No se documentó una vigencia propia de la apertura sin comisión ni costos de seguros separados."
+      ],
+      "evidence": [
+        {
+          "title": "Banamex: Crédito Personal y CAT cargado por la página oficial",
+          "url": "https://www.banamex.com/es/personas/creditos/credito-personal.html"
+        },
+        {
+          "title": "Banamex: soluciones en efectivo, condiciones y beneficios",
+          "url": "https://www.banamex.com/personas/soluciones-en-efectivo"
+        }
+      ]
+    },
+    {
+      "consultedOn": "2026-10-18",
+      "id": "yotepresto-personal",
+      "familyId": "personal",
+      "name": "Préstamo Personal yotepresto",
+      "issuer": "Comunidad de Préstamos, S.A.P.I. de C.V., IFC",
+      "canonicalUrl": "https://www.yotepresto.com/prestamos-personales",
+      "currency": "MXN",
+      "costs": {
+        "cat": {
+          "percent": 26.2,
+          "label": "CAT promedio publicado para fines informativos y de comparación.",
+          "asOf": "2026-06-15",
+          "validThrough": null,
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "yotepresto: préstamo personal, tasas y requisitos",
+              "url": "https://www.yotepresto.com/prestamos-personales"
+            },
+            {
+              "title": "yotepresto: tasas y comisiones por perfil",
+              "url": "https://www.yotepresto.com/tasas-comisiones"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": null,
+          "label": "Fija anual según perfil; rango publicado, no cotización individual.",
+          "asOf": null,
+          "validThrough": null,
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "yotepresto: préstamo personal, tasas y requisitos",
+              "url": "https://www.yotepresto.com/prestamos-personales"
+            },
+            {
+              "title": "yotepresto: tasas y comisiones por perfil",
+              "url": "https://www.yotepresto.com/tasas-comisiones"
+            }
+          ],
+          "minPercent": 8.9,
+          "maxPercent": 38.9
+        },
+        "openingFee": {
+          "amount": null,
+          "unit": "percent",
+          "frequency": "one-time",
+          "label": "Apertura según perfil",
+          "publishedText": "2.9%, 3.9% o 4.9%",
+          "taxTreatment": "Más IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "2.9% para perfiles A1–A3; 3.9% para A4–A7; 4.9% para B1–C7. Se descuenta del monto fondeado al formalizar; no se cobra si la solicitud se rechaza, no se fondea o no se firma.",
+          "sources": [
+            {
+              "title": "yotepresto: tasas y comisiones por perfil",
+              "url": "https://www.yotepresto.com/tasas-comisiones"
+            }
+          ]
+        },
+        "maintenanceFee": {
+          "amount": null,
+          "unit": "MXN",
+          "frequency": "monthly",
+          "label": "Administración mensual según monto del préstamo",
+          "publishedText": "$149, $199, $249 o $299 MXN al mes",
+          "taxTreatment": "IVA incluido",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Tabla publicada: $149 para préstamo de $10,000–$25,000; $199 para $25,001–$49,999; $249 para $50,000–$74,999; $299 desde $75,000 MXN. Incluye IVA y seguro del capital por fallecimiento. Los intervalos se conservan como están publicados, sin interpolar importes con centavos.",
+          "sources": [
+            {
+              "title": "yotepresto: tasas y comisiones por perfil",
+              "url": "https://www.yotepresto.com/tasas-comisiones"
+            },
+            {
+              "title": "yotepresto: tabla publicada de administración mensual por monto del préstamo",
+              "url": "https://cdn.prod.website-files.com/60fee83d8392d802267e7efc/62eac70bc9142dac652d1e85_comision-administracion-y-cuenta.webp"
+            }
+          ]
+        }
+      },
+      "amountRange": "$10,000–$425,000 MXN",
+      "termRange": "6, 12, 18, 24, 30 o 36 meses",
+      "requirements": [
+        "De 21 a 69 años; buen historial crediticio de al menos dos años e ingresos comprobables.",
+        "Cuenta bancaria propia e identificación; la FAQ excluye actualmente a empleados de gobierno.",
+        "Evaluación de la solicitud y fondeo por la comunidad; la aprobación no garantiza desembolso inmediato."
+      ],
+      "otherFees": [
+        "Mora: $300 MXN más IVA por atraso de al menos tres días hábiles o domiciliación fallida por falta de saldo.",
+        "Cobranza extrajudicial: hasta 20% de lo pagado; tratamiento de IVA no especificado para este cargo."
+      ],
+      "benefits": [
+        "Pago anticipado sin comisión ni penalización conforme a las condiciones del préstamo.",
+        "Mensualidades fijas salvo el primer periodo y pago domiciliado sin cargo.",
+        "El seguro incluido cubre capital insoluto por fallecimiento, no intereses; requiere acta y contempla hasta 120 días hábiles según la FAQ."
+      ],
+      "limitations": [
+        "Es financiamiento colectivo, no un préstamo bancario. El fondeo puede tomar de uno a 25 días; disponibilidad inmediata no garantizada.",
+        "No se publica fecha final de vigencia del CAT. La fecha de cálculo del CAT no se atribuye al rango de tasa ni a las comisiones.",
+        "La prima del seguro no está desglosada; los cargos escalonados no se promedian ni se transforman en una cuota única.",
+        "Las tablas promocionales que comparan otros bancos no se usan como fuente de sus costos."
+      ],
+      "evidence": [
+        {
+          "title": "yotepresto: préstamo personal, tasas y requisitos",
+          "url": "https://www.yotepresto.com/prestamos-personales"
+        },
+        {
+          "title": "yotepresto: tasas y comisiones por perfil",
+          "url": "https://www.yotepresto.com/tasas-comisiones"
+        },
+        {
+          "title": "yotepresto: preguntas frecuentes de solicitantes",
+          "url": "https://www.yotepresto.com/preguntas-frec-qup"
+        },
+        {
+          "title": "yotepresto: tabla publicada de administración mensual por monto del préstamo",
+          "url": "https://cdn.prod.website-files.com/60fee83d8392d802267e7efc/62eac70bc9142dac652d1e85_comision-administracion-y-cuenta.webp"
+        }
+      ]
+    },
+    {
+      "consultedOn": "2026-10-18",
+      "id": "bbva-nomina-seguro-vida",
+      "name": "Creditón Nómina BBVA con seguro de vida",
+      "issuer": "BBVA México",
+      "canonicalUrl": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-nomina.html",
+      "costs": {
+        "cat": {
+          "percent": 26.8,
+          "asOf": "2026-07-10",
+          "validThrough": "2027-01-10",
+          "status": "documented",
+          "taxTreatment": "Sin IVA",
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-nomina.html"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": null,
+          "label": "Rango general de tasa anual fija; confirmar cotización de esta modalidad.",
+          "asOf": null,
+          "validThrough": null,
+          "minPercent": 23.75,
+          "maxPercent": 37.45,
+          "taxTreatment": "Sin IVA",
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-nomina.html"
+            }
+          ]
+        },
+        "openingFee": {
+          "amount": 0,
+          "unit": "MXN",
+          "taxTreatment": "Sin comisión",
+          "conditions": "Contratación sin costo.",
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-nomina.html"
+            }
+          ]
+        }
+      },
+      "amountRange": "$2,000–$1,500,000 MXN, rango general",
+      "termRange": "3–72 meses, según evaluación",
+      "requirements": [
+        "Persona física sin actividad empresarial.",
+        "Ingreso mensual mínimo $2,000 MXN; nómina BBVA de al menos un mes y empleo actual de tres meses.",
+        "Edad mínima 18; edad más plazo no mayor a 75 años y 364 días en el régimen general.",
+        "Seguro de vida, documentación y evaluación."
+      ],
+      "limitations": [
+        "CAT sin IVA exclusivo de la modalidad con seguro de vida.",
+        "La modalidad sin seguro es para adultos mayores bajo otras condiciones."
+      ],
+      "evidence": [
+        {
+          "title": "Creditón Nómina: requisitos y CAT por modalidad",
+          "url": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-nomina.html"
+        }
+      ],
+      "familyId": "payroll"
+    },
+    {
+      "consultedOn": "2026-10-18",
+      "id": "santander-nomina",
+      "familyId": "payroll",
+      "name": "Crédito Nómina Santander",
+      "issuer": "Banco Santander México",
+      "canonicalUrl": "https://www.santander.com.mx/personas/credito-y-financiamiento/creditos-personales/credito-nomina-santander/",
+      "currency": "MXN",
+      "costs": {
+        "cat": {
+          "percent": 38.7,
+          "label": "CAT promedio ponderado, para fines informativos y de comparación.",
+          "asOf": "2026-08-31",
+          "validThrough": "2027-02-28",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Santander: folleto de créditos personales y de nómina, octubre de 2026",
+              "url": "https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:95f815f3-9707-4ddf-99b1-9ac025c2699a/original/as/folleto-electronico-ajuste-comision.pdf"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": 27.32,
+          "label": "Ordinaria anual fija promedio ponderada; la tasa individual depende de la oferta.",
+          "asOf": "2026-08-31",
+          "validThrough": "2027-02-28",
+          "taxTreatment": "IVA no precisado para esta tasa",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Santander: folleto de créditos personales y de nómina, octubre de 2026",
+              "url": "https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:95f815f3-9707-4ddf-99b1-9ac025c2699a/original/as/folleto-electronico-ajuste-comision.pdf"
+            }
+          ]
+        },
+        "openingFee": {
+          "amount": 12,
+          "unit": "percent",
+          "frequency": "per-event",
+          "label": "Comisión por disposición máxima",
+          "taxTreatment": "Más IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Hasta 12% por evento sobre el monto contratado. Puede reducirse según el perfil; no es una cotización individual.",
+          "sources": [
+            {
+              "title": "Santander: folleto de créditos personales y de nómina, octubre de 2026",
+              "url": "https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:95f815f3-9707-4ddf-99b1-9ac025c2699a/original/as/folleto-electronico-ajuste-comision.pdf"
+            },
+            {
+              "title": "Santander: Crédito Nómina, requisitos y comisión",
+              "url": "https://www.santander.com.mx/personas/credito-y-financiamiento/creditos-personales/credito-nomina-santander/"
+            }
+          ]
+        }
+      },
+      "amountRange": "Hasta $3,000,000 MXN; mínimo por verificar.",
+      "termRange": "3–72 meses",
+      "requirements": [
+        "Recibir la nómina en Santander; de 18 a 81 años; ingreso neto mensual mínimo publicado de $1,000 MXN.",
+        "Dos años continuos entre empleo actual y anterior, con al menos tres meses en el actual; buenos antecedentes crediticios si existe historial.",
+        "Identificación y comprobante de domicilio de hasta dos meses; comprobantes de ingresos si la nómina lleva menos de tres meses en Santander.",
+        "Seguro obligatorio según la oferta: vida e invalidez o desempleo. Se admite una aseguradora que cumpla los requisitos; costo no cuantificado.",
+        "Sujeto a evaluación y condiciones de la oferta individual."
+      ],
+      "otherFees": [
+        "Cobranza por evento según frecuencia de pago: $100 MXN mensual, $50 MXN quincenal o catorcenal y $25 MXN semanal; máximo tres eventos consecutivos. IVA no explicitado."
+      ],
+      "benefits": [
+        "Pagos anticipados totales o parciales sin penalización estando al corriente; se aplican al saldo insoluto conforme al contrato.",
+        "Sin garantía, sujeto a los requisitos y evaluación del banco."
+      ],
+      "limitations": [
+        "CAT y tasa promedio del folleto de octubre de 2026; no representan una oferta personalizada.",
+        "La página conserva cifras con vigencia vencida. El máximo de tasa de 65% de ese bloque no se adopta como condición vigente.",
+        "No se documentó una vigencia propia de la comisión ni el costo del seguro. La fecha del CAT no se extiende a esos cargos."
+      ],
+      "evidence": [
+        {
+          "title": "Santander: folleto de créditos personales y de nómina, octubre de 2026",
+          "url": "https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:95f815f3-9707-4ddf-99b1-9ac025c2699a/original/as/folleto-electronico-ajuste-comision.pdf"
+        },
+        {
+          "title": "Santander: Crédito Nómina, requisitos y comisión",
+          "url": "https://www.santander.com.mx/personas/credito-y-financiamiento/creditos-personales/credito-nomina-santander/"
+        }
+      ]
+    },
+    {
+      "consultedOn": "2026-10-18",
+      "id": "hsbc-nomina",
+      "name": "Crédito de Nómina HSBC",
+      "familyId": "payroll",
+      "issuer": "HSBC México",
+      "canonicalUrl": "https://www.hsbc.com.mx/creditos/personales/nomina/",
+      "currency": "MXN",
+      "costs": {
+        "cat": {
+          "percent": 36.7,
+          "label": "CAT promedio publicado, para fines informativos y de comparación.",
+          "asOf": "2026-06-30",
+          "validThrough": "2026-12-31",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "HSBC: comisiones y CAT de créditos al consumo, vigencia publicada a diciembre de 2026",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/comisiones/comisiones_credito_consumo.pdf"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": null,
+          "label": "Fija anual, según evaluación; rango publicado, no cotización individual.",
+          "asOf": "2026-06-30",
+          "validThrough": "2026-12-31",
+          "taxTreatment": "IVA no precisado para esta tasa",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "HSBC: comisiones y CAT de créditos al consumo, vigencia publicada a diciembre de 2026",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/comisiones/comisiones_credito_consumo.pdf"
+            }
+          ],
+          "minPercent": 15.9,
+          "maxPercent": 49.99
+        },
+        "openingFee": {
+          "amount": 1.77,
+          "unit": "percent",
+          "frequency": "per-event",
+          "label": "Comisión por disposición",
+          "taxTreatment": "Más IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "1.77% una vez por cada disposición del crédito.",
+          "sources": [
+            {
+              "title": "HSBC: comisiones y CAT de créditos al consumo, vigencia publicada a diciembre de 2026",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/comisiones/comisiones_credito_consumo.pdf"
+            },
+            {
+              "title": "HSBC: anexo de comisiones de Crédito Nómina, emisión del 7 de julio de 2025",
+              "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/creditos/tarifas_comisiones_cred_nomina.pdf"
+            }
+          ]
+        }
+      },
+      "amountRange": "Hasta 11 meses del sueldo o $1,200,000 MXN, según capacidad de pago.",
+      "termRange": "6–60 meses",
+      "requirements": [
+        "Recibir la nómina en HSBC y cumplir los requisitos de contratación.",
+        "De 18 a 74 años y 11 meses; buen historial crediticio y evaluación de capacidad de pago.",
+        "Ingreso mínimo no cuantificado en la página consultada.",
+        "Identificación y, para extranjeros, residencia; comprobante de domicilio de hasta dos meses y solicitud.",
+        "Comprobantes de ingresos de los últimos dos meses o seis estados de cuenta donde se reciben, según los requisitos de contratación."
+      ],
+      "otherFees": [
+        "Cobranza por pago vencido en crédito simple: $100 MXN para pago semanal y $366 MXN para pago quincenal o mensual; en cuenta corriente, $100 MXN. Importes más IVA, según la modalidad contratada."
+      ],
+      "benefits": [
+        "Pagos anticipados o adelantados sin penalización, conforme al contrato.",
+        "Pagos fijos según la oferta contratada.",
+        "Condonación por fallecimiento mediante aviso al banco y conforme a la cláusula Quinta; no se presenta como un seguro gratuito."
+      ],
+      "limitations": [
+        "El rango de tasas y el CAT son publicaciones informativas; no garantizan aprobación, monto ni tasa individual.",
+        "La vigencia del CAT y del rango de tasas no acredita una vigencia propia de la comisión por disposición.",
+        "Costo de seguros separado no documentado en esta ficha. La condonación por fallecimiento es una condición contractual.",
+        "El folleto enlazado conserva un plazo distinto y un CAT vencido; esta ficha usa el plazo de la página y los costos del tarifario de junio–diciembre de 2026."
+      ],
+      "evidence": [
+        {
+          "title": "HSBC: Crédito de Nómina HSBC, requisitos y condiciones",
+          "url": "https://www.hsbc.com.mx/creditos/personales/nomina/"
+        },
+        {
+          "title": "HSBC: comisiones y CAT de créditos al consumo, vigencia publicada a diciembre de 2026",
+          "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/comisiones/comisiones_credito_consumo.pdf"
+        },
+        {
+          "title": "HSBC: anexo de comisiones de Crédito Nómina, emisión del 7 de julio de 2025",
+          "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/creditos/tarifas_comisiones_cred_nomina.pdf"
+        },
+        {
+          "title": "HSBC: folleto Nómina enlazado con CAT vencido",
+          "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/creditos/folleto_digital_nomina.pdf"
+        }
+      ]
+    },
+    {
+      "consultedOn": "2026-10-18",
+      "id": "banorte-nomina",
+      "familyId": "payroll",
+      "name": "Crédito de Nómina Banorte",
+      "issuer": "Banco Mercantil del Norte",
+      "canonicalUrl": "https://www.banorte.com/Personal/Nomina/Nomina-Personas-Fisicas/Credito-de-Nomina.html",
+      "currency": "MXN",
+      "costs": {
+        "cat": {
+          "percent": 38,
+          "label": "CAT promedio publicado para fines informativos y de comparación.",
+          "asOf": "2026-06-30",
+          "validThrough": "2026-12-31",
+          "taxTreatment": "Sin IVA",
+          "status": "documented",
+          "sources": [
+            {
+              "title": "Banorte: Crédito de Nómina, requisitos y costos",
+              "url": "https://www.banorte.com/Personal/Nomina/Nomina-Personas-Fisicas/Credito-de-Nomina.html"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": null,
+          "label": "Tasa ordinaria por verificar; el rango de la tabla del folleto está pendiente de revisión visual.",
+          "asOf": null,
+          "validThrough": null,
+          "taxTreatment": "IVA no precisado para esta tasa",
+          "status": "unknown",
+          "sources": [
+            {
+              "title": "Banorte: folleto Crédito de Nómina, junio–diciembre de 2026; tabla de tasa pendiente de revisión visual",
+              "url": "https://www.banorte.com/dam/jcr:94448546-782b-4e6c-aaf7-c13afdbb9087/Folleto-Informativo-CDN.pdf"
+            }
+          ]
+        },
+        "openingFee": {
+          "amount": 350,
+          "unit": "MXN",
+          "frequency": "one-time",
+          "label": "Comisión por apertura",
+          "taxTreatment": "Más IVA",
+          "asOf": null,
+          "validThrough": null,
+          "conditions": "Por apertura, una sola vez.",
+          "sources": [
+            {
+              "title": "Banorte: Crédito de Nómina, requisitos y costos",
+              "url": "https://www.banorte.com/Personal/Nomina/Nomina-Personas-Fisicas/Credito-de-Nomina.html"
+            }
+          ]
+        }
+      },
+      "amountRange": "Hasta $1,500,000 MXN; mínimo por verificar.",
+      "termRange": "6, 12, 18, 24, 30, 36, 42, 48, 54 o 60 meses",
+      "requirements": [
+        "Recibir nómina neta de al menos $2,000 MXN; de 18 a 74 años y 11 meses, o hasta 79 años y 11 meses para pensionados.",
+        "Identificación, comprobante de domicilio de hasta tres meses, comprobantes de ingresos y consulta de Buró de Crédito.",
+        "Solicitud desde el primer depósito, sujeta a validación de 48–72 horas y aprobación.",
+        "Seguro de vida y desempleo obligatorio según el folleto; prima no cuantificada en esta ficha."
+      ],
+      "otherFees": [
+        "Otros cargos del folleto y sus modalidades están pendientes de revisión visual de las tablas; no se consideran iguales a cero."
+      ],
+      "benefits": [
+        "Sin anualidad, aval ni garantía, sujeto a evaluación y condiciones del crédito.",
+        "Pagos anticipados sin penalización y cargo a la nómina conforme al contrato."
+      ],
+      "limitations": [
+        "La página oficial acredita CAT, apertura y condiciones aquí publicadas. El folleto contiene un rango de tasa, pero su tabla no pudo verificarse visualmente y permanece pendiente; esto no significa que el emisor no publique el dato.",
+        "El CAT no se usa como sustituto de la tasa ni como cotización individual.",
+        "La fecha de vigencia del CAT no se extiende a la comisión de apertura ni al seguro."
+      ],
+      "evidence": [
+        {
+          "title": "Banorte: Crédito de Nómina, requisitos y costos",
+          "url": "https://www.banorte.com/Personal/Nomina/Nomina-Personas-Fisicas/Credito-de-Nomina.html"
+        },
+        {
+          "title": "Banorte: folleto Crédito de Nómina, junio–diciembre de 2026; tabla de tasa pendiente de revisión visual",
+          "url": "https://www.banorte.com/dam/jcr:94448546-782b-4e6c-aaf7-c13afdbb9087/Folleto-Informativo-CDN.pdf"
+        }
+      ]
+    },
+    {
+      "consultedOn": "2026-10-18",
+      "id": "bbva-hipoteca-fija",
+      "name": "Hipoteca Fija BBVA",
+      "issuer": "BBVA México",
+      "canonicalUrl": "https://www.bbva.mx/personas/productos/creditos/credito-hipotecario/hipoteca-fija.html",
+      "costs": {
+        "cat": {
+          "percent": 13.3,
+          "asOf": "2026-06-30",
+          "validThrough": "2026-12-27",
+          "status": "documented",
+          "taxTreatment": "Sin IVA",
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://www.bbva.mx/personas/productos/creditos/credito-hipotecario/hipoteca-fija.html"
+            }
+          ]
+        },
+        "interestRate": {
+          "percent": null,
+          "label": "Fija individual; la página presenta tasas mínimas inconsistentes.",
+          "asOf": null,
+          "validThrough": null,
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://www.bbva.mx/personas/productos/creditos/credito-hipotecario/hipoteca-fija.html"
+            }
+          ]
+        },
+        "openingFee": {
+          "amount": 1,
+          "unit": "percent",
+          "taxTreatment": "Exenta de IVA según el apartado de contratación",
+          "conditions": "Sobre el monto financiado, una vez al formalizar.",
+          "sources": [
+            {
+              "title": "Costos publicados por el emisor",
+              "url": "https://www.bbva.mx/personas/productos/creditos/credito-hipotecario/hipoteca-fija.html"
+            }
+          ]
+        }
+      },
+      "amountRange": null,
+      "termRange": "5, 10, 15 o 20 años",
+      "requirements": [
+        "Mayor de 26 años; terminar antes de cumplir 85.",
+        "Historial, ingresos y antigüedad laboral comprobables.",
+        "Vivienda elegible, seguros de vida y daños."
+      ],
+      "limitations": [
+        "CAT sin IVA: aforo de 80%, 15 años y tasa de referencia 11.20%.",
+        "La página muestra desde 9.05% y desde 9.15%; no se eligió una por inferencia.",
+        "Administración mensual: 0.030% del monto financiado más IVA; existen otros gastos iniciales."
+      ],
+      "evidence": [
+        {
+          "title": "Hipoteca Fija: costos y supuestos del CAT",
+          "url": "https://www.bbva.mx/personas/productos/creditos/credito-hipotecario/hipoteca-fija.html"
+        }
+      ],
+      "familyId": "mortgage"
+    }
+  ]
+}

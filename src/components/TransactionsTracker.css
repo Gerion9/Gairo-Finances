@@ -1,0 +1,42 @@
+.sf-transactions button { min-height: 44px; }
+.sf-transactions-registered[hidden], .sf-transactions-header-actions[hidden] { display: none; }
+.sf-transactions-view-switch { display: flex; gap: 4px; width: fit-content; max-width: 100%; padding: 4px; border: 1px solid #30435a; border-radius: 12px; background: #0d1724; }
+.sf-transactions-view-switch > button { flex: 1; padding: 10px 16px; border-radius: 8px; color: #aebdd0; font-size: 14px; line-height: 1.5; }
+.sf-transactions-view-switch > button[aria-pressed="true"] { background: #263a50; color: #f0f5fa; }
+.sf-transactions .sf-transactions-history-title { border-radius: 5px; scroll-margin-top: calc(var(--header-height, 64px) + 24px); }
+.sf-transactions-row-actions { display: flex; align-items: center; gap: 4px; }
+.sf-transactions-row-actions > button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 9px 10px; border: 1px solid transparent; border-radius: 9px; color: #a6c7bc; font-size: 13px; font-weight: 500; white-space: nowrap; transition: border-color 160ms ease, background-color 160ms ease; }
+.sf-transactions-row-actions > button:hover { border-color: #7de4bf2c; background: #7de4bf0a; color: #c0f0dc; }
+.sf-transactions-row-actions > .sf-transactions-delete { width: 44px; flex-shrink: 0; padding: 10px; color: #99a9bf; }
+.sf-transactions-row-actions > .sf-transactions-delete:hover { border-color: #f2a4ac30; background: #f2a4ac0d; color: #ffb3bc; }
+.sf-transactions-category { display: inline-block; overflow-wrap: anywhere; }
+.sf-transactions-filter-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+.sf-transactions-filter-chips > button { display: inline-flex; align-items: center; justify-content: space-between; gap: 10px; max-width: 100%; min-height: 44px; padding: 9px 12px; border: 1px solid #7de4bf35; border-radius: 9px; background: #7de4bf0b; color: #b6e7d4; font-size: 13px; text-align: left; overflow-wrap: anywhere; }
+.sf-transactions-filter-chips > button > svg { flex-shrink: 0; }
+.sf-transactions-filter-chips > button:hover { background: #7de4bf15; border-color: #7de4bf69; }
+.sf-transactions-notice { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 18px; padding: 13px 16px; border: 1px solid #7de4bf35; border-radius: 13px; background: #10271f; }
+.sf-transactions-notice > p { flex: 1 1 260px; margin: 0; color: #c6e8d9; font-size: 14px; line-height: 23px; }
+.sf-transactions-notice > div { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.sf-transactions-notice button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; padding: 9px 11px; border: 1px solid #7de4bf32; border-radius: 8px; color: #b7eed7; font-size: 13px; font-weight: 550; }
+.sf-transactions-notice button:hover { background: #7de4bf10; }
+.sf-transactions-notice .sf-transactions-dismiss { width: 44px; padding: 8px; border-color: transparent; color: #96b6a7; }
+.sf-transactions-budget-row { display: block; width: calc(100% + 16px); min-height: 44px; margin: -8px; padding: 10px 8px; border: 1px solid transparent; border-radius: 11px; text-align: left; transition: background-color 160ms ease, border-color 160ms ease; }
+.sf-transactions-budget-row:hover { border-color: #7de4bf26; background: #7de4bf06; }
+.sf-transactions-budget-link { display: flex; align-items: center; justify-content: flex-end; gap: 5px; margin-top: 8px; color: #8fc6af; font-size: 12px; line-height: 20px; }
+.sf-transactions-unassigned-budget { margin-top: 22px; padding: 14px; border: 1px solid #35475b; border-radius: 11px; background: #142030; color: #aebed0; font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+.sf-transactions-unassigned-budget p { margin: 0; }
+.sf-transactions-unassigned-budget p:first-child { color: #e2eaf4; font-weight: 550; }
+.sf-transactions-unassigned-budget p + p { margin-top: 5px; }
+.sf-transactions-review-budget { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 44px; margin-top: 18px; padding-top: 12px; border-top: 1px solid #2b3e52; color: #b3d7c9; font-size: 14px; }
+.sf-transactions-save-error { margin: 0 0 18px; padding: 13px 15px; border: 1px solid #f3a2ae44; border-radius: 10px; background: #f3a2ae0b; color: #ffc1cb; font-size: 14px; line-height: 23px; }
+@media (max-width: 767px) {
+  .sf-transactions-view-switch { width: 100%; }
+  .sf-transactions-view-switch > button { padding: 9px 10px; font-size: 13px; }
+  .sf-transactions-notice { padding: 14px; }
+  .sf-transactions-notice > div { width: 100%; }
+  .sf-transactions-notice .sf-transactions-dismiss { margin-left: auto; }
+  .sf-transactions-row-actions > button:first-child { border-color: #7de4bf25; background: #7de4bf06; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sf-transactions-row-actions > button, .sf-transactions-budget-row { transition: none; }
+}

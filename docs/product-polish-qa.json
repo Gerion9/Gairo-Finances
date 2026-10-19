@@ -1,0 +1,372 @@
+{
+  "schemaVersion": 1,
+  "contract": "PRODUCT-POLISH-INTEGRATED-QA r4",
+  "verifiedOn": "2026-10-18",
+  "timezone": "America/Mexico_City",
+  "status": "implemented_and_locally_verified_with_limits",
+  "delivery": {
+    "scope": "Cambios locales en Inicio, navegación, continuidad de tareas y carga de productos financieros.",
+    "designAuthority": "ux_design_lead / perfil ux-ui; decisiones y aprobación de composición sobre capturas renderizadas.",
+    "titleAuthority": "product_titles / perfil titulador.",
+    "deployed": false,
+    "financialCatalogChanged": false,
+    "previousIteration": "docs/product-excellence-qa.json"
+  },
+  "inputIntegrity": {
+    "implementationBaseline": "artifacts/ui-review/product-polish-baseline.json",
+    "finalTestBaseline": "artifacts/ui-review/product-polish-tests-baseline-r4.json",
+    "finalTestPostcheck": "artifacts/ui-review/product-polish-tests-post-build-r4.json",
+    "testedFiles": 247,
+    "testedTreeSha256": "394d32f7d1d0b7e5fd312a7d59a4a3de3838c8c00fee7485d4952cb9f5238e1b",
+    "unchangedDuringAutomatedVerification": true,
+    "distManifest": "artifacts/ui-review/product-polish-tests-dist-scan-r4.json",
+    "distTreeSha256": "448d968a82dbce7146756cd95bbf0bef05d25ac430376d49a13f0cbc547eba55",
+    "documentationWrittenAfterTests": [
+      "README.md (cierre de verificación)",
+      "docs/product-polish-qa.json"
+    ],
+    "finalDocumentationCheck": "artifacts/ui-review/product-polish-documentation-check-r4.json",
+    "implementationBaselineTreeSha256": "f23dbea8d1052aa7d712be7e4e8eb68b0bf905fe3ce378c9747eb24bd4ebf830",
+    "implementationDelta": {
+      "changedExistingFiles": 18,
+      "addedFiles": 13,
+      "removedFiles": 0,
+      "paths": [
+        "src/App.jsx",
+        "src/components/CardChoiceWorkbench.jsx",
+        "src/components/CommandPalette.jsx",
+        "src/components/CreditLibrary.css",
+        "src/components/CreditLibrary.jsx",
+        "src/components/DashboardOverview.css",
+        "src/components/DashboardOverview.jsx",
+        "src/components/ExpectedReceivables.jsx",
+        "src/components/Navigation.css",
+        "src/components/ToolsDirectory.jsx",
+        "src/components/TransactionsTracker.jsx",
+        "src/components/Workspace.css",
+        "src/components/WorkspaceWelcome.jsx",
+        "src/data/navigation.js",
+        "src/data/navigation.test.js",
+        "src/services/financialReview.js",
+        "src/services/financialReview.test.js",
+        "src/services/marketPreferences.test.js",
+        "src/components/CreditLibraryRoute.jsx",
+        "src/components/ProductViewLoader.js",
+        "src/components/ProductViewLoader.jsx",
+        "src/components/SavingsCatalogRoute.jsx",
+        "src/components/WorkspaceOverview.test.jsx",
+        "src/data/marketCoverage.js",
+        "src/services/actionAvailability.js",
+        "src/services/actionAvailability.test.js",
+        "src/services/navigationSearch.js",
+        "src/services/navigationSearch.test.js",
+        "src/services/productLoading.test.js",
+        "src/services/workspaceOverview.js",
+        "src/services/workspaceOverview.test.js"
+      ],
+      "scope": "Comparación entre las huellas de esta iteración y el cierre r2; no atribuye el trabajo previo del árbol sucio."
+    }
+  },
+  "implemented": [
+    {
+      "id": "task_based_start",
+      "behavior": "Cuatro tareas equivalentes al abrir un espacio vacío; presupuesto y respaldo secundarios.",
+      "paths": [
+        "src/components/WorkspaceWelcome.jsx",
+        "src/components/Workspace.css"
+      ],
+      "evidence": [
+        "artifacts/ui-review/sifran-polish-final-welcome-mobile.jpg",
+        "artifacts/ui-review/sifran-polish-final-welcome-320.jpg"
+      ]
+    },
+    {
+      "id": "home_matches_records",
+      "behavior": "El inicio reconoce cobros, movimientos y un plan existente aunque no haya presupuesto; el cobro pendiente no se suma al saldo disponible. Conserva presupuesto, cascada y cálculos anteriores cuando existen.",
+      "paths": [
+        "src/App.jsx",
+        "src/components/DashboardOverview.jsx",
+        "src/components/DashboardOverview.css",
+        "src/services/workspaceOverview.js"
+      ],
+      "evidence": [
+        "artifacts/ui-review/sifran-polish-final-receivable-home-r3.jpg",
+        "artifacts/ui-review/sifran-polish-final-movements-home.jpg",
+        "artifacts/ui-review/sifran-polish-final-budget-desktop.jpg"
+      ]
+    },
+    {
+      "id": "optional_budget",
+      "behavior": "La ausencia de presupuesto deja de generar un asunto de revisión. Contador y detalle usan el mismo resultado; fechas, deudas y movimientos que requieren revisión permanecen.",
+      "paths": [
+        "src/services/financialReview.js",
+        "src/services/financialReview.test.js"
+      ],
+      "evidence": [
+        "artifacts/ui-review/sifran-polish-final-receivable-home-r3.jpg"
+      ]
+    },
+    {
+      "id": "find_and_resume_tasks",
+      "behavior": "Búsqueda compartida con prioridad de nombre exacto y alias; accesos directos a cobros y ahorro. Herramientas conserva consulta, objetivo y origen de regreso durante la sesión. Selector de objetivo compacto en móvil. Los resultados usan singular cuando corresponde.",
+      "paths": [
+        "src/data/navigation.js",
+        "src/services/navigationSearch.js",
+        "src/components/ToolsDirectory.jsx",
+        "src/components/CommandPalette.jsx",
+        "src/components/Navigation.css",
+        "src/App.jsx"
+      ],
+      "evidence": [
+        "artifacts/ui-review/sifran-polish-final-tools-mobile.jpg"
+      ]
+    },
+    {
+      "id": "navigation_and_focus",
+      "behavior": "Rutas para movimientos registrados y cobros esperados, compatibles con Atrás/Adelante. El selector mantiene su foco; la entrada externa y el primer registro o deuda recuperan un encabezado visible sin desplazar un foco que el usuario ya movió. Revelar desde el botón de la vista privada devuelve el foco al control persistente de la barra sólo si quedó en BODY, sin cambiar el scroll ni desplazar un nuevo foco.",
+      "paths": [
+        "src/App.jsx",
+        "src/components/TransactionsTracker.jsx",
+        "src/components/ExpectedReceivables.jsx"
+      ]
+    },
+    {
+      "id": "available_navigation",
+      "behavior": "El modo de consulta mantiene búsqueda y navegación; las acciones de edición o protegidas por privacidad exponen su motivo y conservan guardas en el controlador.",
+      "paths": [
+        "src/services/actionAvailability.js",
+        "src/components/ToolsDirectory.jsx",
+        "src/components/CommandPalette.jsx",
+        "src/App.jsx"
+      ]
+    },
+    {
+      "id": "load_when_needed",
+      "behavior": "Tarjetas se separa de la entrada; Ahorro y Compra se cargan al visitarse. Las vistas visitadas conservan su montaje, con estado de espera y reintento local. La resolución de una descarga no roba el foco.",
+      "paths": [
+        "src/components/CreditLibraryRoute.jsx",
+        "src/components/CreditLibrary.jsx",
+        "src/components/CreditLibrary.css",
+        "src/components/SavingsCatalogRoute.jsx",
+        "src/components/CardChoiceWorkbench.jsx",
+        "src/components/ProductViewLoader.jsx",
+        "src/components/ProductViewLoader.js",
+        "src/data/marketCoverage.js"
+      ]
+    }
+  ],
+  "automated": {
+    "contract": "PRODUCT-POLISH-TEST r4",
+    "report": "artifacts/ui-review/product-polish-tests-summary-r4.json",
+    "tests": {
+      "passed": 931,
+      "total": 931,
+      "files": 43,
+      "failed": 0,
+      "skipped": 0,
+      "retries": 0,
+      "runnerDurationSeconds": 9.88
+    },
+    "integrity": {
+      "command": "node scripts/check-market-data.mjs",
+      "exitCode": 0,
+      "scope": "Integridad estructural y paridad de auditorías, sin refresco web ni prueba de cobertura total.",
+      "reusedFrom": "PRODUCT-POLISH-TEST r2",
+      "reason": "Checker, datasets y auditorías conservan sus hashes r2.",
+      "executedThisRevision": false
+    },
+    "diffCheck": {
+      "command": "git diff --check",
+      "exitCode": 0,
+      "scope": "Diff de archivos rastreados; nuevos archivos cubiertos por huellas, pruebas y build."
+    },
+    "build": {
+      "command": "node scripts/build.mjs",
+      "exitCode": 0,
+      "modules": 2994,
+      "durationSeconds": 14.3480827,
+      "warningCount": 0
+    },
+    "productionScan": {
+      "files": 60,
+      "explicitFixtureMarkers": 40,
+      "matches": 0,
+      "scope": "Sólo dist actual; un conjunto finito de marcadores no acredita ausencia de cualquier dato posible."
+    },
+    "environment": {
+      "node": "22.23.2",
+      "vite": "6.4.3",
+      "vitest": "4.1.11",
+      "platform": "win32"
+    },
+    "notes": [
+      "Los avisos de acceso al prefijo global de npm y atributos globales de Git no impidieron los comandos; no son advertencias del build.",
+      "El build canónico utilizó la escalación aprobada por la restricción de acceso de esbuild; no se modificaron ACL ni configuración.",
+      "El proyecto no define scripts de lint ni type-check; no se presentan como ejecutados.",
+      "Las pruebas del servidor usan SQLite en memoria y servicios externos simulados."
+    ]
+  },
+  "performance": {
+    "contract": "PRODUCT-PERFORMANCE r4",
+    "report": "artifacts/ui-review/product-polish-performance-r4.json",
+    "finalDistVerified": true,
+    "initialJs": {
+      "beforeBytes": 778259,
+      "afterBytes": 722305,
+      "reductionPercent": 7.189637,
+      "beforeGzipBytes": 246193,
+      "afterGzipBytes": 231413,
+      "gzipReductionPercent": 6.00342
+    },
+    "initialAndCardsJs": {
+      "beforeBytes": 1414784,
+      "afterBytes": 1113826,
+      "reductionPercent": 21.272364,
+      "beforeGzipBytes": 337073,
+      "afterGzipBytes": 292208,
+      "gzipReductionPercent": 13.310173
+    },
+    "totalAllProductViewsJs": {
+      "beforeBytes": 1414784,
+      "afterBytes": 1424236,
+      "increasePercent": 0.668088
+    },
+    "interpretation": "Se difiere la carga hasta necesitar cada vista; el tamaño total al visitar todas las vistas crece ligeramente con el conjunto de cambios.",
+    "scope": "Clausuras estáticas y compresión gzip local del producto completo; no latencia de red, LCP, INP ni CPU."
+  },
+  "codeReview": {
+    "contract": "PRODUCT-POLISH-REVIEW r4",
+    "reviewer": "daily_value_review / perfil code-reviewer",
+    "baseline": "artifacts/ui-review/product-polish-tests-post-build-r3.json",
+    "finalFiles": {
+      "src/App.jsx": "1e0a1edea6e99bd8616d6263ea74612d01ac15871b9bfecaae04a8d895784e11",
+      "src/components/TransactionsTracker.jsx": "6c1b28033fef9025a6bdaf8c88face4b835c0a208f9366894b6a2ff3d53b2281",
+      "src/services/financialReview.js": "faee92592d6517e5e9b027dafe61a4febf51e6e4bdf32940cf3a35c49c593b82",
+      "src/services/financialReview.test.js": "0ce3935330bf99015335b6107182f0a042297185d50f2a7c9260ce1d2a63dd1b",
+      "src/components/CommandPalette.jsx": "0381496b2e41df10faff5c142813f8156b860857f01a7b8d5ee698aa7f5290fd"
+    },
+    "unresolvedFindings": [],
+    "result": "P3 de recuperación de foco durante sincronización pausada cerrado por inspección; sin nuevos hallazgos. Las revisiones anteriores de las demás fuentes conservan su alcance.",
+    "resolvedFinalFinding": {
+      "originalRevision": "PRODUCT-POLISH-REVIEW r3",
+      "severity": "P3",
+      "issue": "El permiso de edición isCurrent no equivalía a la vigencia del espacio y bloqueaba el rescate de foco durante conflict/remote/refreshing.",
+      "resolution": "La recuperación usa vigencia de instancia, ruta, privacidad, diálogo y foco; no consulta autorización de edición ni la modifica.",
+      "lifecycleEvidence": [
+        "src/App.jsx:74",
+        "src/SessionGate.jsx:60",
+        "src/SessionGate.jsx:68",
+        "src/SessionGate.jsx:94"
+      ]
+    }
+  },
+  "browser": {
+    "status": "passed_with_explicit_limits",
+    "contract": "PRODUCT-POLISH-BROWSER r3 final on product freeze r4",
+    "reviewer": "excellence_browser / perfil verificador-chrome",
+    "report": "artifacts/ui-review/product-polish-browser-validation.json",
+    "baseline": "artifacts/ui-review/product-polish-browser-baseline-final.json",
+    "method": "Navegador real con CUA sobre fixtures sintéticos aislados; fuentes de la aplicación reales.",
+    "assertions": {
+      "groups": 11,
+      "total": 50,
+      "passed": 47,
+      "observedLimits": 1,
+      "notExecuted": 2
+    },
+    "openP1P2": [],
+    "observed": [
+      "Inicio vacío a 320/390 px y con movimientos, cobros o presupuesto existente.",
+      "Primer registro y primera deuda; foco posterior en el Resumen.",
+      "Entrada fría StrictMode a cobros, selector interno y Atrás/Adelante.",
+      "Búsqueda exacta y alias; consulta, objetivo, origen y scroll al volver a Herramientas.",
+      "Navegación disponible en lectura y motivos de acciones deshabilitadas.",
+      "Carga normal de Productos y conservación de filtros, selecciones y compra.",
+      "Privacidad, foco posterior y conservación del borrador, incluido readOnly/isCurrent=false sintético.",
+      "Carga controlada: primera visita, espera, resolución con vista oculta, error, reintento y nuevo foco del usuario.",
+      "Sin desbordamiento horizontal en estados observados; navegación con movimiento reducido y sin errores de App en la lectura final."
+    ],
+    "disabledActionLimit": {
+      "normalPointer": "La automatización se abstuvo de activar la opción aria-disabled; se observaron estado, motivo y paleta abierta, no ejecución de su handler.",
+      "automaticApprovalRejection": "La revisión automática rechazó click(force:true) por considerarlo eludir un control de escritura deshabilitado.",
+      "notExecuted": [
+        "Activación forzada de la opción deshabilitada",
+        "Activación de esa opción por teclado tras el rechazo"
+      ],
+      "response": "No se intentó eludir el rechazo. Las guardas conservan revisión estática y pruebas de disponibilidad, separadas de este dictamen dinámico."
+    },
+    "sourcesStableAtClosure": true,
+    "qaOverridesRestored": true,
+    "ownedTabsClosed": true,
+    "limitations": [
+      "El modo de consulta representa un estado sintético; no se provocó un conflicto de una cuenta remota real.",
+      "Los fallos del cargador se inyectaron en un importador controlado; no se probaron fallos de CDN.",
+      "Sin sesión de lector de pantalla ni auditoría WCAG integral.",
+      "No se midieron duración ni número de animaciones; no se cubrieron todas las carreras de foco dentro de un frame."
+    ]
+  },
+  "designReview": {
+    "status": "approved_for_observed_surfaces",
+    "contract": "PRODUCT-POLISH-UX r2 on product freeze r4",
+    "reviewer": "ux_design_lead / perfil ux-ui",
+    "materialCompositionChangesPending": 0,
+    "approvedSurfaces": [
+      "Bienvenida 320/390 px",
+      "Inicio con cobros, movimientos o presupuesto",
+      "Herramientas móvil",
+      "Motivos de solo lectura en búsqueda",
+      "Error y reintento del cargador controlado"
+    ],
+    "evidence": [
+      "artifacts/ui-review/sifran-polish-final-welcome-mobile.jpg",
+      "artifacts/ui-review/sifran-polish-final-welcome-320.jpg",
+      "artifacts/ui-review/sifran-polish-final-receivable-home-r3.jpg",
+      "artifacts/ui-review/sifran-polish-final-movements-home.jpg",
+      "artifacts/ui-review/sifran-polish-final-budget-desktop.jpg",
+      "artifacts/ui-review/sifran-polish-final-tools-mobile.jpg",
+      "artifacts/ui-review/sifran-polish-final-readonly-palette.jpg",
+      "artifacts/ui-review/sifran-polish-loading-controlled-error-mobile.jpg"
+    ],
+    "interactionEvidence": "artifacts/ui-review/product-polish-browser-validation.json",
+    "scope": "Aprobación propia de composición sobre capturas; navegación, foco y continuidad citan la ejecución del verificador. Capturas anteriores se reutilizan cuando los cambios finales no alteran su composición."
+  },
+  "rationale": [
+    {
+      "source": "https://www.w3.org/WAI/WCAG2/supplemental/objectives/o1-understandable/",
+      "consultedOn": "2026-10-18",
+      "application": "Propósito visible, tareas reconocibles y agrupación consistente.",
+      "limit": "Guía cognitiva complementaria; no prueba conformidad WCAG ni un beneficio medido en usuarios de Sifran."
+    },
+    {
+      "source": "https://motion.dev/docs/react-accessibility",
+      "consultedOn": "2026-10-18",
+      "application": "Conservar movimiento reducido y transiciones breves; no animar por decoración.",
+      "limit": "La documentación no equivale a una auditoría de accesibilidad del producto."
+    },
+    {
+      "source": "https://react.dev/reference/react/lazy",
+      "consultedOn": "2026-10-18",
+      "application": "Carga diferida con promesas estables, errores locales y nueva identidad al reintentar."
+    },
+    {
+      "source": "https://react.dev/reference/react/Suspense",
+      "consultedOn": "2026-10-18",
+      "application": "Fronteras de espera alineadas con las vistas que la persona abre."
+    }
+  ],
+  "priorResearch": [
+    "docs/product-excellence-research.json",
+    "docs/product-excellence-research.html",
+    "docs/daily-value-research.json",
+    "docs/ux-research.json"
+  ],
+  "limitations": [
+    "Validación local con datos sintéticos aislados; no acredita guardado en una cuenta privada real, sincronización entre dispositivos ni despliegue.",
+    "No se ejecutó un estudio de usabilidad con personas, medición de retención ni auditoría WCAG integral.",
+    "La medición de bytes no permite afirmar una reducción de tiempo de carga en dispositivos reales.",
+    "El catálogo financiero conserva el corte editorial del 18 de octubre de 2026; esta iteración no refrescó sus fuentes ni añadió un crawler.",
+    "Los espacios actuales son independientes; la colaboración real del hogar y sus permisos siguen siendo trabajo futuro.",
+    "Dos activaciones de una acción de escritura deshabilitada quedaron sin ejecutar tras el rechazo de la revisión automática; el estado deshabilitado y su motivo sí se observaron."
+  ],
+  "generatedAt": "2026-10-19T01:55:41.717Z"
+}

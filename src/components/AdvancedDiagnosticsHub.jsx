@@ -48,9 +48,9 @@ Teléfono: [Teléfono de Contacto]`;
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
         <div className="flex items-center gap-2 pb-4 border-b border-slate-800">
           <ShieldCheck className="w-5 h-5 text-emerald-400" />
-          <h2 className="text-xl font-extrabold text-white tracking-tight">
+          <h1 className="text-xl font-extrabold text-white tracking-tight">
             Centro de Diagnóstico Avanzado & Guía Buró de Crédito
-          </h2>
+          </h1>
         </div>
         <p className="text-xs text-slate-400 mt-2">
           Herramientas ejecutivas para proteger tu historial crediticio, negociar con bancos y mantener hábitos blindados.

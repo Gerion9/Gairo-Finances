@@ -1,0 +1,685 @@
+{
+  "schemaVersion": 1,
+  "reportId": "sifran-product-excellence-research-2026-10-18",
+  "contract": "EXCELLENCE-RESEARCH-DOC r2",
+  "title": "Sifran necesita reducir el trabajo de decidir y volver a empezar",
+  "language": "es-MX",
+  "consultedOn": "2026-10-18",
+  "implementationStatus": "implemented_local",
+  "validationStatus": "technical_verification_passed",
+  "statusNote": "Cinco cambios implementados localmente. Pasaron 878 pruebas automatizadas, la compilación y las verificaciones de navegador descritas en el registro de QA. UX/UI y visualización aprobaron las superficies observadas. El estudio con usuarios sigue pendiente; no se realizó un despliegue.",
+  "designAuthority": "UX/UI dirige la ubicación, jerarquía, interacción, estados, adaptación móvil y accesibilidad. La revisión de literatura y comunidades informa las decisiones; no sustituye la validación de la experiencia.",
+  "thesis": "La mejora debe reducir el trabajo necesario para decidir, conservar contexto útil al regresar y distinguir el dinero esperado del recibido. Ampliar el catálogo o aumentar la frecuencia de uso no acredita por sí mismo una mejor experiencia.",
+  "methodology": {
+    "type": "Búsqueda dirigida, revisión documental condensada y contraste de señales; no es una revisión sistemática ni exhaustiva.",
+    "inputs": [
+      "EXCELLENCE-LITERATURE r1",
+      "EXCELLENCE-COMMUNITIES r1"
+    ],
+    "referenceRecords": 28,
+    "literatureStandardsAndContextRecords": 10,
+    "forumThreads": 12,
+    "officialProductDocumentationRecords": 6,
+    "coverageNote": "Los 28 registros documentan esta ampliación. Algunas fuentes se reconsultaron y ya aparecían en investigación anterior; el número no representa 28 fuentes nuevas para el proyecto. Los documentos complementarios de una misma referencia no se cuentan como registros adicionales.",
+    "forumSampling": "Muestra intencional: ocho hilos de r/MexicoFinanciero, uno de r/ayudamexico, uno de r/budget y dos de r/MonarchMoney. Se leyeron la publicación y segmentos pertinentes de comentarios. Los títulos de los registros son etiquetas descriptivas, no transcripciones de los encabezados de Reddit.",
+    "forumDateNote": "Las fechas de los hilos proceden del índice de Reddit consultado. No se usan para acreditar vigencia de condiciones comerciales.",
+    "excluded": "La documentación de YNAB cuyo cuerpo no pudo recuperarse quedó fuera de esta ampliación.",
+    "rules": [
+      "Los testimonios aportan problemas y contraseñales; no estiman prevalencia ni verifican tasas, impuestos, beneficios o protecciones.",
+      "La documentación de un proveedor acredita una capacidad descrita, no su eficacia ni su disponibilidad bancaria en México.",
+      "La literatura procede de poblaciones, tareas y métodos distintos. No demuestra el efecto de una función de Sifran.",
+      "Correlación no implica causalidad. Los tamaños de efecto no se convierten en porcentajes de mejora de la plataforma.",
+      "Las funciones similares documentadas impiden afirmar novedad mundial. La oportunidad está en su combinación y ejecución para necesidades locales.",
+      "Se conservaron resultados nulos, preferencias distintas y límites de transferencia. La recurrencia de uso no equivale a bienestar financiero."
+    ],
+    "limitations": [
+      "No se entrevistó ni observó a usuarios de Sifran en esta investigación.",
+      "La selección dirigida favorece temas buscados y personas que publican problemas; no representa a todo el mercado mexicano.",
+      "No se probaron cuentas de competidores, conexiones bancarias ni condiciones de contratación.",
+      "No hay un experimento de retención, causalidad, bienestar ni superioridad frente a otras plataformas.",
+      "La consulta de páginas públicas no crea un monitor ni una operación editorial de actualización continua."
+    ]
+  },
+  "sections": [
+    {
+      "id": "decisiones",
+      "title": "Decidir con menos trabajo"
+    },
+    {
+      "id": "evidencia",
+      "title": "Qué respalda cada cambio"
+    },
+    {
+      "id": "oportunidades",
+      "title": "Qué falta resolver"
+    },
+    {
+      "id": "pruebas",
+      "title": "Cómo comprobar la mejora"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "purchase-results-first",
+      "title": "Mostrar una primera evaluación de la compra antes de pedir cada confirmación",
+      "status": "implemented_local",
+      "before": "La persona encuentra condiciones y topes que debe resolver antes de entender qué información falta para comparar sus tarjetas.",
+      "change": "Presentar resultados iniciales con sus límites y reunir las confirmaciones pendientes en el resultado al que afectan. Mantener visibles la compra y la posibilidad de ajustarla.",
+      "invariant": "Un resultado con condiciones desconocidas no puede presentarse como una recomendación confirmada. El financiamiento, los topes y la vigencia conservan sus restricciones; un beneficio desconocido no vale cero.",
+      "acceptance": "La persona distingue una estimación pendiente de confirmar de una estimación que ya puede compararse, identifica qué falta confirmar y modifica la compra sin perder contexto.",
+      "sourceIds": [
+        "L02",
+        "L03",
+        "L05",
+        "C01",
+        "C02",
+        "P04"
+      ]
+    },
+    {
+      "id": "savings-comparable-attributes",
+      "title": "Seleccionar ahorros y comparar sus condiciones sin recorrer fichas completas",
+      "status": "implemented_local",
+      "before": "La densidad de las fichas aumenta el desplazamiento necesario para seleccionar productos y encontrar condiciones equivalentes.",
+      "change": "Acercar la selección al nombre del producto y mantener accesible la comparación. Alinear disponibilidad, requisitos, costos y rendimiento documentado, con detalle consultable.",
+      "invariant": "No convertir tasas de naturaleza o periodo distintos en una clasificación común sin sustento. Lo desconocido permanece explícito y una separación virtual por propósito no implica mover dinero.",
+      "acceptance": "En móvil y escritorio se pueden seleccionar, comparar y retirar opciones, localizar una condición faltante y consultar la fuente sin perder la selección.",
+      "sourceIds": [
+        "L01",
+        "L02",
+        "L05",
+        "C05",
+        "C06"
+      ]
+    },
+    {
+      "id": "stable-selection-reuse",
+      "title": "Conservar la selección de tarjetas y renovar las confirmaciones que caducan",
+      "status": "implemented_local",
+      "before": "Al volver en otra sesión, la selección de tarjetas debe reconstruirse.",
+      "change": "Conservar la selección estable con una salida clara para cambiarla. Recuperar contexto sin tratar topes, fechas o condiciones temporales como confirmaciones vigentes.",
+      "invariant": "Recordar una selección no acredita que la tarjeta, oferta o condición siga disponible. La persistencia no debe ocultar filtros ni presentar una comparación parcial como completa.",
+      "acceptance": "En un segundo uso se recupera la selección y se puede corregir; el sistema vuelve a pedir la información temporal necesaria antes de recomendar.",
+      "sourceIds": [
+        "L04",
+        "C11",
+        "P01",
+        "P02"
+      ]
+    },
+    {
+      "id": "expected-income-partials",
+      "title": "Registrar cobros esperados y vincular pagos parciales a ingresos recibidos",
+      "status": "implemented_local",
+      "before": "Un ingreso registrado no describe por sí mismo un cobro pendiente, un retraso o el saldo de un acuerdo pagado en partes.",
+      "change": "Registrar concepto, fecha esperada y monto del cobro; vincular ingresos recibidos y mostrar lo que sigue pendiente, incluidos pagos parciales.",
+      "invariant": "Un cobro esperado no aumenta el efectivo ni acredita que vaya a llegar. Vincularlo a un ingreso existente no debe duplicar ese ingreso; cambios y desvinculaciones deben conservar trazabilidad.",
+      "acceptance": "La persona registra un cobro, vincula una parcialidad, entiende lo pendiente y reconoce que un atraso no agrega dinero disponible.",
+      "sourceIds": [
+        "L06",
+        "L10",
+        "C09",
+        "C10",
+        "P03",
+        "P05"
+      ]
+    },
+    {
+      "id": "visible-product-terms",
+      "title": "Mostrar tasas, costos y beneficios antes de abrir una ficha",
+      "status": "implemented_local",
+      "before": "El directorio identificaba muchos productos, pero en la lista de tarjetas predominaba la anualidad y los costos de préstamos exigían abrir un desplegable. La cantidad de registros no equivalía a fichas completas.",
+      "change": "Mostrar CAT, tasa ordinaria, anualidad, cargos periódicos y beneficios en las tarjetas; CAT, tasa, apertura, mantenimiento, monto y plazo en préstamos. En ahorro, acercar rendimientos, condiciones y costos de membresía. Permitir elegir entre costos documentados, beneficios y el directorio completo.",
+      "invariant": "CAT, tasa, GAT y recompensas no son intercambiables. Cargos opcionales, montos por tramos, frecuencias, IVA, requisitos y fuentes conservan su contexto. Un dato faltante no vale cero; documentar costos no confirma disponibilidad ni elegibilidad.",
+      "acceptance": "La persona encuentra los costos y beneficios sin abrir cada ficha, distingue un cargo mensual de una anualidad y localiza la condición, fecha o fuente que limita la cifra.",
+      "sourceIds": [
+        "L05"
+      ],
+      "trigger": "Solicitud explícita del usuario de hacer visibles tasas y beneficios por producto.",
+      "primaryEvidence": "mexico-credit-details.json"
+    }
+  ],
+  "evidenceSynthesis": [
+    {
+      "title": "La dificultad de elegir depende de la tarea y de cómo se comparan las opciones",
+      "finding": "Las revisiones de sobrecarga de elección no sostienen una regla universal de menos opciones. La complejidad, la incertidumbre de preferencias y el esfuerzo de la tarea importan.",
+      "application": "Conservar amplitud de catálogo, pero ofrecer una ruta contextual y atributos comparables. El límite de selección de una vista no se presenta como un óptimo científico.",
+      "sourceIds": [
+        "L01",
+        "L02",
+        "L05"
+      ]
+    },
+    {
+      "title": "El detalle debe ayudar a entender, y su efecto necesita probarse",
+      "finding": "La divulgación progresiva produjo preferencias divididas en tareas ajenas a finanzas. La reutilización de información cuenta con un criterio de accesibilidad durante el mismo proceso, con excepciones por caducidad y seguridad.",
+      "application": "Mostrar primero las razones y límites esenciales; permitir consultar detalles y recuperar contexto. No esconder incertidumbre ni conservar confirmaciones temporales por comodidad.",
+      "sourceIds": [
+        "L03",
+        "L04"
+      ]
+    },
+    {
+      "title": "El dinero esperado y el recibido resuelven preguntas diferentes",
+      "finding": "La volatilidad observada, los relatos de trabajo independiente y la documentación de programación o conciliación apuntan a separar expectativas, fechas y movimientos recibidos.",
+      "application": "Permitir cobros parciales y vínculos explícitos. Una proyección requiere supuestos visibles y un saldo de partida suficientemente fiable.",
+      "sourceIds": [
+        "L06",
+        "L10",
+        "C09",
+        "C10",
+        "P03",
+        "P05"
+      ]
+    },
+    {
+      "title": "La utilidad cotidiana no se demuestra contando aperturas o avisos",
+      "finding": "Hay evidencia sobre recordatorios y seguimiento de metas en contextos específicos, pero no acredita retención ni bienestar en Sifran. Algunos testimonios prefieren revisar por lotes en lugar de capturar de inmediato.",
+      "application": "Evaluar si la persona completa su tarea y vuelve sin reconstruir información. Avisos voluntarios y mediciones de bienestar quedan como propuestas; no se añaden rachas ni presión para gastar.",
+      "sourceIds": [
+        "L07",
+        "L08",
+        "L09",
+        "C07",
+        "C12"
+      ]
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "editorial-maintenance",
+      "title": "Mantener las condiciones y avisar qué cambio afecta una decisión",
+      "status": "not_implemented",
+      "proposal": "Definir responsables, fechas de revisión, fuentes primarias, historial de cambios y una salida de abstención cuando falte evidencia. Explorar avisos voluntarios de cambios relevantes para tarjetas seleccionadas.",
+      "dependency": "Operación editorial verificable y una política de vigencia; la publicación de este informe no crea un crawler ni un monitor automático.",
+      "sourceIds": [
+        "C01",
+        "C02",
+        "L07"
+      ]
+    },
+    {
+      "id": "benefit-reconciliation",
+      "title": "Comprobar qué beneficio se recibió después de la compra",
+      "status": "not_implemented",
+      "proposal": "Permitir comprobar un beneficio después de la compra y distinguir estimado, pendiente de comprobar y recibido, conservando evidencia y correcciones.",
+      "dependency": "Modelo de conciliación y una forma fiable de confirmar el abono. Un comentario de foro o una estimación no acredita recepción.",
+      "sourceIds": [
+        "C03",
+        "P04",
+        "P05"
+      ]
+    },
+    {
+      "id": "real-household-permissions",
+      "title": "Coordinar el hogar con responsables y privacidad efectiva",
+      "status": "not_implemented",
+      "proposal": "Distinguir quién es dueño, quién pagará, cómo se acuerdan aportaciones y quién puede consultar o modificar cada elemento. Hacer explícita la base de reparto.",
+      "dependency": "Autorización de servidor, invitaciones, revocación, auditoría y permisos probados. Una etiqueta o un filtro visual no protege información privada.",
+      "sourceIds": [
+        "C04",
+        "C07",
+        "C08",
+        "P06"
+      ]
+    },
+    {
+      "id": "balance-anchor",
+      "title": "Partir de saldos confirmados para anticipar faltantes",
+      "status": "not_implemented",
+      "proposal": "Anclar una proyección a un saldo y fecha confirmados; separar compromisos, cobros inciertos y escenarios para explicar de dónde sale un posible faltante.",
+      "dependency": "Saldos reconciliados por cuenta, reglas temporales y tratamiento de transferencias. No presentar una cifra de dinero libre sin esa base.",
+      "sourceIds": [
+        "L06",
+        "L10",
+        "C04",
+        "C10",
+        "P03"
+      ]
+    }
+  ],
+  "differentiation": {
+    "status": "hypotheses_not_exclusivity_claims",
+    "propositions": [
+      "Combinar decisiones sobre tarjetas mexicanas con condiciones trazables y comprobación posterior del beneficio.",
+      "Conectar compromisos, cuentas y aportaciones del hogar con privacidad y permisos efectivos."
+    ],
+    "limit": "Son combinaciones prometedoras, no capacidades completas de esta entrega ni afirmaciones de exclusividad. Las referencias revisadas no constituyen un censo de competidores."
+  },
+  "validationPlan": {
+    "executed": false,
+    "status": "pending",
+    "method": "Pruebas moderadas de tareas con perfiles que combinan finanzas personales, ingresos variables y coordinación del hogar. Comparar la experiencia anterior y la nueva con casos equivalentes, alternando el orden cuando sea posible; observar un segundo uso separado. Esto evalúa usabilidad, no causalidad de bienestar o retención a largo plazo.",
+    "privacy": "Usar casos de prueba claramente identificados o datos que la persona haya anonimizado. No solicitar credenciales bancarias ni divulgar actividad financiera del hogar.",
+    "observations": [
+      "Finalización sin ayuda y pasos donde se requiere intervención.",
+      "Errores críticos: recomendar con datos pendientes, confundir rendimiento o sumar ingresos esperados al efectivo.",
+      "Comprensión: pedir a la persona que explique el resultado, su límite y la próxima acción.",
+      "Tiempo, desplazamiento, entradas repetidas y contexto perdido como señales diagnósticas, no como objetivos aislados.",
+      "En el segundo uso, información que debe reconstruirse y capacidad de detectar qué confirmaciones caducaron."
+    ],
+    "tasks": [
+      {
+        "id": "purchase-task",
+        "title": "Elegir una tarjeta sin confundir una estimación con una recomendación",
+        "scenario": "Comparar una compra de prueba entre tarjetas propias con una condición pendiente. Cambiar el monto y después indicar que no se liquidará el total.",
+        "beforeAfter": "Comparar cuándo aparece la primera evaluación útil, qué condiciones se entienden y cuántas veces se repiten datos.",
+        "successEvidence": "La persona identifica el resultado pendiente, reconoce que cambiar la compra invalida la evaluación previa y no interpreta el beneficio como ventaja neta al financiar."
+      },
+      {
+        "id": "savings-task",
+        "title": "Comparar ahorros por disponibilidad, costos y requisitos",
+        "scenario": "Seleccionar tres opciones de prueba, localizar una condición desconocida, abrir su fuente y retirar una opción en móvil.",
+        "beforeAfter": "Observar desplazamiento, acceso a selección y capacidad de comparar el mismo atributo entre productos.",
+        "successEvidence": "La persona conserva su selección, diferencia los atributos y no trata una tasa parcial o un dato faltante como una garantía de mejor rendimiento."
+      },
+      {
+        "id": "return-task",
+        "title": "Volver y actualizar sólo lo necesario",
+        "scenario": "Retomar una comparación en una segunda sesión, corregir las tarjetas seleccionadas y revisar un tope o condición temporal.",
+        "beforeAfter": "Registrar qué información estable se recupera y qué información debe reconstruirse; separar esta observación de una prueba de retención.",
+        "successEvidence": "La persona entiende qué se guardó, puede cambiarlo y reconoce qué falta confirmar de nuevo."
+      },
+      {
+        "id": "partial-receivable-task",
+        "title": "Vincular un cobro parcial sin duplicar ingresos",
+        "scenario": "Registrar un cobro esperado de prueba, vincular un ingreso parcial ya registrado y revisar el saldo pendiente. Corregir después el vínculo.",
+        "beforeAfter": "Observar si el estado del acuerdo requiere notas externas, duplicación de movimientos o cálculo mental.",
+        "successEvidence": "El ingreso se cuenta una sola vez; la persona explica qué recibió, qué espera y cómo corregir una asociación."
+      },
+      {
+        "id": "late-receivable-task",
+        "title": "Reconocer un atraso sin sumar dinero disponible",
+        "scenario": "Revisar un cobro cuya fecha esperada ya pasó y un compromiso próximo usando un caso de prueba.",
+        "beforeAfter": "Evaluar si se distingue una expectativa de dinero confirmado y si la próxima acción resulta comprensible.",
+        "successEvidence": "La persona reconoce el atraso y no interpreta el cobro pendiente como efectivo disponible ni como una garantía de pago."
+      }
+    ],
+    "decisionRule": "Un error crítico de comprensión exige corregir el flujo y repetir la tarea afectada. La decisión de ampliar una función debe apoyarse en observaciones de uso y capacidad de mantener sus datos, no en un número de funciones o una promesa de superioridad.",
+    "optionalWellBeingMeasure": "Si se incorpora una medición de bienestar, conservar las instrucciones y el instrumento validado del CFPB y revisar su adecuación local. No inventar un score ni atribuir cambios al producto sin un diseño que lo permita.",
+    "sourceIds": [
+      "L05",
+      "L09",
+      "L10"
+    ]
+  },
+  "references": [
+    {
+      "id": "L01",
+      "type": "meta_analysis",
+      "year": 2010,
+      "title": "Can There Ever Be Too Many Options? A Meta-Analytic Review of Choice Overload",
+      "authors": "Scheibehenne, Greifeneder y Todd",
+      "url": "https://scheibehenne.de/ScheibehenneGreifenederTodd2010.pdf",
+      "readScope": "Cuerpo y secciones metodológicas pertinentes de la revisión.",
+      "finding": "El efecto promedio de sobrecarga fue cercano a cero, con heterogeneidad entre estudios; la cantidad de opciones por sí sola no determina la dificultad.",
+      "limitation": "No establece una regla universal de menos opciones ni demuestra que comparar tres sea óptimo.",
+      "application": "Conservar el catálogo amplio y facilitar rutas contextuales y comparación."
+    },
+    {
+      "id": "L02",
+      "type": "meta_analysis",
+      "year": 2015,
+      "title": "Choice overload: A conceptual review and meta-analysis",
+      "authors": "Chernev, Böckenholt y Goodman",
+      "url": "https://chernev.com/wp-content/uploads/2017/02/ChoiceOverload_JCP_2015.pdf",
+      "readScope": "Cuerpo y análisis de moderadores pertinentes.",
+      "finding": "La complejidad, la dificultad, la incertidumbre de preferencias y el esfuerzo moderan los efectos de la elección.",
+      "limitation": "Emplea datos y modelos distintos de L01; no constituye una segunda estimación independiente del mismo efecto ni valida Sifran.",
+      "application": "Alinear atributos y partir del propósito de la decisión."
+    },
+    {
+      "id": "L03",
+      "type": "research_preprint",
+      "year": 2018,
+      "title": "Progressive Disclosure: Designing for Effective Transparency",
+      "authors": "Springer y Whittaker",
+      "url": "https://arxiv.org/pdf/1811.02164",
+      "readScope": "Versión arXiv: dos estudios de un analizador de emociones, métodos y resultados pertinentes.",
+      "finding": "Las preferencias sobre divulgación progresiva fueron divididas; no hubo una diferencia global fiable en carga NASA-TLX y algunas personas se distrajeron.",
+      "limitation": "Las tareas no eran financieras. No demuestra que esconder detalle reduzca carga o mejore decisiones de dinero.",
+      "application": "Probar razones esenciales visibles y detalle a petición, sin ocultar incertidumbre."
+    },
+    {
+      "id": "L04",
+      "type": "accessibility_standard",
+      "year": 2023,
+      "title": "Understanding Success Criterion 3.3.7: Redundant Entry — WCAG 2.2",
+      "authors": "W3C Web Accessibility Initiative",
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/redundant-entry.html",
+      "readScope": "Criterio, intención y excepciones; WCAG 2.2 de 2023, republicada en 2024.",
+      "finding": "Durante el mismo proceso debe facilitarse reutilizar o seleccionar información introducida antes, salvo excepciones como caducidad, necesidad esencial o seguridad.",
+      "limitation": "Es un estándar, no un ensayo. No ordena persistencia entre sesiones ni mantener información temporal como vigente.",
+      "application": "Recuperar contexto útil y separar selección estable de confirmaciones que caducan."
+    },
+    {
+      "id": "L05",
+      "type": "consumer_research_synthesis",
+      "year": 2011,
+      "title": "Designing Disclosures to Inform Consumer Financial Decisionmaking: Lessons Learned from Consumer Testing",
+      "authors": "Hogarth y Merry",
+      "url": "https://www.federalreserve.gov/pubs/bulletin/2011/articles/designingdisclosures/",
+      "readScope": "Síntesis de estudios originales de la Reserva Federal: métodos cualitativos, usabilidad y pruebas factoriales.",
+      "finding": "Lenguaje, contexto y estructura contribuyen a la comprensión; una gráfica no resuelve por sí sola todos los problemas de comunicación.",
+      "limitation": "Parte de las muestras fue no probabilística. La comprensión medida no acredita efectos causales sobre resultados financieros reales. Fuente reconsultada.",
+      "application": "Usar atributos comunes y verificar comprensión con tareas concretas."
+    },
+    {
+      "id": "L06",
+      "type": "observational_study",
+      "year": 2019,
+      "title": "Weathering Volatility 2.0: A Monthly Stress Test to Guide Savings",
+      "authors": "Farrell, Greig y Yu; JPMorgan Chase Institute",
+      "url": "https://www.jpmorganchase.com/institute/all-topics/household-financial-health/report-weathering-volatility-2-a-monthly-stress-test-to-guide-saving",
+      "readScope": "Resultados y metodología sobre seis millones de titulares y 75 meses hasta 2018.",
+      "finding": "La variación de ingresos y gastos hace relevante distinguir fechas, expectativas y recursos recibidos al planear.",
+      "limitation": "Datos de clientes Chase con selección por actividad; el titular principal aproxima a la familia. No representa a México ni demuestra causalidad de una interfaz o un umbral universal de reserva.",
+      "application": "Separar cobros esperados y recibidos, y usar escenarios con supuestos visibles."
+    },
+    {
+      "id": "L07",
+      "type": "randomized_trials",
+      "year": 2016,
+      "title": "Getting to the Top of Mind: How Reminders Increase Saving",
+      "authors": "Karlan, McConnell, Mullainathan y Zinman",
+      "url": "https://sendhil.org/wp-content/uploads/2019/08/Publication-16.pdf",
+      "readScope": "Tres ensayos aleatorizados en Perú, Bolivia y Filipinas; métodos, efectos y límites pertinentes.",
+      "finding": "Los recordatorios ayudaron al cumplimiento de metas de ahorro con compromiso; los avisos tardíos adicionales no mostraron un beneficio fiable.",
+      "limitation": "No demuestra que más avisos, rachas o aperturas mejoren retención o bienestar. El contexto de ahorro con compromiso limita la transferencia.",
+      "application": "Explorar avisos voluntarios ligados a una tarea y fecha elegidas, con opciones para posponer o silenciar; propuesta no implementada."
+    },
+    {
+      "id": "L08",
+      "type": "meta_analysis",
+      "year": 2016,
+      "title": "Does Monitoring Goal Progress Promote Goal Attainment? A Meta-Analysis of the Experimental Evidence",
+      "authors": "Harkin, Webb, Chang, Prestwich, Conner, Kellar, Benn y Sheeran",
+      "url": "https://www.apa.org/pubs/journals/releases/bul-bul0000025.pdf",
+      "readScope": "138 estudios experimentales: métodos, resultados y moderadores.",
+      "finding": "El seguimiento del progreso se asoció experimentalmente con mayor logro de metas en los contextos estudiados.",
+      "limitation": "Todos los estudios salvo uno trataban metas de salud. Los moderadores comparan estudios; no se infiere un efecto financiero cuantificado, una frecuencia ideal ni autorización para compartir datos del hogar.",
+      "application": "Probar revisión de progreso real sin convertirla en presión, publicación obligatoria o puntuación de disciplina."
+    },
+    {
+      "id": "L09",
+      "type": "psychometric_technical_report",
+      "year": 2017,
+      "title": "Financial Well-Being Scale: Scale Development Technical Report",
+      "authors": "Consumer Financial Protection Bureau",
+      "url": "https://www.consumerfinance.gov/documents/4800/201705_cfpb_financial-well-being-scale-technical-report.pdf",
+      "relatedUrls": [
+        {
+          "title": "Instrumento completo en español",
+          "url": "https://files.consumerfinance.gov/f/documents/bcfp_fin-well-being_full-scorecard_es.pdf"
+        }
+      ],
+      "readScope": "Desarrollo psicométrico en tres rondas, análisis y reglas de puntuación; instrumento en español como complemento.",
+      "finding": "La escala aporta un instrumento estructurado para estudiar bienestar financiero con instrucciones y reglas de puntuación específicas.",
+      "limitation": "Las muestras de desarrollo no fueron nacionalmente representativas y la puntuación considera edad y modo de aplicación. No valida un score inventado ni demuestra causalidad de la app; comparte base conceptual con ENSAFI.",
+      "application": "Considerar una medición opcional respetando el instrumento y revisando su adecuación local; no está implementada."
+    },
+    {
+      "id": "L10",
+      "type": "national_survey",
+      "year": 2024,
+      "title": "Encuesta Nacional sobre Salud Financiera (ENSAFI) 2023: nota técnica de resultados",
+      "authors": "INEGI y CONDUSEF",
+      "url": "https://www.inegi.org.mx/contenidos/programas/ensafi/2023/doc/ensafi_2023_nota_tecnica.pdf",
+      "relatedUrls": [
+        {
+          "title": "Metadatos y metodología ENSAFI 2023",
+          "url": "https://inegi.org.mx/rnm/index.php/catalog/992"
+        }
+      ],
+      "readScope": "Resultados publicados el 25 de junio de 2024 y metodología de la encuesta probabilística a personas adultas de México levantada entre septiembre y noviembre de 2023.",
+      "finding": "La encuesta documenta falta de margen económico y estrés financiero entre personas adultas en México.",
+      "limitation": "No demuestra que la desorganización cause el problema ni que Sifran lo resuelva. Es una fuente reconsultada; su relación con la base del CFPB no constituye dos validaciones del producto.",
+      "application": "Diseñar para periodos sin margen y permitir retomar tareas sin culpa ni supuestos de ingreso estable."
+    },
+    {
+      "id": "C01",
+      "type": "forum_thread",
+      "year": 2024,
+      "publishedOn": "2024-09-20",
+      "title": "LikeU: discrepancias al clasificar comercios de entretenimiento",
+      "titleKind": "descriptive_label",
+      "url": "https://www.reddit.com/r/MexicoFinanciero/comments/1fl5jp1/",
+      "readScope": "Publicación y segmentos pertinentes de comentarios en r/MexicoFinanciero.",
+      "finding": "Participantes describen diferencias de clasificación según comercio o terminal.",
+      "limitation": "Experiencias autodeclaradas; no verifican categorías ni reglas comerciales vigentes.",
+      "application": "Separar condiciones oficiales de experiencias personales y mostrar qué falta confirmar."
+    },
+    {
+      "id": "C02",
+      "type": "forum_thread",
+      "year": 2025,
+      "publishedOn": "2025-06-06",
+      "title": "LikeU: dudas ante cambios de categorías y requisitos",
+      "titleKind": "descriptive_label",
+      "url": "https://www.reddit.com/r/MexicoFinanciero/comments/1l4u17u/",
+      "readScope": "Publicación y segmentos pertinentes de comentarios en r/MexicoFinanciero.",
+      "finding": "Se expresan dudas sobre cambios, registro y pagos domiciliados.",
+      "limitation": "El hilo no verifica condiciones actuales; no se incorporan sus tasas o reglas al motor.",
+      "application": "Explorar avisos de cambios que afecten tarjetas seleccionadas, sujetos a fuentes oficiales y mantenimiento editorial."
+    },
+    {
+      "id": "C03",
+      "type": "forum_thread",
+      "year": 2025,
+      "publishedOn": "2025-04-23",
+      "title": "Cashback: ausencia de correo y comprobación del abono",
+      "titleKind": "descriptive_label",
+      "url": "https://www.reddit.com/r/MexicoFinanciero/comments/1k6aa2b/",
+      "readScope": "Publicación y segmentos pertinentes de comentarios en r/MexicoFinanciero.",
+      "finding": "Algunas personas relatan falta de correo aunque en ocasiones observan un abono.",
+      "limitation": "No permite medir fallas ni confirmar la recepción de un beneficio concreto.",
+      "application": "Proponer estados separados de estimado, pendiente de comprobar y recibido."
+    },
+    {
+      "id": "C04",
+      "type": "forum_thread",
+      "year": 2023,
+      "publishedOn": "2023-07-30",
+      "title": "Desfase entre nómina y corte de tarjeta",
+      "titleKind": "descriptive_label",
+      "url": "https://www.reddit.com/r/MexicoFinanciero/comments/15dsfsw/",
+      "readScope": "Publicación y segmentos pertinentes de comentarios en r/MexicoFinanciero.",
+      "finding": "El relato muestra dificultad para organizar ingresos y pagos con fechas distintas.",
+      "limitation": "Un caso no establece la frecuencia del problema ni justifica una regla general de pago.",
+      "application": "Hacer explícitas fecha y cuenta de pago, y evitar contar el pago de tarjeta como un segundo gasto."
+    },
+    {
+      "id": "C05",
+      "type": "forum_thread",
+      "year": 2025,
+      "publishedOn": "2025-11-20",
+      "title": "Cajitas: comparación de tasas, requisitos y disponibilidad",
+      "titleKind": "descriptive_label",
+      "url": "https://www.reddit.com/r/MexicoFinanciero/comments/1p28qx6/",
+      "readScope": "Publicación y segmentos pertinentes de comentarios y correcciones en r/MexicoFinanciero.",
+      "finding": "La conversación mezcla tasas, topes, requisitos, liquidez y protección; otros participantes corrigen afirmaciones.",
+      "limitation": "Las afirmaciones financieras del foro no son condiciones verificadas ni vigentes.",
+      "application": "Comparar atributos equivalentes y enlazar evidencia oficial con fecha."
+    },
+    {
+      "id": "C06",
+      "type": "forum_thread",
+      "year": 2024,
+      "publishedOn": "2024-03-24",
+      "title": "Una o varias cajitas: propósito y rendimiento",
+      "titleKind": "descriptive_label",
+      "url": "https://www.reddit.com/r/MexicoFinanciero/comments/1bm7bck/",
+      "readScope": "Publicación y segmentos pertinentes de comentarios en r/MexicoFinanciero.",
+      "finding": "Aparece confusión entre separar dinero por propósito y cambiar su rendimiento.",
+      "limitation": "No prueba una mejora financiera por dividir fondos ni verifica el cálculo del producto.",
+      "application": "Distinguir una reserva virtual de una transferencia o un cambio real de producto."
+    },
+    {
+      "id": "C07",
+      "type": "forum_thread",
+      "year": 2022,
+      "publishedOn": "2022-12-26",
+      "title": "Registro de gastos pequeños en pareja y entre dispositivos",
+      "titleKind": "descriptive_label",
+      "url": "https://www.reddit.com/r/MexicoFinanciero/comments/zvp7a9/",
+      "readScope": "Publicación y segmentos pertinentes de comentarios en r/MexicoFinanciero.",
+      "finding": "Se describen dificultades con gastos pequeños, conceptos bancarios genéricos y coordinación iOS/Android. Otras personas prefieren revisar por lotes o olvidan capturar en el momento.",
+      "limitation": "Preferencias heterogéneas; no demuestra que la captura inmediata sea la mejor opción para todas las personas.",
+      "application": "Facilitar captura breve y notas, conservando una revisión posterior sin presión por registrar cada evento al instante."
+    },
+    {
+      "id": "C08",
+      "type": "forum_thread",
+      "year": 2026,
+      "publishedOn": "2026-04-29",
+      "title": "Hogar: cuenta conjunta, tarjetas y bases de reparto",
+      "titleKind": "descriptive_label",
+      "url": "https://www.reddit.com/r/MexicoFinanciero/comments/1syoy7b/",
+      "readScope": "Publicación y segmentos pertinentes de comentarios en r/MexicoFinanciero.",
+      "finding": "Se discuten aportaciones proporcionales y diferencias entre ingreso bruto, recibido y prestaciones.",
+      "limitation": "Los acuerdos relatados no son una fórmula universal de equidad ni una definición técnica de permisos.",
+      "application": "Explicitar la base de reparto y separar propiedad, responsable de pago y visibilidad; requiere permisos reales."
+    },
+    {
+      "id": "C09",
+      "type": "forum_thread",
+      "year": 2026,
+      "publishedOn": "2026-01-08",
+      "title": "Primer trabajo independiente: anticipo y pagos semanales",
+      "titleKind": "descriptive_label",
+      "url": "https://www.reddit.com/r/ayudamexico/comments/1q7scxj/",
+      "readScope": "Publicación y segmentos pertinentes de comentarios en r/ayudamexico.",
+      "finding": "El relato expone ambigüedad sobre un acuerdo de anticipo y parcialidades.",
+      "limitation": "No acredita hechos contractuales ni garantiza cobros futuros.",
+      "application": "Registrar concepto, fecha esperada y parcialidades sin convertirlas en dinero disponible."
+    },
+    {
+      "id": "C10",
+      "type": "forum_thread",
+      "year": 2025,
+      "publishedOn": "2025-09-30",
+      "title": "Ingresos irregulares: comisiones, reservas y meses desiguales",
+      "titleKind": "descriptive_label",
+      "url": "https://www.reddit.com/r/budget/comments/1nukdqt/",
+      "readScope": "Publicación y segmentos pertinentes de comentarios en r/budget.",
+      "finding": "Se proponen estrategias distintas: piso de gasto, mes anterior o promedios para ingresos desiguales.",
+      "limitation": "La diversidad de respuestas no establece un porcentaje, colchón o método universal.",
+      "application": "Separar esperado y recibido, y permitir revisar supuestos en vez de imponer una proporción fija."
+    },
+    {
+      "id": "C11",
+      "type": "forum_thread",
+      "year": 2025,
+      "publishedOn": "2025-08-08",
+      "title": "Reportes móviles: repetición de filtros y lectura de totales",
+      "titleKind": "descriptive_label",
+      "url": "https://www.reddit.com/r/MonarchMoney/comments/1ml5rz1/",
+      "readScope": "Publicación y segmentos pertinentes de comentarios en r/MonarchMoney.",
+      "finding": "Participantes describen fricción al repetir filtros y consultar totales en móvil.",
+      "limitation": "El relato histórico no prueba que Monarch carezca actualmente de reportes guardados; su documentación posterior describe esa capacidad.",
+      "application": "Recuperar contexto y explicar el alcance de los totales y filtros activos."
+    },
+    {
+      "id": "C12",
+      "type": "forum_thread",
+      "year": 2025,
+      "publishedOn": "2025-08-08",
+      "title": "Ocultar movimientos: ruido visual, cálculo y seguimiento",
+      "titleKind": "descriptive_label",
+      "url": "https://www.reddit.com/r/MonarchMoney/comments/1mkuquu/",
+      "readScope": "Publicación y segmentos pertinentes de comentarios en r/MonarchMoney.",
+      "finding": "Las opiniones difieren sobre ocultar movimientos; se mezclan excluir del cálculo, reducir ruido y dejar de dar seguimiento.",
+      "limitation": "No existe consenso representativo ni una sola intención detrás de ocultar.",
+      "application": "Usar controles explícitos y reversibles que aclaren su efecto sobre visibilidad y cálculos."
+    },
+    {
+      "id": "P01",
+      "type": "official_product_documentation",
+      "year": null,
+      "title": "Actual Budget: Transaction Filters",
+      "url": "https://actualbudget.org/docs/transactions/filters/",
+      "readScope": "Documentación de filtros, guardado y límites; sin fecha editorial visible.",
+      "finding": "Documenta guardar, nombrar, recuperar, actualizar y borrar filtros, con límites relacionados con divisiones de movimientos y totales.",
+      "limitation": "Capacidad documentada, no probada en una cuenta ni evidencia de eficacia o compatibilidad bancaria mexicana.",
+      "application": "Conservar contexto estable con controles visibles para recuperarlo o borrarlo."
+    },
+    {
+      "id": "P02",
+      "type": "official_product_documentation",
+      "year": 2026,
+      "updatedOn": "2026-09-21",
+      "title": "Monarch Money: Using Reports",
+      "url": "https://help.monarch.com/hc/en-us/articles/21846787088916-Using-Reports",
+      "readScope": "Documentación de reportes guardados, filtros y diferencias en móvil.",
+      "finding": "Permite guardar tipo, agrupación, filtros y periodo; la consulta móvil tiene restricciones de creación y edición. Advierte que filtros persistentes pueden hacer parecer que faltan datos.",
+      "limitation": "La descripción oficial no demuestra la calidad de la experiencia ni confirma disponibilidad para México.",
+      "application": "Recuperar preferencias mostrando siempre el contexto activo y la forma de restablecerlo."
+    },
+    {
+      "id": "P03",
+      "type": "official_product_documentation",
+      "year": null,
+      "title": "Actual Budget: Schedules",
+      "url": "https://actualbudget.org/docs/schedules/",
+      "readScope": "Documentación de movimientos programados y vinculación; sin fecha editorial visible. Fuente reconsultada.",
+      "finding": "Documenta ingresos y gastos únicos o recurrentes, importes exactos, aproximados o en rango, y vínculos con movimientos dentro de ventanas de fechas.",
+      "limitation": "Programar no confirma recepción; las ventanas documentadas no definen por sí mismas la conciliación de Sifran. No se probó runtime.",
+      "application": "Separar expectativa y movimiento real y hacer explícito su vínculo."
+    },
+    {
+      "id": "P04",
+      "type": "official_product_documentation",
+      "year": null,
+      "title": "CardPointers Pro",
+      "url": "https://cardpointers.com/pro/",
+      "readScope": "Página oficial de capacidades: tarjetas propias, comercio, ofertas, recordatorios y perfiles; sin fecha editorial visible.",
+      "finding": "Documenta orientación contextual sobre tarjetas, ofertas y comercio.",
+      "limitation": "No confirma cobertura de México ni eficacia de recomendaciones. Impide presentar la recomendación de tarjeta como una novedad mundial.",
+      "application": "Diferenciar por condiciones mexicanas trazables y continuidad entre decisión y comprobación, sin alegar exclusividad."
+    },
+    {
+      "id": "P05",
+      "type": "official_product_documentation",
+      "year": 2025,
+      "updatedOn": "2025-11-28",
+      "title": "Quicken Simplifi: Tracking Refunds",
+      "url": "https://support.simplifi.quicken.com/en/articles/4606217-tracking-refunds-in-quicken-simplifi",
+      "readScope": "Flujo de devoluciones esperadas, recepción y limitaciones de movimientos manuales.",
+      "finding": "Documenta monto, fecha y cuenta de una devolución esperada y su vínculo al movimiento recibido.",
+      "limitation": "El flujo de devoluciones no equivale a todo tipo de cobro y limita movimientos manuales. No se probó su comportamiento ni disponibilidad en México.",
+      "application": "Cerrar el ciclo expectativa, recepción y conciliación con registros manuales explícitos en Sifran."
+    },
+    {
+      "id": "P06",
+      "type": "official_product_documentation",
+      "year": 2026,
+      "updatedOn": "2026-07-02",
+      "title": "Monarch Money: Getting Started with Monarch",
+      "url": "https://help.monarch.com/hc/en-us/articles/360048393272-Getting-Started-with-Monarch",
+      "readScope": "Documentación de miembros, cuentas, movimientos y presupuesto compartidos.",
+      "finding": "Describe acceso de los miembros a información compartida; no plantea ocultar ciertas cuentas a algunos miembros dentro de ese esquema.",
+      "limitation": "Una etiqueta de propietario no equivale a permiso. La documentación no valida una implementación de privacidad en Sifran.",
+      "application": "Tratar la privacidad selectiva del hogar como un contrato de backend y autorización, todavía pendiente."
+    }
+  ],
+  "implementationEvidence": {
+    "reviewedOn": "2026-10-18",
+    "quantitativeCreditAudit": "mexico-credit-details.json",
+    "savingsAudit": "mexico-savings-market.json",
+    "coverage": {
+      "directoryCards": 192,
+      "financingProductsAndPrograms": 109,
+      "detailedCards": 17,
+      "detailedLoanOffers": 13,
+      "savingsModalities": 65,
+      "documentedBenefitPrograms": 25,
+      "calculableBenefitPrograms": 5
+    },
+    "note": "Las fuentes primarias de costos se registran por campo en las auditorías. No se suman a los 28 registros de la revisión de literatura, comunidades y producto. La cobertura del mercado y la documentación de cada ficha siguen siendo parciales.",
+    "verification": {
+      "status": "passed_with_documented_limits",
+      "report": "product-excellence-qa.json",
+      "userStudyExecuted": false
+    }
+  }
+}

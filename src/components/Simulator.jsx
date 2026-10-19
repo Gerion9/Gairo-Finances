@@ -35,7 +35,7 @@ export default function Simulator({ deudas, exchangeRate = 19.25, initialExtra =
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7DE4BF]"><SlidersHorizontal size={15} aria-hidden="true" />Explora tus posibilidades</p>
-            <h2 id="simulator-title" className="mt-2 text-xl font-semibold tracking-tight text-white sm:text-2xl">¿Qué cambia si aportas másí</h2>
+            <h1 id="simulator-title" className="mt-2 text-xl font-semibold tracking-tight text-white sm:text-2xl">¿Qué cambia si aportas másí</h1>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">Ajusta tu aportación mensual y compara el resultado con el mismo plan sin extra. El escenario no modifica tus datos guardados.</p>
           </div>
           <button type="button" onClick={() => setExtraPayment(initialExtra)} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-[#223248] px-3 text-xs font-medium text-slate-300 transition-colors hover:bg-[#223248] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7DE4BF]"><RotateCcw size={14} aria-hidden="true" />Restablecer aporte</button>

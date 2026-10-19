@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Calendar, CheckCircle2, Circle, Clock, DollarSign, AlertCircle, ChevronRight } from 'lucide-react';
 import { undatedCommitments } from '../services/planning.js';
 import { calculateFortnightlyFlow } from '../services/financeEngine';
@@ -8,8 +8,14 @@ export default function PaymentCalendar({
   financialData, 
   onTogglePagoMes, 
   exchangeRate, 
-  displayCurrency 
+  displayCurrency,
+  reviewContext,
 }) {
+  const itemRefs = useRef(new Map());
+  useEffect(() => {
+    const item = itemRefs.current.get(reviewContext?.itemId);
+    if (item) { item.scrollIntoView({ block: 'center', behavior: 'auto' }); item.focus({ preventScroll: true }); }
+  }, [reviewContext?.request]);
   const today = new Date();
   const currentMonthKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`; // '2026-09'
   const pagosMes = financialData.pagosRealizadosMes?.[currentMonthKey] || {};
@@ -21,14 +27,14 @@ export default function PaymentCalendar({
       ...financialData.pagosRealizadosMes,
       [currentMonthKey]: {
         ...pagosMes,
-        [itemId]: !pagosMes[itemId]
+        [itemId]: pagosMes[itemId] !== true
       }
     };
     onTogglePagoMes(updated);
   };
 
   const renderItem = (item, isDebt = false) => {
-    const isPaid = Boolean(pagosMes[item.id]);
+    const isPaid = pagosMes[item.id] === true;
     const dia = isDebt ? (item.diaPagoLimite || 15) : (item.diaPago || 15);
     const montoMXN = isDebt 
       ? convertCurrency(item.pagoMinimo, item.moneda, 'MXN', exchangeRate)
@@ -37,15 +43,17 @@ export default function PaymentCalendar({
     return (
       <div
         key={item.id}
-        onClick={() => togglePago(item.id)}
-        className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between gap-3 ${
+        ref={node => { if (node) itemRefs.current.set(item.id, node); else itemRefs.current.delete(item.id); }}
+        tabIndex={-1}
+        aria-label={`${item.nombre}, compromiso del mes`}
+        className={`p-3.5 rounded-xl border transition-colors flex items-center justify-between gap-3 outline-none focus:ring-2 focus:ring-emerald-300 ${
           isPaid
             ? 'bg-slate-950/40 border-slate-800 opacity-60'
             : 'bg-slate-900 border-slate-800 hover:border-emerald-500/50 shadow-md'
         }`}
       >
         <div className="flex items-center gap-3">
-          <button className={`p-1 rounded-full ${isPaid ? 'text-emerald-400' : 'text-slate-500 hover:text-slate-300'}`}>
+          <button type="button" onClick={() => togglePago(item.id)} aria-pressed={isPaid} aria-label={`${isPaid ? 'Quitar marca de pagado de' : 'Marcar como pagado'} ${item.nombre}`} className={`min-h-11 min-w-11 flex items-center justify-center rounded-full ${isPaid ? 'text-emerald-400' : 'text-slate-400 hover:text-slate-300'}`}>
             {isPaid ? <CheckCircle2 className="w-5 h-5" /> : <Circle className="w-5 h-5" />}
           </button>
 
@@ -88,12 +96,12 @@ export default function PaymentCalendar({
           <div>
             <div className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-emerald-400" />
-              <h2 className="text-xl font-extrabold text-white tracking-tight">
-                Calendario de Pagos & Vencimientos por Quincena
-              </h2>
+              <h1 className="text-2xl font-semibold text-white tracking-tight">
+                Fechas de tus pagos
+              </h1>
             </div>
-            <p className="text-xs text-slate-400 mt-1">
-              Planifica tu flujo de caja quincenal para que nunca te tome por sorpresa una fecha límite o corte bancario.
+            <p className="text-sm text-slate-400 mt-2 leading-relaxed">
+              Calendario manual del mes. Marcar un compromiso no realiza un pago ni cambia el saldo de tu deuda. Importes de referencia en MXN.
             </p>
           </div>
 
@@ -119,7 +127,7 @@ export default function PaymentCalendar({
                 <span className="text-base font-black text-white font-mono block">
                   {formatMoney(quincena1.totalSalidas, 'MXN')}
                 </span>
-                <span className="text-[10px] text-slate-400">Total a liquidar</span>
+                <span className="text-xs text-slate-400">Compromisos configurados</span>
               </div>
             </div>
 
@@ -149,7 +157,7 @@ export default function PaymentCalendar({
                 <span className="text-base font-black text-white font-mono block">
                   {formatMoney(quincena2.totalSalidas, 'MXN')}
                 </span>
-                <span className="text-[10px] text-slate-400">Total a liquidar</span>
+                <span className="text-xs text-slate-400">Compromisos configurados</span>
               </div>
             </div>
 

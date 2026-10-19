@@ -1,0 +1,2195 @@
+{
+  "schemaVersion": 1,
+  "reportId": "sifran-daily-value-research-2026-10-18",
+  "contract": "MX-MARKET-DOCS r3",
+  "title": "Sifran debe facilitar el registro y aclarar la próxima decisión",
+  "language": "es-MX",
+  "consultedOn": "2026-10-18",
+  "implementationStatus": "locally_verified_with_documented_limits",
+  "statusNote": "Captura, mercado, Ahorro y comparación contextual verificados en local: 751/751 pruebas, nueve comprobaciones focales repetidas, build aprobado y revisión renderizada UX-DIRECTION r7. La comprobación final de movimiento reducido quedó incompleta por pérdida de la sesión de navegador. No acredita pruebas con usuarios ni despliegue.",
+  "designAuthority": "UX-DIRECTION r4 para composición inicial del informe y UX-DIRECTION r7 para aprobación de las superficies integradas revisadas en capturas reales. UX/UI dirige ubicación, jerarquía, interacción, estados y adaptación móvil. La aprobación no acredita conformidad WCAG completa ni resultados de retención.",
+  "thesis": "Sifran puede ganar un lugar cotidiano si reduce el trabajo de registrar, aclara qué dinero está confirmado y ayuda a resolver el próximo compromiso. La frecuencia de apertura es secundaria frente a la utilidad de cada ciclo de revisión.",
+  "audiences": [
+    {
+      "id": "personal",
+      "name": "Ordenar gastos, tarjetas y deudas",
+      "job": "Saber qué cambió, qué vence y qué acción puedo realizar con el dinero disponible.",
+      "criticalError": "Confundir un saldo total con dinero disponible en la cuenta que hará un pago."
+    },
+    {
+      "id": "variable-income",
+      "name": "Ingresos variables y trabajo independiente",
+      "job": "Planear con cobros inciertos sin gastar dinero que todavía no llegó.",
+      "criticalError": "Sumar ingresos esperados al efectivo confirmado o duplicarlos cuando se cobran."
+    },
+    {
+      "id": "household",
+      "name": "Parejas y hogares",
+      "job": "Coordinar compromisos y aportaciones sin exigir que toda la actividad privada sea compartida.",
+      "criticalError": "Presentar un filtro visual como si protegiera la privacidad o resolviera los permisos."
+    }
+  ],
+  "audienceRule": "Los tres contextos pueden coexistir en una persona o un hogar. No se proponen tres productos ni un selector excluyente de identidad.",
+  "methodology": {
+    "type": "Investigación documental cualitativa, revisión de fuentes oficiales y auditoría de factibilidad del repositorio; no es investigación primaria con usuarios.",
+    "inputs": [
+      "NEEDS-RESEARCH r2",
+      "PRODUCT-BENCHMARK r2",
+      "HABIT-STRATEGY r1",
+      "HABIT-FEASIBILITY r2",
+      "CATALOG-SOURCES r1",
+      "OPEN-DATA r1",
+      "CREDIT-CATALOG r1",
+      "UX-DIRECTION r4",
+      "MX-DIRECTORY-DATA r1",
+      "MX-MARKET-UNIVERSE r1",
+      "MX-LOAN-UNIVERSE r1",
+      "MX-BENEFITS r2",
+      "UX-DIRECTION r6.1",
+      "MX-NAV-INTEGRATION r1"
+    ],
+    "forumCoverage": {
+      "openedThreads": 17,
+      "communities": 4,
+      "usedThreads": 16,
+      "excludedThreads": 1,
+      "communitiesNamed": [
+        "r/MexicoFinanciero",
+        "r/ynab",
+        "r/MonarchMoney",
+        "r/copilotmoney"
+      ],
+      "sampling": "Selección intencional por problemas relevantes; no permite estimar prevalencia ni representar a todos los usuarios.",
+      "excludedReason": "Un hilo con autor eliminado y señales de posible contenido promocional no aportó evidencia suficiente; se excluyó de las decisiones.",
+      "postDates": "No se atribuyen fechas absolutas a publicaciones cuando sólo se dispuso de fechas relativas o inconsistentes."
+    },
+    "benchmarkCoverage": {
+      "functionalReferences": 9,
+      "additionalPositioningReference": "Fintonic",
+      "primaryPages": "Más de 20 páginas de producto, ayuda y términos.",
+      "verification": "Capacidades documentadas; no se probaron cuentas, aplicaciones ni conexiones bancarias de esos productos.",
+      "marketLimit": "Disponibilidad en México y compatibilidad con bancos mexicanos no se infieren de una página traducida o un selector de país."
+    },
+    "evidenceRules": [
+      "Separar documentación del proveedor, testimonios, datos poblacionales e hipótesis de producto.",
+      "No atribuir causalidad, retención o representatividad a coincidencias entre testimonios.",
+      "Usar hechos y fechas de fuentes primarias para costos financieros; señalar conflictos en vez de repararlos por intuición.",
+      "Conservar denominadores y periodos de estadísticas oficiales.",
+      "No afirmar novedad mundial por ausencia de una función en la muestra revisada."
+    ],
+    "limitations": [
+      "No se entrevistó ni observó directamente a usuarios de Sifran en esta investigación.",
+      "No hay una medición de retención, carga de mantenimiento ni tasa de error anterior y posterior al cambio.",
+      "La muestra de foros favorece problemas que las personas deciden publicar.",
+      "Las páginas financieras cambian y pueden contener inconsistencias; fecha de consulta no significa vigencia del costo.",
+      "Algunas vistas dinámicas de CONDUSEF no pudieron recuperarse con el lector disponible, incluso tras un reintento. No se concluye que el servicio esté caído."
+    ],
+    "reuse": "Paráfrasis breves y enlaces directos. Kardmatch se utiliza para descubrir categorías y emisores; no se replica su base, reseñas ni textos.",
+    "marketCoverage": {
+      "cards": 192,
+      "financingEntries": 109,
+      "directorySourceUrls": 247,
+      "detailedCardSheets": 8,
+      "detailedLoanOfferSheets": 3,
+      "documentedBenefitPrograms": 25,
+      "calculableBenefitPrograms": 5,
+      "calculableCards": 4,
+      "sourceAudit": "docs/mexico-credit-market.json",
+      "rule": "Los conteos separan identificación, ficha de costos, programa descrito y regla calculable; no representan cobertura completa del mercado.",
+      "savingsModalities": 65,
+      "detailedSavingsSheets": 58,
+      "savingsSourceUrls": 59,
+      "savingsSourceAudit": "docs/mexico-savings-market.json"
+    }
+  },
+  "nationalContext": [
+    {
+      "id": "cash",
+      "value": 85.2,
+      "unit": "percent",
+      "population": "Personas de la población estudiada por ENIF 2024",
+      "statement": "Reportan usar efectivo frecuentemente para compras de hasta 500 pesos.",
+      "denominatorWarning": "No es el porcentaje de todas las transacciones pagadas en efectivo.",
+      "implication": "Conservar una captura manual breve y útil; no diseñar todo el producto alrededor de una conexión bancaria.",
+      "sourceIds": [
+        "inegi-enif"
+      ],
+      "page": 31
+    },
+    {
+      "id": "separate-money",
+      "value": 51.8,
+      "unit": "percent",
+      "population": "Personas de la población estudiada por ENIF 2024",
+      "statement": "Separan dinero para pagos o deudas del gasto diario.",
+      "implication": "Distinguir disponibilidad de compromisos sin afirmar que una separación visual mueve dinero real.",
+      "sourceIds": [
+        "inegi-enif"
+      ],
+      "page": 42
+    },
+    {
+      "id": "shortfall",
+      "value": 30.5,
+      "unit": "percent",
+      "population": "Personas de 18 años y más, ENSAFI 2023",
+      "statement": "Durante el mes anterior no tuvieron dinero suficiente para cubrir sus gastos sin endeudarse.",
+      "implication": "Priorizar próximos compromisos y faltantes comprensibles.",
+      "sourceIds": [
+        "inegi-ensafi"
+      ],
+      "page": 4
+    },
+    {
+      "id": "stress",
+      "value": 36.9,
+      "unit": "percent",
+      "population": "Personas de 18 años y más, ENSAFI 2023",
+      "statement": "Presentaron un nivel alto de estrés financiero.",
+      "implication": "Evitar mensajes de culpa y alertas sin una acción concreta.",
+      "sourceIds": [
+        "inegi-ensafi"
+      ],
+      "page": 25
+    },
+    {
+      "id": "savings-buffer",
+      "value": 57.3,
+      "unit": "percent",
+      "population": "Personas con ahorros, ENSAFI 2023",
+      "statement": "Tenían ahorros equivalentes a hasta una quincena de sus ingresos.",
+      "denominatorWarning": "El denominador son las personas con ahorros, no toda la población adulta.",
+      "implication": "Mostrar el alcance y las limitaciones de una reserva sin convertirlo en una garantía.",
+      "sourceIds": [
+        "inegi-ensafi"
+      ],
+      "page": 2
+    }
+  ],
+  "findings": [
+    {
+      "id": "next-commitment",
+      "finding": "El próximo cobro y la cuenta que pagará pueden ser más útiles que un total mensual aislado.",
+      "affectedContexts": [
+        "personal",
+        "variable-income",
+        "household"
+      ],
+      "evidenceKind": [
+        "qualitative",
+        "documented-feature"
+      ],
+      "sourceIds": [
+        "forum-fortnight",
+        "forum-freelance",
+        "rocket-payday"
+      ],
+      "decision": "Conservar un recorrido por fecha, compromiso y cuenta; mostrar la diferencia entre efectivo recibido e ingreso esperado.",
+      "uncertainty": "La preferencia y mejora de comprensión en Sifran todavía deben probarse."
+    },
+    {
+      "id": "capture-control",
+      "finding": "La captura manual da control a algunas personas y resulta una carga para otras.",
+      "affectedContexts": [
+        "personal",
+        "variable-income"
+      ],
+      "evidenceKind": [
+        "qualitative",
+        "population-statistic"
+      ],
+      "sourceIds": [
+        "forum-overwhelmed",
+        "forum-mobile",
+        "inegi-enif"
+      ],
+      "decision": "Ofrecer captura contextual corta y reutilización explícita de movimientos recientes; mantener importación y revisión como recorridos compatibles.",
+      "uncertainty": "No se conoce el equilibrio óptimo de automatización para los usuarios actuales."
+    },
+    {
+      "id": "shared-autonomy",
+      "finding": "Compartir compromisos no implica querer compartir todas las compras o todos los presupuestos.",
+      "affectedContexts": [
+        "household",
+        "variable-income"
+      ],
+      "evidenceKind": [
+        "qualitative",
+        "documented-policy"
+      ],
+      "sourceIds": [
+        "forum-couple-freelance",
+        "forum-private",
+        "forum-couple-admin",
+        "ynab-together",
+        "honeydue"
+      ],
+      "decision": "Diseñar pertenencia, visibilidad y responsabilidad por separado, con autorización de servidor antes de ofrecer colaboración.",
+      "uncertainty": "La evidencia no determina un reparto único; 50/50, proporcional y aportaciones fijas tienen contextos distintos."
+    },
+    {
+      "id": "resume",
+      "finding": "La revisión debe ayudar a retomar sin convertir el atraso en una deuda de trabajo interminable.",
+      "affectedContexts": [
+        "personal",
+        "variable-income",
+        "household"
+      ],
+      "evidenceKind": [
+        "qualitative"
+      ],
+      "sourceIds": [
+        "forum-anxiety",
+        "forum-overwhelmed",
+        "forum-month-covered"
+      ],
+      "decision": "Separar lo imprescindible para decidir hoy del historial pendiente, sin ocultar la cobertura incompleta.",
+      "uncertainty": "Es una hipótesis de experiencia, no una eficacia demostrada sobre ansiedad o retención."
+    },
+    {
+      "id": "trust-context",
+      "finding": "Poder llegar al movimiento y regresar al contexto es parte de la confianza en un resumen.",
+      "affectedContexts": [
+        "personal",
+        "variable-income",
+        "household"
+      ],
+      "evidenceKind": [
+        "qualitative"
+      ],
+      "sourceIds": [
+        "forum-drilldown",
+        "forum-deleted",
+        "forum-missing"
+      ],
+      "decision": "Preservar fecha, filtros y selección; ofrecer corrección y deshacer verificables.",
+      "uncertainty": "Los incidentes publicados en otras aplicaciones no se reprodujeron y no prueban una falla equivalente en Sifran."
+    },
+    {
+      "id": "credit-clarity",
+      "finding": "Una biblioteca de crédito necesita explicar condiciones y fechas antes de comparar costos.",
+      "affectedContexts": [
+        "personal",
+        "variable-income",
+        "household"
+      ],
+      "evidenceKind": [
+        "official-document",
+        "catalog-audit"
+      ],
+      "sourceIds": [
+        "banxico-card-comparison",
+        "kardmatch-terms",
+        "forum-msi"
+      ],
+      "decision": "Comparación por atributos, cobertura parcial explícita, costos desconocidos visibles y fuentes primarias; ninguna clasificación de mejor producto.",
+      "uncertainty": "Un CAT publicado no es una cotización individual ni garantiza aprobación."
+    }
+  ],
+  "journey": [
+    {
+      "step": 1,
+      "name": "Registrar",
+      "question": "¿Qué pasó con mi dinero?",
+      "response": "Captura breve en el contexto actual; fecha explícita y deshacer.",
+      "doneWhen": "El movimiento se registra una sola vez y puede localizarse sin perder el trabajo previo."
+    },
+    {
+      "step": 2,
+      "name": "Anticipar",
+      "question": "¿Qué viene antes del siguiente cobro?",
+      "response": "Compromisos por fecha y cuenta; confirmado y esperado separados.",
+      "doneWhen": "Un ingreso pendiente nunca disfraza un faltante de efectivo disponible."
+    },
+    {
+      "step": 3,
+      "name": "Resolver",
+      "question": "¿Qué puedo hacer y qué cambia?",
+      "response": "Acciones y simulaciones con supuestos, costo y consecuencia visibles.",
+      "doneWhen": "La persona entiende el impacto antes de confirmar y conserva el control."
+    },
+    {
+      "step": 4,
+      "name": "Revisar",
+      "question": "¿Qué necesita atención ahora?",
+      "response": "Revisión a la cadencia elegida; esenciales y cobertura pendiente separados.",
+      "doneWhen": "Se cierra una decisión útil sin exigir entrar diariamente ni completar todo el historial."
+    }
+  ],
+  "benchmark": [
+    {
+      "product": "YNAB",
+      "lesson": "Objetivos por distintas cadencias y posibilidad de posponer un mes; su colaboración documentada permite al administrador ver y editar los planes de miembros.",
+      "takeaway": "Flexibilidad temporal con límites de privacidad explícitos.",
+      "sourceIds": [
+        "ynab-targets",
+        "ynab-together"
+      ]
+    },
+    {
+      "product": "Monarch",
+      "lesson": "Presupuesto flexible, revisión asignable y experiencia del hogar; documenta límites para divisas y visibilidad compartida.",
+      "takeaway": "Asignar responsabilidades no equivale a aislar datos privados.",
+      "sourceIds": [
+        "monarch-flex",
+        "monarch-review",
+        "monarch-currency"
+      ]
+    },
+    {
+      "product": "Copilot",
+      "lesson": "El panel organiza revisión y compromisos recurrentes; el disponible presupuestario depende de reglas y cobertura.",
+      "takeaway": "Explicar la fórmula y el perímetro de cada cantidad.",
+      "sourceIds": [
+        "copilot-dashboard",
+        "copilot-recurring",
+        "copilot-international"
+      ]
+    },
+    {
+      "product": "Simplifi",
+      "lesson": "Listas de seguimiento y un plan de gasto; su proyección de caja documenta exclusiones.",
+      "takeaway": "Una proyección debe declarar lo que deja fuera.",
+      "sourceIds": [
+        "simplifi-watchlists",
+        "simplifi-spending",
+        "simplifi-projection"
+      ]
+    },
+    {
+      "product": "Actual",
+      "lesson": "Importación con conciliación y programación; los alcances de sincronización, cifrado y colaboración no son equivalentes.",
+      "takeaway": "Evitar duplicados y promesas de seguridad más amplias que la implementación.",
+      "sourceIds": [
+        "actual-import",
+        "actual-schedules",
+        "actual-sync"
+      ]
+    },
+    {
+      "product": "Lunch Money",
+      "lesson": "Recurrencias revisables, periodos configurables y cuentas de presupuesto; algunos cambios de periodo afectan el historial.",
+      "takeaway": "Proteger historial y explicar consecuencias antes de cambiar una estructura.",
+      "sourceIds": [
+        "lunch-recurring",
+        "lunch-budget",
+        "lunch-collaborators"
+      ]
+    },
+    {
+      "product": "Rocket Money",
+      "lesson": "Payday View ya organiza alrededor del cobro, con requisitos de depósitos y cuenta vinculada.",
+      "takeaway": "La oportunidad está en cubrir incertidumbre e ingresos múltiples, no en afirmar que nadie organiza por cobro.",
+      "sourceIds": [
+        "rocket-payday"
+      ]
+    },
+    {
+      "product": "BBVA Apartados",
+      "lesson": "Separación de dinero dentro de una cuenta bancaria real.",
+      "takeaway": "Distinguir una reserva de planificación de un movimiento bancario efectivo.",
+      "sourceIds": [
+        "bbva-apartados"
+      ]
+    },
+    {
+      "product": "Honeydue",
+      "lesson": "Documenta opciones de compartir movimientos y saldo, sólo saldo o nada; la página consultada es antigua.",
+      "takeaway": "La granularidad de privacidad es una referencia; su comportamiento actual no se verificó.",
+      "sourceIds": [
+        "honeydue"
+      ]
+    },
+    {
+      "product": "Fintonic",
+      "role": "positioning-only",
+      "lesson": "Referencia de posicionamiento de préstamos y conocimiento financiero.",
+      "takeaway": "No usar marketing ni un selector territorial como prueba de cobertura operativa mexicana.",
+      "sourceIds": [
+        "fintonic"
+      ]
+    }
+  ],
+  "uxContracts": [
+    {
+      "id": "capture",
+      "status": "locally_verified_with_documented_limits",
+      "title": "Registrar sin perder el contexto",
+      "contract": "Modal breve, monto primero, fecha de hoy para un nuevo registro y detalles progresivos. Repetir un reciente copia campos editables, no metadatos de importación. Guardar no navega; aviso persistente con ver, deshacer y cerrar. Respetar teclado y movimiento reducido.",
+      "mustNot": "No registrar al seleccionar un reciente, no duplicar con doble clic y no anunciar sincronización remota sin confirmación."
+    },
+    {
+      "id": "money-states",
+      "status": "designed_requires_data_model",
+      "title": "Recibido, esperado y meta son estados distintos",
+      "contract": "Recibido afecta efectivo confirmado; esperado expresa monto, fecha e incertidumbre; meta expresa intención. Un cobro parcial conserva saldo pendiente y concilia el movimiento una sola vez.",
+      "mustNot": "No sumar una factura esperada a disponible ni volver a contarla cuando entra al banco."
+    },
+    {
+      "id": "household-privacy",
+      "status": "designed_requires_server_authorization",
+      "title": "Compartir lo común con permisos reales",
+      "contract": "Identidad, membresía, rol, visibilidad y responsabilidad se modelan de forma explícita. La invitación y revocación se verifican en servidor; exportaciones y asistencia con IA respetan el mismo alcance.",
+      "mustNot": "No presentar colores, filtros, nombres de pareja o cuentas existentes como aislamiento autorizado."
+    },
+    {
+      "id": "return",
+      "status": "hypothesis_to_validate",
+      "title": "Retomar por lo que importa hoy",
+      "contract": "Mostrar qué falta confirmar, qué afecta una decisión cercana y qué historial puede revisarse después. Conservar el contexto de exploración y explicar cobertura incompleta.",
+      "mustNot": "No afirmar que todo está al día por cerrar o descartar una lista."
+    },
+    {
+      "id": "credit-library",
+      "status": "locally_verified_with_documented_limits",
+      "title": "Productos financieros en México",
+      "contract": "Ruta secundaria en Herramientas con búsqueda, filtros y carga progresiva. Directorio de tarjetas, financiamiento y opciones de ahorro; fichas de costos y programas visibles con su cobertura. Comparación de hasta tres fichas de tarjeta por atributos, con lectura apilada en móvil. Identificación, disponibilidad, consulta y vigencia se distinguen.",
+      "mustNot": "No ordenar por mejor producto, esconder condiciones de exención ni llamar vigente a un costo sin fechas coherentes."
+    },
+    {
+      "id": "official-reference",
+      "status": "locally_verified_with_documented_limits",
+      "title": "Referencia oficial para tu supuesto",
+      "contract": "CETES a 28 días aparece junto a la simulación de ahorro con fecha de colocación, consulta y fuente. Aplicar exige una acción explícita. Actualizar la referencia no cambia el escenario; errores y datos antiguos conservan su estado visible.",
+      "mustNot": "No prometer rendimientos futuros, transformar automáticamente el supuesto ni llenar la portada con indicadores ajenos a una decisión."
+    },
+    {
+      "id": "purchase-comparison",
+      "status": "locally_verified_with_documented_limits",
+      "title": "Comparar una compra entre las tarjetas que ya tengo",
+      "contract": "La persona selecciona sus tarjetas y declara monto, fecha, categoría, canal, modalidad de pago, condiciones y tope restante del periodo. La comparación exige evidencia suficiente y conserva resultados descriptivos, estimados o pendientes. Un dato desconocido nunca se trata como cero.",
+      "mustNot": "No recomendar un producto universal, calcular intereses desde CAT, sumar programas incompatibles ni clasificar un beneficio con costos de redención desconocidos como efectivo comparable."
+    }
+  ],
+  "dataCoverage": {
+    "creditLibrary": {
+      "cards": 192,
+      "financingEntries": 109,
+      "financingFamilyLabels": 12,
+      "directorySourceUrls": 247,
+      "detailedCardSheets": 8,
+      "educationalLoanFamilies": 6,
+      "detailedLoanOfferSheets": 3,
+      "detailedLoanOfferIssuers": [
+        "BBVA"
+      ],
+      "marketCoverage": "Directorio editorial parcial: identifica productos, modalidades y programas, sin representar todo el mercado ni acreditar una oferta individual.",
+      "commercialRelationships": "Este informe no establece convenios, acceso comercial ni autorización para republicar bases de terceros.",
+      "dateHandling": "Distinguir consulta, cálculo, vigencia y disponibilidad comercial; conservar desconocidos y conflictos de documentación.",
+      "nuExample": "La documentación revisada contiene un costo anterior vencido y un folleto posterior con fechas incompatibles. No se corrige el año por intuición; el CAT operativo se marca por verificar.",
+      "availabilityWarning": "Un costo con vigencia futura no prueba que una tarjeta siga disponible para nuevas solicitudes.",
+      "comparisonWarning": "La comparación de costos conserva el alcance de cada ficha; el cálculo contextual de beneficios usa reglas separadas y no determina el costo total de financiar una compra.",
+      "dataset": "src/data/mexicoCreditDirectory.js",
+      "detailedSheetsDataset": "src/data/creditCatalog.js",
+      "audit": "docs/mexico-credit-market.json",
+      "includedContexts": [
+        "Banca de consumo y tarjetas de servicios",
+        "Cooperativas, productos digitales y tarjetas de tienda",
+        "Ingresos variables, crédito empresarial y programas institucionales",
+        "Fonacot, Infonavit, FOVISSSTE y programas de segundo piso, con su naturaleza explícita"
+      ],
+      "remainingCoverage": [
+        "No existe un censo completo ni verificación de elegibilidad de todos los productos.",
+        "Persisten candidatos sin fuente suficiente, costos no documentados y registros con contratación por confirmar.",
+        "La verificación registral individual no quedó completa; las formas institucionales provienen de las fuentes declaradas.",
+        "Factoraje y arrendamiento conservan su evidencia en pendientes para una presentación que distinga su naturaleza."
+      ],
+      "deduplication": "Se conserva una identidad por producto y se documentan alias, migraciones y modalidades. Versiones físicas/digitales, niveles o campañas no se cuentan automáticamente como tarjetas nuevas.",
+      "familyTerminology": "Consolidación de deudas se conserva como estrategia o uso; no se presenta como clase jurídica.",
+      "detailedSheetInventory": {
+        "cards": [
+          {
+            "id": "bbva-azul",
+            "name": "Tarjeta Azul BBVA",
+            "issuer": "BBVA México",
+            "canonicalUrl": "https://www.bbva.mx/personas/productos/tarjetas-de-credito/tarjeta-de-credito-azul.html",
+            "evidence": [
+              {
+                "title": "BBVA Azul: requisitos, comisiones y CAT",
+                "url": "https://www.bbva.mx/personas/productos/tarjetas-de-credito/tarjeta-de-credito-azul.html"
+              }
+            ]
+          },
+          {
+            "id": "banamex-joy",
+            "name": "Tarjeta de Crédito Joy Banamex",
+            "issuer": "Banamex",
+            "canonicalUrl": "https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-joy-sin-anualidad",
+            "evidence": [
+              {
+                "title": "Joy Banamex: costos y condiciones",
+                "url": "https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-joy-sin-anualidad"
+              }
+            ]
+          },
+          {
+            "id": "santander-likeu",
+            "name": "Tarjeta de Crédito LikeU",
+            "issuer": "Banco Santander México",
+            "canonicalUrl": "https://www.santander.com.mx/personas/credito-y-financiamiento/tarjetas-de-credito/likeu",
+            "evidence": [
+              {
+                "title": "LikeU: página oficial",
+                "url": "https://www.santander.com.mx/personas/credito-y-financiamiento/tarjetas-de-credito/likeu"
+              },
+              {
+                "title": "Folleto LikeU: julio–diciembre de 2026",
+                "url": "https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:eadbc941-a74c-4127-ac61-b4250eb85b52/original/as/Cards_Folleto_TDC_LikeUMastercard_Jun2026_V2_0726.pdf"
+              }
+            ]
+          },
+          {
+            "id": "hsbc-zero",
+            "name": "Tarjeta de Crédito HSBC Zero",
+            "issuer": "HSBC México",
+            "canonicalUrl": "https://www.hsbc.com.mx/tarjetas-de-credito/productos/zero/",
+            "evidence": [
+              {
+                "title": "HSBC Zero: página y requisitos",
+                "url": "https://www.hsbc.com.mx/tarjetas-de-credito/productos/zero/"
+              },
+              {
+                "title": "Folleto HSBC Zero: agosto de 2026",
+                "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/folleto_digital_zero.pdf"
+              }
+            ]
+          },
+          {
+            "id": "banorte-clasica",
+            "name": "Tarjeta de Crédito Clásica Banorte",
+            "issuer": "Banco Mercantil del Norte",
+            "canonicalUrl": "https://www.banorte.com/Personal/TDC/Clasica.html",
+            "evidence": [
+              {
+                "title": "Clásica Banorte: requisitos y costos",
+                "url": "https://www.banorte.com/Personal/TDC/Clasica.html"
+              },
+              {
+                "title": "Folleto Clásica: octubre de 2026",
+                "url": "https://www.banorte.com/dam/jcr:53a48148-c63e-446b-8d27-f8521310f4c0/Folleto%20Cl%C3%A1sica%20oct26.pdf"
+              }
+            ]
+          },
+          {
+            "id": "nu-credito",
+            "name": "Tarjeta de Crédito Nu",
+            "issuer": "Nubank, S.A., Institución de Banca Múltiple",
+            "canonicalUrl": "https://nubank.com.mx/credito/",
+            "evidence": [
+              {
+                "title": "Nu: tarjeta de crédito",
+                "url": "https://nubank.com.mx/credito/"
+              },
+              {
+                "title": "Nu: CAT publicado",
+                "url": "https://nubank.com.mx/cat/"
+              },
+              {
+                "title": "Folleto Nu: discrepancia de fechas",
+                "url": "https://cdn.nubank.com.mx/mex/credito/folleto-informativo.pdf"
+              }
+            ]
+          },
+          {
+            "id": "klar-garantizada",
+            "name": "Tarjeta de Crédito Klar con Garantía",
+            "issuer": "Klar Technologies, S.A. de C.V., S.F.P.",
+            "canonicalUrl": "https://www.klar.mx/tarjeta-de-credito-con-garantia",
+            "evidence": [
+              {
+                "title": "Klar: tarjeta con garantía",
+                "url": "https://www.klar.mx/tarjeta-de-credito-con-garantia"
+              },
+              {
+                "title": "Klar: costos de tarjeta con y sin garantía",
+                "url": "https://www.klar.mx/cat"
+              }
+            ]
+          },
+          {
+            "id": "stori-green",
+            "name": "Stori Green",
+            "issuer": "Stori México, S.A. de C.V., Sociedad Financiera Popular",
+            "canonicalUrl": "https://www.storicard.com/stori-card",
+            "evidence": [
+              {
+                "title": "Stori Green: página y requisitos",
+                "url": "https://www.storicard.com/stori-card"
+              },
+              {
+                "title": "Tarifario Stori: renglón STORI GREEN",
+                "url": "https://www.storicard.com/files/costos-y-comisiones-credito.pdf?v=20260213"
+              }
+            ]
+          }
+        ],
+        "loanFamilies": [
+          {
+            "id": "personal",
+            "name": "Préstamo personal",
+            "evidence": [
+              {
+                "title": "BBVA: préstamo personal",
+                "url": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-personal-inmediato.html"
+              }
+            ],
+            "offers": [
+              {
+                "id": "bbva-personal-inmediato",
+                "name": "Préstamo Personal Inmediato BBVA",
+                "issuer": "BBVA México",
+                "canonicalUrl": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-personal-inmediato.html",
+                "evidence": [
+                  {
+                    "title": "Personal Inmediato: oferta y requisitos",
+                    "url": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-personal-inmediato.html"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "payroll",
+            "name": "Préstamo de nómina",
+            "evidence": [
+              {
+                "title": "BBVA: préstamo de nómina",
+                "url": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-nomina.html"
+              }
+            ],
+            "offers": [
+              {
+                "id": "bbva-nomina-seguro-vida",
+                "name": "Creditón Nómina BBVA con seguro de vida",
+                "issuer": "BBVA México",
+                "canonicalUrl": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-nomina.html",
+                "evidence": [
+                  {
+                    "title": "Creditón Nómina: requisitos y CAT por modalidad",
+                    "url": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-nomina.html"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "auto",
+            "name": "Crédito automotriz",
+            "evidence": [
+              {
+                "title": "BBVA: crédito de auto",
+                "url": "https://www.bbva.mx/personas/productos/creditos/credito-auto.html"
+              }
+            ],
+            "offers": []
+          },
+          {
+            "id": "mortgage",
+            "name": "Crédito hipotecario",
+            "evidence": [
+              {
+                "title": "BBVA: Hipoteca Fija",
+                "url": "https://www.bbva.mx/personas/productos/creditos/credito-hipotecario/hipoteca-fija.html"
+              }
+            ],
+            "offers": [
+              {
+                "id": "bbva-hipoteca-fija",
+                "name": "Hipoteca Fija BBVA",
+                "issuer": "BBVA México",
+                "canonicalUrl": "https://www.bbva.mx/personas/productos/creditos/credito-hipotecario/hipoteca-fija.html",
+                "evidence": [
+                  {
+                    "title": "Hipoteca Fija: costos y supuestos del CAT",
+                    "url": "https://www.bbva.mx/personas/productos/creditos/credito-hipotecario/hipoteca-fija.html"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "consolidation",
+            "name": "Consolidación de deudas",
+            "evidence": [
+              {
+                "title": "BBVA: préstamos para pagar deudas",
+                "url": "https://www.bbva.mx/educacion-financiera/creditos/credito-de-nomina-prestamo/ppi-prestamos-para-pagar-deudas.html"
+              }
+            ],
+            "offers": []
+          },
+          {
+            "id": "secured-pledge",
+            "name": "Crédito con garantía prendaria",
+            "evidence": [
+              {
+                "title": "Nacional Monte de Piedad: vehículo en garantía",
+                "url": "https://www.montepiedad.com.mx/empeno-vehiculos/"
+              }
+            ],
+            "offers": []
+          }
+        ]
+      }
+    },
+    "publicReferences": [
+      {
+        "id": "cetes28",
+        "sourceIds": [
+          "banxico-rss",
+          "banxico-cetes-table"
+        ],
+        "unit": "Porcentaje anual",
+        "meaning": "Tasa de la colocación de CETES a 28 días indicada por la fuente.",
+        "interface": "Visible junto al supuesto de una simulación; aplicación manual.",
+        "limit": "No es una tasa fija garantizada para todo el horizonte proyectado."
+      },
+      {
+        "id": "usdMxnFix",
+        "sourceIds": [
+          "banxico-rss"
+        ],
+        "unit": "Pesos por dólar estadounidense",
+        "meaning": "Tipo de cambio FIX con su fecha efectiva.",
+        "interface": "Disponible en la capa de referencias; no se añade un indicador a la portada.",
+        "limit": "No es una cotización de compra o venta de un banco."
+      },
+      {
+        "id": "udi",
+        "sourceIds": [
+          "banxico-rss"
+        ],
+        "unit": "Pesos por UDI",
+        "meaning": "Valor para la fecha efectiva indicada.",
+        "interface": "Disponible en la capa de referencias para futuros contextos pertinentes.",
+        "limit": "No equivale a un rendimiento ni acredita el saldo de un contrato."
+      },
+      {
+        "id": "inflationAnnual",
+        "sourceIds": [
+          "inegi-feed",
+          "inegi-inpc-feed"
+        ],
+        "unit": "Variación porcentual anual",
+        "meaning": "Inflación anual de un periodo mensual.",
+        "interface": "Disponible en la capa de referencias; no se aplica automáticamente a una proyección.",
+        "limit": "Frecuencia mensual no significa inflación mensual; un dato observado no es un pronóstico."
+      }
+    ],
+    "publicReferencePipeline": {
+      "retrieval": "Lectura desde servidor de URLs oficiales fijas; sin enviar información financiera del usuario a esas fuentes.",
+      "verificationAtResearch": "Los cuatro feeds devolvieron HTTP 200 en la revisión técnica. Esto no garantiza disponibilidad futura.",
+      "dates": "Conservar fecha efectiva o periodo, publicación cuando existe y momento de consulta. No inventar día u hora para un dato mensual.",
+      "reliability": "Tiempo y tamaño de respuesta limitados, validación estricta y último dato válido identificado si falla una actualización.",
+      "cachePolicy": "Política implementada en el adaptador: caché de 6 horas para Banxico y 24 para INPC, con actualización solicitada por la persona. No garantiza la frecuencia de publicación de los proveedores.",
+      "rights": "Usar atribución y enlaces conforme a términos oficiales; no convertir acceso técnico en permiso de republicar contenido ajeno."
+    },
+    "cardBenefits": {
+      "dataset": "src/data/cardBenefits.js",
+      "engine": "src/services/cardBenefits.js",
+      "programs": 25,
+      "calculablePrograms": 5,
+      "calculableCards": 4,
+      "calculableProgramIds": [
+        "santander-likeu-cashback",
+        "plata-all-base",
+        "plata-all-plus",
+        "hsbc-2now-cash-equivalent",
+        "stori-simi-green-base"
+      ],
+      "descriptivePrograms": 20,
+      "contextRequired": [
+        "Tarjetas que la persona ya tiene",
+        "Importe y fecha de compra",
+        "Categoría, canal y modalidad de pago",
+        "Pago total confirmado para una recomendación comparable",
+        "Condiciones aplicables y tope restante del periodo"
+      ],
+      "comparisonScope": "LikeU, Plata sin Plus o con Plus y HSBC 2Now pueden aportar efectivo o valor de canje comparable cuando se cumplen las condiciones. No se elige una ganadora con información insuficiente.",
+      "storiSimi": "Simi x Stori Green tiene regla para estimar acumulación bruta. Sus costos de redención siguen desconocidos, por lo que se excluye de la recomendación de efectivo comparable.",
+      "hsbc2Now": "Se conserva como saldo estimado equivalente en MXN según el canje documentado; no significa efectivo disponible inmediatamente.",
+      "unknownHandling": "Sin regla, con conflicto o sin confirmar condiciones se muestra el motivo. Tope desconocido puede producir un máximo publicado, no una cantidad garantizada ni un cero.",
+      "maintenance": "La fecha de revisión y su límite editorial son independientes de las fechas contractuales. Una revisión vencida bloquea una conclusión que requiere evidencia fresca.",
+      "inventory": [
+        {
+          "id": "santander-likeu-cashback",
+          "cardId": "santander-likeu",
+          "name": "Cashback Baby LikeU",
+          "status": "verified",
+          "kind": "ongoing",
+          "calculable": true,
+          "redemptionCosts": "none",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "plata-all-base",
+          "cardId": "plata-credito",
+          "name": "Plata: Todas tus compras, sin Plus",
+          "status": "verified",
+          "kind": "ongoing",
+          "calculable": true,
+          "redemptionCosts": "none",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "plata-all-plus",
+          "cardId": "plata-credito",
+          "name": "Plata: Todas tus compras, con Plus",
+          "status": "verified",
+          "kind": "ongoing",
+          "calculable": true,
+          "redemptionCosts": "none",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "hsbc-2now-cash-equivalent",
+          "cardId": "hsbc-2now",
+          "name": "Saldo HSBC 2Now para retiro en efectivo",
+          "status": "verified",
+          "kind": "ongoing",
+          "calculable": true,
+          "redemptionCosts": "none",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "hey-rewards",
+          "cardId": "hey-credito",
+          "name": "Recompensas Hey con anualidad",
+          "status": "verified",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "costco-annual-reward",
+          "cardId": "banamex-costco",
+          "name": "Recompensa anual Costco Banamex",
+          "status": "verified",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "vexi-amex-cashback",
+          "cardId": "vexi-amex",
+          "name": "Vexi American Express: Cashback",
+          "status": "verified",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "vexi-carnet-cashback",
+          "cardId": "vexi-carnet",
+          "name": "Vexi Carnet: Cashback",
+          "status": "verified",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "bbva-azul-points",
+          "cardId": "bbva-azul",
+          "name": "Puntos BBVA Azul",
+          "status": "verified",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "liverpool-visa-points",
+          "cardId": "liverpool-visa",
+          "name": "Puntos Rosas Liverpool Visa",
+          "status": "verified",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "suburbia-visa-wallet",
+          "cardId": "suburbia-visa",
+          "name": "Monedero Suburbia Visa",
+          "status": "verified",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "palacio-points",
+          "cardId": "palacio-tarjeta",
+          "name": "Puntos Palacio",
+          "status": "verified",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "stori-simi-green-base",
+          "cardId": "stori-simi-green",
+          "name": "Simi x Stori Green: beneficio base",
+          "status": "verified",
+          "kind": "ongoing",
+          "calculable": true,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "stori-simi-garantizada-base",
+          "cardId": "stori-simi-garantizada",
+          "name": "Simi x Stori Garantizada: beneficio base",
+          "status": "incomplete",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "stori-simi-welcome",
+          "cardId": "stori-simi-green",
+          "name": "Simi x Stori: bienvenida",
+          "status": "verified",
+          "kind": "welcome",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "rappicard-october",
+          "cardId": "rappicard",
+          "name": "Cashback RappiCard de octubre",
+          "status": "conflict",
+          "kind": "temporary",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-10-31"
+        },
+        {
+          "id": "didi-cashback",
+          "cardId": "didi-card",
+          "name": "DiDi Card Cashback",
+          "status": "conflict",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "stori-black-personalized",
+          "cardId": "stori-black",
+          "name": "Stori Black: Redime tu Cashback",
+          "status": "incomplete",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "stori-shein-points",
+          "cardId": "stori-shein",
+          "name": "Puntos SHEIN x Stori",
+          "status": "conflict",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "klar-clasica-conditional-benefits",
+          "cardId": "klar-clasica",
+          "name": "Klar Plus",
+          "status": "incomplete",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "klar-platino-conditional-benefits",
+          "cardId": "klar-platino",
+          "name": "Klar Platino",
+          "status": "incomplete",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "klar-uber-conditional-benefits",
+          "cardId": "klar-uber",
+          "name": "Uber Card",
+          "status": "incomplete",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "klar-uber-platino-conditional-benefits",
+          "cardId": "klar-uber-platino",
+          "name": "Uber Card Platino",
+          "status": "incomplete",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "banregio-win-conditional-benefits",
+          "cardId": "banregio-win",
+          "name": "Win Banregio",
+          "status": "incomplete",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        },
+        {
+          "id": "uala-credito-conditional-benefits",
+          "cardId": "uala-credito",
+          "name": "Mastercard Offers para Ualá",
+          "status": "incomplete",
+          "kind": "ongoing",
+          "calculable": false,
+          "redemptionCosts": "unknown",
+          "reviewedOn": "2026-10-18",
+          "reviewDueOn": "2026-11-17"
+        }
+      ],
+      "selectionPersistence": "Las tarjetas seleccionadas se conservan durante la sesión; seleccionarlas no crea deudas ni verifica crédito disponible."
+    },
+    "savingsCatalog": {
+      "status": "implemented_pending_integrated_verification",
+      "consultedOn": "2026-10-18",
+      "dataset": "src/data/mexicoSavingsCatalog.js",
+      "audit": "docs/mexico-savings-market.json",
+      "counts": {
+        "productModalities": 65,
+        "detailedSheets": 58,
+        "identifiedWithLimitedEvidence": 7,
+        "returnObservations": 248,
+        "numericReturnObservations": 231,
+        "unknownReturnObservations": 17,
+        "legalIssuerNotConsolidated": 24,
+        "numericObservationsWithDatePending": 115,
+        "inaccessibleSourceProductRecords": 4,
+        "distinctCitedSourceUrls": 59
+      },
+      "countingRule": "65 modalidades, no 65 proveedores. Las 248 observaciones incluyen tasas, GAT y objetivos con condiciones distintas; no son 248 productos ni rendimientos comparables.",
+      "coverageByMechanism": [
+        {
+          "mechanism": "Cuenta bancaria",
+          "productCount": 17
+        },
+        {
+          "mechanism": "Depósito bancario a plazo",
+          "productCount": 16
+        },
+        {
+          "mechanism": "Servicio de inversión en el extranjero",
+          "productCount": 1
+        },
+        {
+          "mechanism": "Depósito en SOFIPO",
+          "productCount": 15
+        },
+        {
+          "mechanism": "Fondo",
+          "productCount": 6
+        },
+        {
+          "mechanism": "Valores gubernamentales",
+          "productCount": 1
+        },
+        {
+          "mechanism": "Depósito en cooperativa",
+          "productCount": 3
+        },
+        {
+          "mechanism": "Mecanismo por verificar",
+          "productCount": 5
+        },
+        {
+          "mechanism": "Reporto",
+          "productCount": 1
+        }
+      ],
+      "interface": "Ahorro permite explorar, seleccionar hasta tres opciones y comparar disponibilidad, mecanismo, rendimiento publicado, liquidez, costos, requisitos, entidad, protección y fechas.",
+      "comparisonRule": "Sin ranking de tasas heterogéneas ni cálculo de ganancias. No sumar coberturas por cajita ni atribuir a un fondo, reporto o estructura extranjera la protección de un depósito.",
+      "valueRule": "Los desconocidos permanecen null; un cero requiere fuente explícita. GAT nominal, GAT real, tasa anual, objetivo promocional y rendimiento histórico conservan su naturaleza y unidad.",
+      "dateRule": "Consulta, cálculo y vigencia son fechas distintas. Una ficha detallada puede tener tarifas o fechas pendientes; no equivale a contratación verificada.",
+      "evidenceLimitations": [
+        "58 fichas detalladas y 7 registros con evidencia limitada; una ficha detallada no implica contrato completo ni todas sus condiciones confirmadas.",
+        "En 24 registros no quedó consolidada la razón social completa; el conteo es de registros, no de entidades legales distintas.",
+        "115 observaciones numéricas tienen alguna fecha pendiente; la consulta no completa esos campos.",
+        "Covalto, Banco Azteca, Sabadell y Kubo permanecen como registros limitados por acceso insuficiente. Libertad queda como pendiente documental sin ficha ni cifra.",
+        "La cobertura no incluye todo el mercado, todas las series de fondos, AFORE, retiro ni seguros con ahorro."
+      ],
+      "sourceExamples": [
+        "https://nubank.com.mx/gat/",
+        "https://www.openbank.mx/assets/OK_MX/es-MX/precontract/v1/MX.OB.CUENTA.NOREM.T%26C.pdf",
+        "https://www.mercadopago.com.mx/ayuda/Terminos-rendimientos_15581",
+        "https://gbm.com/faqs/que-diferencia-existe-entre-smart-cash-y-smart-cash-dolares/",
+        "https://actinvertrade.actinver.com/preguntas-frecuentes.html",
+        "https://www.cpm.coop/rendicuenta"
+      ],
+      "implementationVerification": "Integridad local y paridad comprobadas por la rama de datos y raíz; verificación integrada de la experiencia en curso."
+    },
+    "updateModel": {
+      "catalogs": "Snapshots editoriales fechados mantenidos en archivos versionados. Esta implementación no incluye un crawler, un monitor de cambios ni actualización automática de productos o beneficios.",
+      "freshness": "Consultar una página hoy no vuelve vigente un tarifario vencido. Disponibilidad comercial, periodo del dato, vigencia contractual y revisión editorial se conservan por separado.",
+      "references": "Sólo las cuatro series oficiales de referencia cuentan con una consulta GET refrescable: CETES a 28 días, FIX, UDI e inflación anual del INPC. La caché y el último dato válido no sustituyen su estado de frescura.",
+      "referenceEndpoint": "GET /api/reference-rates",
+      "future": "Automatizar el monitoreo requiere fuentes y derechos de uso verificados, detección de cambios, revisión editorial y control de versiones antes de publicar."
+    }
+  },
+  "roadmap": [
+    {
+      "order": 1,
+      "name": "Verificar la experiencia integrada de captura y mercado",
+      "status": "locally_verified_with_documented_limits",
+      "scope": [
+        "Captura contextual y repetición explícita",
+        "Directorio de 192 tarjetas y 109 productos, modalidades o programas de financiamiento",
+        "Ocho fichas de costos y 25 programas de beneficios, con cinco reglas calculables",
+        "Comparación contextual de compras sin convertir desconocidos en cero",
+        "Referencia CETES junto a simulación con aplicación manual",
+        "Ahorro: 65 modalidades, 58 fichas detalladas y comparación por atributos sin ranking de tasas heterogéneas"
+      ],
+      "dependencies": [
+        "Revisión final renderizada por UX/UI",
+        "Pruebas focalizadas e integradas",
+        "Verificación de fuentes y fechas del catálogo"
+      ],
+      "done": [
+        "Captura no duplica, no pierde contexto y permite deshacer sin borrar una edición posterior.",
+        "La biblioteca distingue cero, desconocido y vencido; selección y filtros funcionan en móvil y teclado.",
+        "Un fallo de la fuente no fabrica valores ni cambia el supuesto de inversión.",
+        "No hay exposición de datos de otra cuenta ni regresiones en rutas y persistencia.",
+        "Los programas incompletos, conflictivos o con revisión vencida explican su estado sin producir una recomendación falsa.",
+        "Simi Green puede mostrar una estimación bruta, pero no participa en el ranking de efectivo mientras sus costos de redención estén sin confirmar.",
+        "Ahorro preserva unidades, ceros publicados, GAT negativos, fechas pendientes y protección por mecanismo; navegar entre categorías conserva el contexto."
+      ]
+    },
+    {
+      "order": 2,
+      "name": "Modelar cobros y compromisos con incertidumbre",
+      "status": "designed_requires_data_model",
+      "scope": [
+        "Esperados, parciales, vencidos y conciliados",
+        "Recurrencias revisables",
+        "Cadencia por cobro y reservas explícitas"
+      ],
+      "dependencies": [
+        "Evolución versionada del esquema y respaldo",
+        "Migración compatible y protección frente a clientes antiguos",
+        "Conciliación idempotente",
+        "Contrato UX de estados y consecuencias"
+      ],
+      "done": [
+        "Un ingreso tardío no figura como efectivo recibido.",
+        "Dos importaciones o una confirmación repetida no duplican un cobro.",
+        "Cambiar una recurrencia no altera silenciosamente el historial.",
+        "Se prueban fechas, cuentas, cancelaciones y cobros parciales."
+      ]
+    },
+    {
+      "order": 3,
+      "name": "Construir coordinación del hogar",
+      "status": "designed_requires_server_authorization",
+      "scope": [
+        "Espacios, membresías e invitaciones",
+        "Aportaciones y responsabilidades",
+        "Visibilidad privada y compartida"
+      ],
+      "dependencies": [
+        "Modelo de identidad y espacio independiente",
+        "Permisos verificados en servidor",
+        "Exportación, respaldo y asistencia con IA por alcance",
+        "Investigación con ambos integrantes"
+      ],
+      "done": [
+        "Revocar acceso lo elimina también de APIs, exportaciones y sesiones activas según el contrato.",
+        "Un miembro no puede recuperar movimientos privados por URL, ID o consulta indirecta.",
+        "El reparto y los reembolsos no duplican el gasto del hogar.",
+        "Ambas personas entienden qué comparten antes de aceptar."
+      ]
+    },
+    {
+      "order": 4,
+      "name": "Probar revisión y regreso sin fricción",
+      "status": "hypothesis_to_validate",
+      "scope": [
+        "Cadencia elegida",
+        "Retomar esenciales antes del historial",
+        "Cambios desde un punto de revisión verificable"
+      ],
+      "dependencies": [
+        "Estado de revisión persistente y versionado",
+        "Cobertura y fecha de datos por cuenta",
+        "Preferencias explícitas y controles de alertas"
+      ],
+      "done": [
+        "No se afirma desde tu última visita sin un punto de comparación real.",
+        "Posponer una tarea no la marca como resuelta.",
+        "La comprensión y los errores mejoran en pruebas con usuarios, sin aumentar exposición ni trabajo de mantenimiento."
+      ]
+    },
+    {
+      "order": 5,
+      "name": "Mantener y ampliar la evidencia del mercado",
+      "status": "designed_requires_data_pipeline",
+      "scope": [
+        "Actualizar el snapshot editorial con fuentes nuevas",
+        "Cerrar costos, programas y candidatos pendientes",
+        "Diseñar monitoreo de cambios con revisión antes de publicación"
+      ],
+      "dependencies": [
+        "Inventario de fuentes primarias y términos de uso",
+        "Modelo por producto, segmento, fecha y metodología",
+        "Detección de cambios con revisión editorial",
+        "Política de retiro y caducidad",
+        "No existe un crawler o monitor de productos corriendo en esta versión."
+      ],
+      "done": [
+        "Cada dato conserva evidencia recuperable y fecha.",
+        "Un cambio de página o conflicto no publica un costo inventado.",
+        "La interfaz conserva registros históricos sin presentarlos como oferta disponible.",
+        "Ampliar cobertura no agrega navegación principal ni ruido a la portada."
+      ]
+    }
+  ],
+  "feasibility": {
+    "baselineArtifact": "artifacts/ui-review/daily-value-baseline.json",
+    "baselineCapturedAt": "2026-10-18T22:29:37.5882617Z",
+    "safeCurrentWork": "La captura usa el modelo existente de transacciones; recientes se deriva de datos ya guardados y no necesita una entidad nueva.",
+    "constraints": [
+      {
+        "evidence": [
+          "src/services/backup.js",
+          "server/sites/router.js"
+        ],
+        "finding": "El respaldo actual declara schemaVersion 1 y la normalización conserva un conjunto definido de campos.",
+        "consequence": "Agregar claves raíz para cobros, hábitos o membresías sin migración puede perder información al normalizar o sincronizar."
+      },
+      {
+        "evidence": [
+          "server/workspace/identity.js",
+          "server/workspace/repository.js"
+        ],
+        "finding": "La factibilidad revisada no encontró un modelo de membresías de hogar con roles y visibilidad por recurso.",
+        "consequence": "La colaboración real requiere autorización de servidor; no se entrega mediante etiquetas de interfaz."
+      },
+      {
+        "evidence": [
+          "src/App.jsx",
+          "src/services/paymentTimeline.js"
+        ],
+        "finding": "La planificación existente no constituye un sistema completo de cobros variables y reconciliación.",
+        "consequence": "Separar lo registrado de futuras entidades; impedir doble conteo de reservas y cobros."
+      }
+    ]
+  },
+  "validationPlan": {
+    "executed": false,
+    "researchStudy": "Propuesta de dos rondas moderadas con 12 unidades: 4 de finanzas personales, 4 con ingreso variable y 4 hogares con ambos adultos. Los contextos pueden superponerse; no son segmentos excluyentes.",
+    "comparison": "Tareas comparables con experiencia actual y propuesta, alternando el orden para reducir sesgo de aprendizaje.",
+    "scenarios": [
+      {
+        "name": "Cuenta equivocada",
+        "fixture": "Cuenta A: 1,200; cuenta B: 6,000; pago de 3,500 desde A antes del cobro.",
+        "success": "Identificar el faltante de la cuenta que paga, aunque el total conjunto alcance."
+      },
+      {
+        "name": "Cobro incierto",
+        "fixture": "2,000 confirmados; 3,000 comprometidos; 5,000 esperados que se atrasan.",
+        "success": "Reconocer faltante de 1,000 sin contar el ingreso pendiente; registrar el cobro posterior una sola vez."
+      },
+      {
+        "name": "Hogar",
+        "fixture": "Renta compartida con aportaciones diferentes y un reembolso.",
+        "success": "Explicar responsabilidad y privacidad; no duplicar el gasto al transferir o reembolsar."
+      },
+      {
+        "name": "Regreso",
+        "fixture": "Varias semanas sin revisar, un saldo antiguo y movimientos sin categoría.",
+        "success": "Encontrar lo necesario para decidir hoy y reconocer lo todavía incompleto."
+      }
+    ],
+    "pilot": "Observar al menos cuatro ciclos de revisión elegidos por cada unidad; cuatro ciclos no equivale siempre a cuatro semanas.",
+    "metrics": [
+      {
+        "name": "Decisiones correctas sin ayuda",
+        "definition": "Tareas resueltas correctamente sin intervención, junto con tiempo y errores críticos; segmentar por contexto."
+      },
+      {
+        "name": "Ciclos útiles",
+        "definition": "Ciclos con una decisión útil completada / todos los ciclos debidos tras la activación, incluyendo aquellos sin visita."
+      },
+      {
+        "name": "Continuidad al cuarto ciclo",
+        "definition": "Unidades que completan un ciclo útil en el cuarto ciclo / unidades activadas cuyo cuarto ciclo ya venció; segmentar por cadencia y contexto."
+      },
+      {
+        "name": "Participación del hogar",
+        "definition": "Medir la participación y comprensión de cada integrante, sin esconder el trabajo que recae en una sola persona."
+      }
+    ],
+    "guardrails": [
+      "Duplicados y conciliaciones erróneas",
+      "Comprensión de cobertura y vigencia",
+      "Exposición no autorizada",
+      "Esfuerzo de mantenimiento",
+      "Abandono de captura",
+      "Alertas desactivadas",
+      "Preocupación declarada por la persona"
+    ],
+    "targets": "No se fijan porcentajes de mejora ni resultados comerciales sin una línea base.",
+    "remindersEvidence": "Un ensayo publicado en 2025 estudió recordatorios en clientes bancarios estadounidenses durante dos meses de 2022; su mejor intervención elevó una medida de depósitos de ahorro en 0.13 puntos porcentuales. Es evidencia acotada de una intervención, no prueba de retención ni del efecto de Sifran.",
+    "sourceIds": [
+      "savings-rct",
+      "cfpb-wellbeing"
+    ]
+  },
+  "excludedDirections": [
+    "Rachas obligatorias o recompensas por abrir sin una tarea útil",
+    "Feed de noticias y catálogo completo en la portada",
+    "Ranking universal de tarjetas o préstamos",
+    "Chat genérico como reemplazo del recorrido principal",
+    "Aplicaciones o pagos automáticos sin decisión explícita",
+    "Colaboración simulada mediante filtros",
+    "Afirmar que una simulación garantiza un resultado"
+  ],
+  "sources": [
+    {
+      "id": "inegi-enif",
+      "kind": "official-statistics",
+      "title": "INEGI · ENIF 2024, presentación de resultados",
+      "url": "https://inegi.org.mx/contenidos/programas/enif/2024/doc/enif_2024_resultados.pdf",
+      "period": "2024"
+    },
+    {
+      "id": "inegi-ensafi",
+      "kind": "official-statistics",
+      "title": "INEGI · ENSAFI 2023, nota técnica",
+      "url": "https://www.inegi.org.mx/contenidos/programas/ensafi/2023/doc/ensafi_2023_nota_tecnica.pdf",
+      "period": "2023"
+    },
+    {
+      "id": "cfpb-wellbeing",
+      "kind": "public-research",
+      "title": "CFPB · Hallazgos sobre bienestar financiero",
+      "url": "https://www.consumerfinance.gov/consumer-tools/educator-tools/financial-well-being-resources/explore-findings/"
+    },
+    {
+      "id": "savings-rct",
+      "kind": "primary-research",
+      "title": "PNAS Nexus · Ensayo de recordatorios de ahorro",
+      "url": "https://academic.oup.com/pnasnexus/article/4/9/pgaf280/8244974",
+      "publicationYear": 2025,
+      "studyPeriod": "Marzo–abril de 2022",
+      "sample": "1,925,785 clientes bancarios de Estados Unidos"
+    },
+    {
+      "id": "nng-load",
+      "kind": "ux-research",
+      "title": "Nielsen Norman Group · Minimizar carga cognitiva",
+      "url": "https://www.nngroup.com/articles/minimize-cognitive-load/"
+    },
+    {
+      "id": "nng-dashboard",
+      "kind": "ux-research",
+      "title": "Nielsen Norman Group · Atributos preatentivos en paneles",
+      "url": "https://www.nngroup.com/articles/dashboards-preattentive/"
+    },
+    {
+      "id": "forum-couple-freelance",
+      "kind": "qualitative-testimony",
+      "community": "r/MexicoFinanciero",
+      "title": "Organizar dinero en una pareja con trabajo independiente",
+      "url": "https://www.reddit.com/r/MexicoFinanciero/comments/1hcx9im/banda_casada_de_freelancer_c%C3%B3mo_hacen_para/"
+    },
+    {
+      "id": "forum-fortnight",
+      "kind": "qualitative-testimony",
+      "community": "r/MexicoFinanciero",
+      "title": "Organización personal y familiar por quincena",
+      "url": "https://www.reddit.com/r/MexicoFinanciero/comments/1rf2b24/c%C3%B3mo_manejan_sus_finanzas_personalesfamiliares/"
+    },
+    {
+      "id": "forum-overwhelmed",
+      "kind": "qualitative-testimony",
+      "community": "r/ynab",
+      "title": "Carga percibida de mantener el presupuesto",
+      "url": "https://www.reddit.com/r/ynab/comments/1dqj5kq/do_you_find_ynab_overwhelming/"
+    },
+    {
+      "id": "forum-freelance",
+      "kind": "qualitative-testimony",
+      "community": "r/ynab",
+      "title": "Confusión entre objetivos e ingreso disponible",
+      "url": "https://www.reddit.com/r/ynab/comments/1bickju/am_i_using_ynab_right/"
+    },
+    {
+      "id": "forum-seasonal",
+      "kind": "qualitative-testimony",
+      "community": "r/ynab",
+      "title": "Ingresos muy variables y gastos compartidos",
+      "url": "https://www.reddit.com/r/ynab/comments/1ugzvgz/ynab_system_for_very_variable_income/"
+    },
+    {
+      "id": "forum-new-freelance",
+      "kind": "qualitative-testimony",
+      "community": "r/ynab",
+      "title": "Primer presupuesto como trabajador independiente",
+      "url": "https://www.reddit.com/r/ynab/comments/1rl76kz/help_like_im_5_new_budget_and_unselfemployed/"
+    },
+    {
+      "id": "forum-private",
+      "kind": "qualitative-testimony",
+      "community": "r/MonarchMoney",
+      "title": "Presupuestos y movimientos privados",
+      "url": "https://www.reddit.com/r/MonarchMoney/comments/1v4m9rv/private_budgets_and_transactions/"
+    },
+    {
+      "id": "forum-msi",
+      "kind": "qualitative-testimony",
+      "community": "r/MexicoFinanciero",
+      "title": "Anticipar el próximo pago de tarjeta antes del corte",
+      "url": "https://www.reddit.com/r/MexicoFinanciero/comments/1jkid5d/hay_forma_de_saber_con_bbva_cu%C3%A1nto_va_a_ser_el/"
+    },
+    {
+      "id": "forum-mobile",
+      "kind": "qualitative-testimony",
+      "community": "r/MexicoFinanciero",
+      "title": "Herramientas de registro, móvil y privacidad",
+      "url": "https://www.reddit.com/r/MexicoFinanciero/comments/134wmor/qu%C3%A9_app_usan_para_sus_finanzas_personales_y/"
+    },
+    {
+      "id": "forum-drilldown",
+      "kind": "qualitative-testimony",
+      "community": "r/MonarchMoney",
+      "title": "Continuidad entre reporte y detalle",
+      "url": "https://www.reddit.com/r/MonarchMoney/comments/1vohjqo/cash_flow_reports_monarch_is_officially_losing/"
+    },
+    {
+      "id": "forum-couple-admin",
+      "kind": "qualitative-testimony",
+      "community": "r/MonarchMoney",
+      "title": "Reparto del trabajo de registrar en pareja",
+      "url": "https://www.reddit.com/r/MonarchMoney/comments/1ko31tl/couples_who_track_expenses_together_how_do_you/"
+    },
+    {
+      "id": "forum-anxiety",
+      "kind": "qualitative-testimony",
+      "community": "r/ynab",
+      "title": "Estrés asociado al presupuesto",
+      "url": "https://www.reddit.com/r/ynab/comments/1oc8hsf/budgeting_apps_stress_me_out_rather_than_helping/"
+    },
+    {
+      "id": "forum-month-covered",
+      "kind": "qualitative-testimony",
+      "community": "r/ynab",
+      "title": "Alivio declarado al cubrir el mes",
+      "url": "https://www.reddit.com/r/ynab/comments/1t5otxg/my_month_is_paid_for_and_i_can_finally_breathe/"
+    },
+    {
+      "id": "forum-deleted",
+      "kind": "qualitative-testimony",
+      "community": "r/copilotmoney",
+      "title": "Relato de eliminación de movimientos",
+      "url": "https://www.reddit.com/r/copilotmoney/comments/1wnhxpu/support_just_deleted_my_transactions/",
+      "limitation": "Incidente relatado; no reproducido."
+    },
+    {
+      "id": "forum-missing",
+      "kind": "qualitative-testimony",
+      "community": "r/copilotmoney",
+      "title": "Relato de movimientos faltantes",
+      "url": "https://www.reddit.com/r/copilotmoney/comments/1f1sv9s/missing_transaction_data/",
+      "limitation": "Incidente relatado; no reproducido."
+    },
+    {
+      "id": "forum-secondary",
+      "kind": "qualitative-testimony",
+      "community": "r/MexicoFinanciero",
+      "title": "Herramientas de finanzas utilizadas",
+      "url": "https://www.reddit.com/r/MexicoFinanciero/comments/1vookd4/que_app_de_finanzas_usan_para_sus_finanzas/",
+      "weight": "Contexto secundario; señales de autopromoción impiden tratarlo como evidencia decisiva."
+    },
+    {
+      "id": "forum-excluded",
+      "kind": "excluded",
+      "community": "r/MexicoFinanciero",
+      "title": "Hilo excluido sobre ingreso variable",
+      "url": "https://www.reddit.com/r/MexicoFinanciero/comments/1vlirf0/c%C3%B3mo_ahorran_si_sus_ingresos_cambian_cada_mes/",
+      "reason": "Autor eliminado y posible contenido promocional; no sustenta decisiones."
+    },
+    {
+      "id": "ynab-targets",
+      "kind": "provider-documentation",
+      "title": "YNAB · Seguimiento de objetivos",
+      "url": "https://www.ynab.com/features/goal-tracking"
+    },
+    {
+      "id": "ynab-together",
+      "kind": "provider-terms",
+      "title": "YNAB Together · Términos de uso",
+      "url": "https://www.ynab.com/terms/ynab-together"
+    },
+    {
+      "id": "monarch-flex",
+      "kind": "provider-documentation",
+      "title": "Monarch · Flex Budgeting",
+      "url": "https://help.monarch.com/hc/en-us/articles/32125337244052-Using-Flex-Budgeting"
+    },
+    {
+      "id": "monarch-review",
+      "kind": "provider-documentation",
+      "title": "Monarch · Asignación de revisión a un miembro",
+      "url": "https://www.monarch.com/blog/assign-transactions-to-a-household-member-for-review"
+    },
+    {
+      "id": "monarch-currency",
+      "kind": "provider-documentation",
+      "title": "Monarch · Cuentas internacionales y moneda",
+      "url": "https://help.monarch.com/hc/en-us/articles/360048393552-International-Accounts-and-Currency"
+    },
+    {
+      "id": "copilot-dashboard",
+      "kind": "provider-documentation",
+      "title": "Copilot · Panel de inicio",
+      "url": "https://help.copilot.money/en/articles/6045480-dashboard-tab-overview"
+    },
+    {
+      "id": "copilot-recurring",
+      "kind": "provider-documentation",
+      "title": "Copilot · Preguntas sobre recurrencias",
+      "url": "https://help.copilot.money/en/articles/10244751-recurrings-faq"
+    },
+    {
+      "id": "copilot-international",
+      "kind": "provider-documentation",
+      "title": "Copilot · Moneda internacional",
+      "url": "https://help.copilot.money/en/articles/10715424-international-currency"
+    },
+    {
+      "id": "simplifi-watchlists",
+      "kind": "provider-documentation",
+      "title": "Simplifi · Listas de seguimiento",
+      "url": "https://support.simplifi.quicken.com/en/articles/3472367-using-watchlists-on-the-web-app"
+    },
+    {
+      "id": "simplifi-spending",
+      "kind": "provider-documentation",
+      "title": "Simplifi · Plan de gasto",
+      "url": "https://support.simplifi.quicken.com/en/articles/4212702-understanding-your-spending-plan"
+    },
+    {
+      "id": "simplifi-projection",
+      "kind": "provider-documentation",
+      "title": "Simplifi · Proyección de flujo",
+      "url": "https://support.simplifi.quicken.com/en/articles/3357429-using-projected-cash-flow"
+    },
+    {
+      "id": "actual-import",
+      "kind": "provider-documentation",
+      "title": "Actual · Importación y conciliación",
+      "url": "https://actualbudget.org/docs/transactions/importing/"
+    },
+    {
+      "id": "actual-schedules",
+      "kind": "provider-documentation",
+      "title": "Actual · Programación de movimientos",
+      "url": "https://actualbudget.org/docs/schedules/"
+    },
+    {
+      "id": "actual-sync",
+      "kind": "provider-documentation",
+      "title": "Actual · Sincronización y alcance del cifrado",
+      "url": "https://actualbudget.org/docs/getting-started/sync/"
+    },
+    {
+      "id": "lunch-recurring",
+      "kind": "provider-documentation",
+      "title": "Lunch Money · Crear recurrencias",
+      "url": "https://support.lunchmoney.app/finances/recurring-items/creating-recurring-items"
+    },
+    {
+      "id": "lunch-budget",
+      "kind": "provider-documentation",
+      "title": "Lunch Money · Configurar el presupuesto",
+      "url": "https://support.lunchmoney.app/guides/budgeting/step-2-setting-up-your-budget"
+    },
+    {
+      "id": "lunch-collaborators",
+      "kind": "provider-documentation",
+      "title": "Lunch Money · Colaboradores",
+      "url": "https://support.lunchmoney.app/settings/collaborators"
+    },
+    {
+      "id": "rocket-payday",
+      "kind": "provider-documentation",
+      "title": "Rocket Money · Requisitos de Payday View",
+      "url": "https://help.rocketmoney.com/en/articles/6235627-enabling-payday-view"
+    },
+    {
+      "id": "bbva-apartados",
+      "kind": "provider-documentation",
+      "title": "BBVA · Apartados",
+      "url": "https://www.bbva.mx/educacion-financiera/ahorro/ahorro/que-es-un-apartado-de-dinero.html"
+    },
+    {
+      "id": "honeydue",
+      "kind": "provider-documentation",
+      "title": "Honeydue · Compartir saldos y movimientos",
+      "url": "https://support.honeydue.com/en/articles/3179542-will-my-partner-see-my-bank-account-balances-and-transactions",
+      "limitation": "Documentación antigua; comportamiento actual no probado."
+    },
+    {
+      "id": "fintonic",
+      "kind": "provider-positioning",
+      "title": "Fintonic · Sitio de producto",
+      "url": "https://www.fintonic.com/es-ES/inicio/"
+    },
+    {
+      "id": "kardmatch-terms",
+      "kind": "provider-terms",
+      "title": "Kardmatch · Términos y condiciones",
+      "url": "https://www.kardmatch.com.mx/acerca-de-kardmatch/terminos-y-condiciones-de-uso-kardmatch.asp"
+    },
+    {
+      "id": "banxico-card-comparison",
+      "kind": "official-comparison",
+      "title": "Banco de México · Comparación de tarjetas por CAT",
+      "url": "https://www.banxico.org.mx/tarjetascat/TarjetasEntrada.jsp",
+      "limitation": "Documentos por segmento; excluyen productos cuya participación no supera 0.1% del segmento. No es un censo de todas las tarjetas."
+    },
+    {
+      "id": "banxico-card-history",
+      "kind": "official-comparison",
+      "title": "Banco de México · Histórico de comparación de tarjetas",
+      "url": "https://www.banxico.org.mx/tarjetascat/TarjetasEntradaHistoricos.jsp"
+    },
+    {
+      "id": "banxico-rss",
+      "kind": "official-data-documentation",
+      "title": "Banco de México · Indicadores RSS",
+      "url": "https://www.banxico.org.mx/statistics/rss-indicators-banco-mexico.html"
+    },
+    {
+      "id": "banxico-cetes-table",
+      "kind": "official-data",
+      "title": "Banco de México · Cuadro CF107, valores gubernamentales",
+      "url": "https://www.banxico.org.mx/SieInternet/consultarDirectorioInternetAction.do?accion=consultarCuadroAnalitico&idCuadro=CF107"
+    },
+    {
+      "id": "banxico-terms",
+      "kind": "official-terms",
+      "title": "Banco de México · Políticas de uso",
+      "url": "https://www.banxico.org.mx/footer-es/salvedad-politicas-uso-banco-.html"
+    },
+    {
+      "id": "inegi-feed",
+      "kind": "official-data-documentation",
+      "title": "INEGI · Feeds de indicadores",
+      "url": "https://www.inegi.org.mx/servicios/feedsnoticias/feeds.html"
+    },
+    {
+      "id": "inegi-inpc-feed",
+      "kind": "official-data",
+      "title": "INEGI · Feed de variación anual del INPC",
+      "url": "https://www.inegi.org.mx/servicios/xml/INPCA_M_O.xml"
+    },
+    {
+      "id": "inegi-terms",
+      "kind": "official-terms",
+      "title": "INEGI · Términos de libre uso",
+      "url": "https://www.inegi.org.mx/inegi/terminos.html"
+    },
+    {
+      "id": "catalog-01",
+      "kind": "credit-provider-documentation",
+      "title": "BBVA Azul: requisitos, comisiones y CAT",
+      "url": "https://www.bbva.mx/personas/productos/tarjetas-de-credito/tarjeta-de-credito-azul.html"
+    },
+    {
+      "id": "catalog-02",
+      "kind": "credit-provider-documentation",
+      "title": "Joy Banamex: costos y condiciones",
+      "url": "https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-joy-sin-anualidad"
+    },
+    {
+      "id": "catalog-03",
+      "kind": "credit-provider-documentation",
+      "title": "LikeU: página oficial",
+      "url": "https://www.santander.com.mx/personas/credito-y-financiamiento/tarjetas-de-credito/likeu"
+    },
+    {
+      "id": "catalog-04",
+      "kind": "credit-provider-documentation",
+      "title": "Folleto LikeU: julio–diciembre de 2026",
+      "url": "https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:eadbc941-a74c-4127-ac61-b4250eb85b52/original/as/Cards_Folleto_TDC_LikeUMastercard_Jun2026_V2_0726.pdf"
+    },
+    {
+      "id": "catalog-05",
+      "kind": "credit-provider-documentation",
+      "title": "HSBC Zero: página y requisitos",
+      "url": "https://www.hsbc.com.mx/tarjetas-de-credito/productos/zero/"
+    },
+    {
+      "id": "catalog-06",
+      "kind": "credit-provider-documentation",
+      "title": "Folleto HSBC Zero: agosto de 2026",
+      "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/folleto_digital_zero.pdf"
+    },
+    {
+      "id": "catalog-07",
+      "kind": "credit-provider-documentation",
+      "title": "Clásica Banorte: requisitos y costos",
+      "url": "https://www.banorte.com/Personal/TDC/Clasica.html"
+    },
+    {
+      "id": "catalog-08",
+      "kind": "credit-provider-documentation",
+      "title": "Folleto Clásica: octubre de 2026",
+      "url": "https://www.banorte.com/dam/jcr:53a48148-c63e-446b-8d27-f8521310f4c0/Folleto%20Cl%C3%A1sica%20oct26.pdf"
+    },
+    {
+      "id": "catalog-09",
+      "kind": "credit-provider-documentation",
+      "title": "Nu: tarjeta de crédito",
+      "url": "https://nubank.com.mx/credito/"
+    },
+    {
+      "id": "catalog-10",
+      "kind": "credit-provider-documentation",
+      "title": "Nu: CAT publicado",
+      "url": "https://nubank.com.mx/cat/"
+    },
+    {
+      "id": "catalog-11",
+      "kind": "credit-provider-documentation",
+      "title": "Folleto Nu: discrepancia de fechas",
+      "url": "https://cdn.nubank.com.mx/mex/credito/folleto-informativo.pdf"
+    },
+    {
+      "id": "catalog-12",
+      "kind": "credit-provider-documentation",
+      "title": "Klar: tarjeta con garantía",
+      "url": "https://www.klar.mx/tarjeta-de-credito-con-garantia"
+    },
+    {
+      "id": "catalog-13",
+      "kind": "credit-provider-documentation",
+      "title": "Klar: costos de tarjeta con y sin garantía",
+      "url": "https://www.klar.mx/cat"
+    },
+    {
+      "id": "catalog-14",
+      "kind": "credit-provider-documentation",
+      "title": "Stori Green: página y requisitos",
+      "url": "https://www.storicard.com/stori-card"
+    },
+    {
+      "id": "catalog-15",
+      "kind": "credit-provider-documentation",
+      "title": "Tarifario Stori: renglón STORI GREEN",
+      "url": "https://www.storicard.com/files/costos-y-comisiones-credito.pdf?v=20260213"
+    },
+    {
+      "id": "catalog-16",
+      "kind": "credit-provider-documentation",
+      "title": "BBVA: préstamo personal",
+      "url": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-personal-inmediato.html"
+    },
+    {
+      "id": "catalog-17",
+      "kind": "credit-provider-documentation",
+      "title": "BBVA: préstamo de nómina",
+      "url": "https://www.bbva.mx/personas/productos/creditos/prestamos-personales/prestamo-nomina.html"
+    },
+    {
+      "id": "catalog-18",
+      "kind": "credit-provider-documentation",
+      "title": "BBVA: crédito de auto",
+      "url": "https://www.bbva.mx/personas/productos/creditos/credito-auto.html"
+    },
+    {
+      "id": "catalog-19",
+      "kind": "credit-provider-documentation",
+      "title": "BBVA: Hipoteca Fija",
+      "url": "https://www.bbva.mx/personas/productos/creditos/credito-hipotecario/hipoteca-fija.html"
+    },
+    {
+      "id": "catalog-20",
+      "kind": "credit-provider-documentation",
+      "title": "BBVA: préstamos para pagar deudas",
+      "url": "https://www.bbva.mx/educacion-financiera/creditos/credito-de-nomina-prestamo/ppi-prestamos-para-pagar-deudas.html"
+    },
+    {
+      "id": "catalog-21",
+      "kind": "credit-provider-documentation",
+      "title": "Nacional Monte de Piedad: vehículo en garantía",
+      "url": "https://www.montepiedad.com.mx/empeno-vehiculos/"
+    },
+    {
+      "id": "benefit-source-01",
+      "kind": "benefit-provider-documentation",
+      "title": "Términos Cashback Baby publicados el 1 de octubre de 2026",
+      "url": "https://assets.santandermedia.com/adobe/assets/urn:aaid:aem:7d6d6b86-b947-4401-996e-830a04318331/original/as/tyc-cashback.pdf"
+    },
+    {
+      "id": "benefit-source-02",
+      "kind": "benefit-provider-documentation",
+      "title": "Directorio de comercios participantes",
+      "url": "https://www.santander.com.mx/personas/beneficios/cashback/comercios-participantes/"
+    },
+    {
+      "id": "benefit-source-03",
+      "kind": "benefit-provider-documentation",
+      "title": "Condiciones del programa de cashback Plata",
+      "url": "https://prime.bancoplata.mx/file-service/static/cashback_conditions_public.pdf"
+    },
+    {
+      "id": "benefit-source-04",
+      "kind": "benefit-provider-documentation",
+      "title": "Términos Saldo HSBC 2Now",
+      "url": "https://www.hsbc.com.mx/content/dam/hsbc/mx/documents/tarjetas/terminos_condiciones_2now.pdf"
+    },
+    {
+      "id": "benefit-source-05",
+      "kind": "benefit-provider-documentation",
+      "title": "HSBC 2Now: retiro de saldo sin costo",
+      "url": "https://www.hsbc.com.mx/tarjetas-de-credito/productos/2now/"
+    },
+    {
+      "id": "benefit-source-06",
+      "kind": "benefit-provider-documentation",
+      "title": "Recompensas Hey: términos vigentes desde febrero de 2026",
+      "url": "https://banco.hey.inc/content/dam/heybanco/terminos-condiciones/beneficios/recompensas.pdf"
+    },
+    {
+      "id": "benefit-source-07",
+      "kind": "benefit-provider-documentation",
+      "title": "Condiciones de recompensas Costco Banamex",
+      "url": "https://www.banamex.com/personas/tarjetas-de-credito/tarjeta-costco"
+    },
+    {
+      "id": "benefit-source-08",
+      "kind": "benefit-provider-documentation",
+      "title": "Términos Vexi Cashback",
+      "url": "https://www.vexi.mx/centro-de-ayuda/terminos-y-condiciones-cashback"
+    },
+    {
+      "id": "benefit-source-09",
+      "kind": "benefit-provider-documentation",
+      "title": "Términos de Puntos BBVA",
+      "url": "https://www.bbva.mx/content/dam/public-web/mexico/documents/personas/tarjetas/promociones-tdc/tyc-puntos-bbva.pdf"
+    },
+    {
+      "id": "benefit-source-10",
+      "kind": "benefit-provider-documentation",
+      "title": "Liverpool: tarjetas y Puntos Rosas",
+      "url": "https://assetsmcproa.liverpool.com.mx/pdf/CAT_Tarjetas_Liverpool_TyC.pdf"
+    },
+    {
+      "id": "benefit-source-11",
+      "kind": "benefit-provider-documentation",
+      "title": "Suburbia: términos de crédito y monedero",
+      "url": "https://assetsmcproa.suburbia.com.mx/pdf/Terminos_Condiciones_Credito_Suburbia.pdf"
+    },
+    {
+      "id": "benefit-source-12",
+      "kind": "benefit-provider-documentation",
+      "title": "Beneficios de Tarjeta Palacio",
+      "url": "https://www.elpalaciodehierro.com/on/demandware.static/-/Library-Sites-palacio-content-global/default/PDF/Informativas/Terminos-y-condiciones/Beneficios-de-Tarjeta-Palacio.pdf"
+    },
+    {
+      "id": "benefit-source-13",
+      "kind": "benefit-provider-documentation",
+      "title": "Términos de alianzas Stori, actualización de junio de 2026",
+      "url": "https://www.storicard.com/files/terminos-y-condiciones-stori-alianzas.pdf?v=20251114"
+    },
+    {
+      "id": "benefit-source-14",
+      "kind": "benefit-provider-documentation",
+      "title": "Simi x Stori: cómo transferir el cashback base",
+      "url": "https://www.storicard.com/farmacias-similares"
+    },
+    {
+      "id": "benefit-source-15",
+      "kind": "benefit-provider-documentation",
+      "title": "RappiCard: cashback de octubre de 2026",
+      "url": "https://rappicard.mx/condiciones-cashback/"
+    },
+    {
+      "id": "benefit-source-16",
+      "kind": "benefit-provider-documentation",
+      "title": "DiDi Card: condiciones de cashback",
+      "url": "https://web.didiglobal.com/mx/tarjeta-de-credito/tc-cashback.pdf"
+    },
+    {
+      "id": "benefit-source-17",
+      "kind": "benefit-provider-documentation",
+      "title": "Producto actual DiDi Card",
+      "url": "https://didifinance.com/tarjeta-de-credito"
+    },
+    {
+      "id": "benefit-source-18",
+      "kind": "benefit-provider-documentation",
+      "title": "Stori Black: programa Redime tu Cashback",
+      "url": "https://www.storicard.com/files/stori-black/programa-redime-tu-cashback.pdf?v=20250603"
+    },
+    {
+      "id": "benefit-source-19",
+      "kind": "benefit-provider-documentation",
+      "title": "SHEIN x Stori: beneficios y condiciones",
+      "url": "https://www.storicard.com/files/shein/SheinTyCBeneficios.pdf?v=20241125"
+    },
+    {
+      "id": "benefit-source-20",
+      "kind": "benefit-provider-documentation",
+      "title": "Información oficial: Klar Plus",
+      "url": "https://www.klar.mx/plus"
+    },
+    {
+      "id": "benefit-source-21",
+      "kind": "benefit-provider-documentation",
+      "title": "Información oficial: Klar Platino",
+      "url": "https://www.klar.mx/platino"
+    },
+    {
+      "id": "benefit-source-22",
+      "kind": "benefit-provider-documentation",
+      "title": "Información oficial: Uber Card Platino",
+      "url": "https://www.klar.mx/uber"
+    },
+    {
+      "id": "benefit-source-23",
+      "kind": "benefit-provider-documentation",
+      "title": "Información oficial: Win Banregio",
+      "url": "https://www.banregio.com/personas/tarjetas/banregio.php"
+    },
+    {
+      "id": "benefit-source-24",
+      "kind": "benefit-provider-documentation",
+      "title": "Información oficial: Mastercard Offers para Ualá",
+      "url": "https://www.uala.mx/promociones/mastercardoffers"
+    },
+    {
+      "id": "market-amex-types",
+      "kind": "market-provider-documentation",
+      "title": "American Express México · Catálogo de tarjetas",
+      "url": "https://www.americanexpress.com/es-mx/tarjetas-de-credito/nuestras-tarjetas/"
+    },
+    {
+      "id": "market-nafin-program",
+      "kind": "market-institution-documentation",
+      "title": "Nafin · Tu Primer Crédito",
+      "url": "https://www.nafin.com/portalnf/content/financiamiento/tu-primer-credito.html"
+    },
+    {
+      "id": "market-fira-funding",
+      "kind": "market-institution-documentation",
+      "title": "FIRA · Fondeo mediante intermediarios",
+      "url": "https://www.fira.gob.mx/Nd/FondeoFira.jsp"
+    },
+    {
+      "id": "savings-source-01",
+      "kind": "savings-provider-documentation",
+      "title": "Nu: tasas, GAT y vigencias",
+      "url": "https://nubank.com.mx/gat/",
+      "consultedOn": "2026-10-18"
+    },
+    {
+      "id": "savings-source-02",
+      "kind": "savings-provider-documentation",
+      "title": "Openbank: términos de Apartados Open, programa septiembre–diciembre de 2026",
+      "url": "https://www.openbank.mx/assets/OK_MX/es-MX/precontract/v1/MX.OB.CUENTA.NOREM.T%26C.pdf",
+      "consultedOn": "2026-10-18"
+    },
+    {
+      "id": "savings-source-03",
+      "kind": "savings-provider-documentation",
+      "title": "Mercado Pago: términos de inversión en MPAGORF y cuenta GBM",
+      "url": "https://www.mercadopago.com.mx/ayuda/Terminos-rendimientos_15581",
+      "consultedOn": "2026-10-18"
+    },
+    {
+      "id": "savings-source-04",
+      "kind": "savings-provider-documentation",
+      "title": "GBM: diferencias entre Smart Cash y Smart Cash Dólares",
+      "url": "https://gbm.com/faqs/que-diferencia-existe-entre-smart-cash-y-smart-cash-dolares/",
+      "consultedOn": "2026-10-18"
+    },
+    {
+      "id": "savings-source-05",
+      "kind": "savings-provider-documentation",
+      "title": "Actinver Trade: preguntas frecuentes, ACTIREN y costos",
+      "url": "https://actinvertrade.actinver.com/preguntas-frecuentes.html",
+      "consultedOn": "2026-10-18"
+    },
+    {
+      "id": "savings-source-06",
+      "kind": "savings-provider-documentation",
+      "title": "Caja Popular Mexicana: Rendicuenta",
+      "url": "https://www.cpm.coop/rendicuenta",
+      "consultedOn": "2026-10-18"
+    }
+  ],
+  "sourceDateRule": "Todas las fuentes se consultaron durante esta investigación cerrada al 2026-10-18; periodo del dato y fecha de publicación se conservan por separado cuando están verificados.",
+  "previousContracts": [
+    "RESEARCH-REPORT r1",
+    "MX-MARKET-DOCS r2"
+  ],
+  "artifacts": [
+    {
+      "title": "Informe editorial",
+      "path": "docs/daily-value-research.html"
+    },
+    {
+      "title": "Investigación original de UX",
+      "path": "docs/ux-research.json"
+    },
+    {
+      "title": "Inventario auditable del mercado de crédito",
+      "path": "docs/mexico-credit-market.json"
+    },
+    {
+      "title": "Inventario auditable de ahorro e inversión",
+      "path": "docs/mexico-savings-market.json"
+    }
+  ],
+  "documentationRevision": {
+    "contract": "MX-MARKET-DOCS r3",
+    "originalResearchSourcesPreserved": 74,
+    "marketSnapshotDate": "2026-10-18",
+    "integratedQa": "locally_verified_with_documented_limits",
+    "technicalEvidence": [
+      {
+        "path": "src/data/mexicoCreditDirectory.js",
+        "role": "Identificación y disponibilidad"
+      },
+      {
+        "path": "src/data/creditCatalog.js",
+        "role": "Fichas de costos"
+      },
+      {
+        "path": "src/data/cardBenefits.js",
+        "role": "Programas y reglas"
+      },
+      {
+        "path": "src/services/cardBenefits.js",
+        "role": "Evaluación contextual y exclusiones"
+      },
+      {
+        "path": "server/references/publicRates.js",
+        "role": "Únicas referencias oficiales refrescables"
+      },
+      {
+        "path": "src/data/mexicoSavingsCatalog.js",
+        "role": "Modalidades de ahorro, rendimientos publicados y límites de evidencia"
+      },
+      {
+        "path": "src/components/SavingsCatalog.jsx",
+        "role": "Exploración y comparación de hasta tres modalidades"
+      }
+    ]
+  },
+  "integratedVerification": {
+    "status": "locally_verified_with_documented_limits",
+    "evidence": "artifacts/ui-review/market-browser-validation.json",
+    "automated": {
+      "fullSuite": {
+        "passed": 751,
+        "total": 751,
+        "files": 34,
+        "report": "artifacts/ui-review/market-tests-summary-r1.json"
+      },
+      "focusedAfterSticky": {
+        "passed": 9,
+        "total": 9,
+        "report": "artifacts/ui-review/market-tests-summary-r2.json",
+        "note": "Son una repetición focal; no 760 pruebas distintas."
+      },
+      "finalBuild": {
+        "status": "passed_with_size_warning",
+        "report": "artifacts/ui-review/market-tests-summary-r3.json",
+        "minifiedCreditLibraryKB": 614.41,
+        "gzipCreditLibraryKB": 84.66,
+        "note": "Advertencia de tamaño; no es una medición de rendimiento en un dispositivo."
+      },
+      "dataIntegrity": {
+        "status": "passed",
+        "command": "node scripts/check-market-data.mjs",
+        "cards": 192,
+        "financingEntries": 109,
+        "savingsModalities": 65,
+        "benefitPrograms": 25,
+        "calculablePrograms": 5,
+        "referencedDistinctUrls": 318,
+        "limit": "Integridad y paridad offline; no prueba de disponibilidad actual de todas las URLs ni censo de mercado."
+      },
+      "sourceMutationCheck": {
+        "files": 183,
+        "unchangedDuringFinalBuild": true
+      },
+      "productionScan": {
+        "status": "passed",
+        "note": "Sin los marcadores inspeccionados de harness, documentos y fixtures de QA en dist; no constituye prueba universal de ausencia de cualquier dato sintético."
+      }
+    },
+    "designReview": "UX-DIRECTION r7 aprobado sobre capturas reales, incluido ajuste final de pintura del encabezado. No sustituye un estudio con usuarios.",
+    "browserObservedChecks": 25,
+    "incomplete": [
+      {
+        "id": "reduced-motion-final",
+        "status": "not_completed",
+        "reason": "La sesión del navegador dejó de estar disponible después de solicitar prefers-reduced-motion y abrir captura rápida. No se pudo terminar la inspección ni confirmar limpieza de overrides temporales de esa sesión."
+      }
+    ],
+    "limits": [
+      "No se operaron cuentas reales ni sincronización desplegada.",
+      "No se ejecutó auditoría WCAG completa, lector de pantalla ni zoom.",
+      "Las capturas del informe preceden a la actualización final de su texto de estado; esa actualización conserva estructura y CSS.",
+      "Cobertura editorial parcial y fechada; 192 tarjetas identificadas no equivalen a 192 fichas contractuales completas. Hay ocho fichas detalladas de costos.",
+      "109 entradas de financiamiento incluyen productos, modalidades y programas; no son 109 préstamos directos independientes.",
+      "Ahorro: 58 fichas detalladas y siete limitadas. No cubre todos los fondos, AFORE ni seguros con ahorro.",
+      "Las únicas referencias refrescables son CETES, FIX, UDI e INPC; el catálogo de productos no tiene crawler ni monitor automático en operación.",
+      "Coordinación de hogares con permisos compartidos, cobros esperados conciliables y medición de retención siguen como trabajo futuro documentado.",
+      "No se desplegó esta iteración."
+    ]
+  }
+}

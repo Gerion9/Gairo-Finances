@@ -2,12 +2,13 @@ import { json, readJSON, WorkspaceError } from '../workspace/errors.js';
 import { readIdentity, getAccountSession, bindAccount, requireAccount } from '../workspace/identity.js';
 import { getWorkspace, putWorkspace } from '../workspace/repository.js';
 import { handleAccountAI } from '../ai/worker-ai.js';
+import { getPublicRates } from '../references/publicRates.js';
 
 export const SITE_ORIGIN = 'https://sifran.gairo.chatgpt.site';
 
 // Deploy this entrypoint ONLY through Sites. It relies on the managed
 // dispatcher stripping/replacing identity headers and enforcing private access.
-export async function handleSiteRequest(request, env, { html = '', ai = handleAccountAI } = {}) {
+export async function handleSiteRequest(request, env, { html = '', ai = handleAccountAI, referenceRates = getPublicRates } = {}) {
   const url = new URL(request.url);
   if (url.origin !== SITE_ORIGIN) return json({ error: { code: 'ENTRYPOINT_DENIED', message: 'Abre Sifran desde su dirección privada.' } }, 403);
   const path = url.pathname;
@@ -15,6 +16,16 @@ export async function handleSiteRequest(request, env, { html = '', ai = handleAc
     if (request.method !== 'GET' && request.method !== 'HEAD') return new Response(null, { status: 405 });
     if (path === '/' || path === '/index.html') return new Response(request.method === 'HEAD' ? null : html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin' } });
     return env.ASSETS ? env.ASSETS.fetch(request) : new Response('Not found', { status: 404 });
+  }
+  // Public reference data only: no identity, account, database or user input is
+  // forwarded to the fixed official sources. Private API boundaries remain below.
+  if (path === '/api/reference-rates') {
+    if (request.method !== 'GET') return json({ error: { code: 'METHOD_NOT_ALLOWED', message: 'Consulta las referencias con GET.' } }, 405, { Allow: 'GET' });
+    try {
+      return json(await referenceRates({ forceRefresh: request.headers.get('X-Sifran-Refresh') === '1' }));
+    } catch {
+      return json({ error: { code: 'REFERENCES_UNAVAILABLE', message: 'No se pudieron consultar las referencias oficiales. Puedes conservar tu propio supuesto.' } }, 503);
+    }
   }
   try {
     const identity = readIdentity(request);
